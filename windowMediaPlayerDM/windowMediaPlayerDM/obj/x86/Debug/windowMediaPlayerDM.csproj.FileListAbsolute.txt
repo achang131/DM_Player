@@ -1,0 +1,13 @@
+c:\users\alan\documents\visual studio 2010\Projects\windowMediaPlayerDM\windowMediaPlayerDM\bin\Debug\windowMediaPlayerDM.exe
+c:\users\alan\documents\visual studio 2010\Projects\windowMediaPlayerDM\windowMediaPlayerDM\bin\Debug\windowMediaPlayerDM.pdb
+c:\users\alan\documents\visual studio 2010\Projects\windowMediaPlayerDM\windowMediaPlayerDM\bin\Debug\Interop.WMPLib.dll
+c:\users\alan\documents\visual studio 2010\Projects\windowMediaPlayerDM\windowMediaPlayerDM\bin\Debug\AxInterop.WMPLib.dll
+c:\users\alan\documents\visual studio 2010\Projects\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\Interop.WMPLib.dll
+c:\users\alan\documents\visual studio 2010\Projects\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\AxInterop.WMPLib.dll
+c:\users\alan\documents\visual studio 2010\Projects\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\windowMediaPlayerDM.csproj.ResolveComReference.cache
+c:\users\alan\documents\visual studio 2010\Projects\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\windowMediaPlayerDM.Form1.resources
+c:\users\alan\documents\visual studio 2010\Projects\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\windowMediaPlayerDM.Properties.Resources.resources
+c:\users\alan\documents\visual studio 2010\Projects\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\windowMediaPlayerDM.csproj.GenerateResource.Cache
+c:\users\alan\documents\visual studio 2010\Projects\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\windowMediaPlayerDM.exe
+c:\users\alan\documents\visual studio 2010\Projects\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\windowMediaPlayerDM.pdb
+c:\users\alan\documents\visual studio 2010\Projects\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\windowMediaPlayerDM.Form2.resources
