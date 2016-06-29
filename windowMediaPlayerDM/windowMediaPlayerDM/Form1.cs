@@ -40,6 +40,8 @@ namespace windowMediaPlayerDM
 
         delegate void exmovelabel(Label l);
 
+        delegate void commentEnginecomp();
+
         Dictionary<int, String> comment2 = new Dictionary<int, string>();
 
         TaskFactory th1 = new TaskFactory();
@@ -75,11 +77,11 @@ namespace windowMediaPlayerDM
 
             time_offset = 0;
 
-            move_distance = 13;
+            move_distance = 6;
 
             timer1.Interval = 1;
 
-            commentdestroy = -100;
+            commentdestroy = -200;
 
             sommentswitch = true;
 
@@ -97,7 +99,7 @@ namespace windowMediaPlayerDM
 
             //newTimer2.Interval = TimeSpan.FromMilliseconds(.1);
 
-            newTimer2.Interval = 1;
+            newTimer2.Interval = .1;
 
             //
           
@@ -134,6 +136,9 @@ namespace windowMediaPlayerDM
         void newTimer2_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             moveComment_thread();
+           // commentEngine();
+
+           // commentEngine_thread();
         }
 
         void newTimer2_Tick(object sender, EventArgs e)
@@ -144,6 +149,11 @@ namespace windowMediaPlayerDM
         void newtimer_Tick(object sender, EventArgs e)
         {
             commentEngine();
+
+            //moveComment_thread();
+
+           // moveComment();
+
         }
         void runEngine(int a) {
             while (a != 1) {
@@ -781,6 +791,43 @@ namespace windowMediaPlayerDM
 
             }
              
+        
+        
+        }
+
+        void commentEngine_thread() {
+
+            if (this.InvokeRequired)
+            {
+
+                commentEnginecomp c = new commentEnginecomp(commentEngine_thread);
+                try
+                {
+                    this.Invoke(c, new object[] { });
+                }
+                catch (Exception) { 
+                
+                
+                }
+
+
+
+            }
+            else {
+
+                if (sommentswitch == true)
+                {
+
+                    makeComment();
+
+                    //moveComment();
+
+                }
+             
+        
+            
+            }
+        
         
         
         }
