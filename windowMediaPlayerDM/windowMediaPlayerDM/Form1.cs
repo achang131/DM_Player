@@ -30,19 +30,26 @@ namespace windowMediaPlayerDM
         int time_offset;
         int move_distance;
         int playedcomment;
+        List<String[]> Media_list = new List<String[]>();
+        List<String[]> DM_list = new List<String[]>();
+        bool sommentswitch;
+        int commentdestroy;
+        
 
-        
-        
+        delegate void tmovelabel(Label l,int x, int y);
+
+        delegate void exmovelabel(Label l);
+
         Dictionary<int, String> comment2 = new Dictionary<int, string>();
 
         TaskFactory th1 = new TaskFactory();
 
         public DispatcherTimer newtimer = new DispatcherTimer();
 
-       
+        //public DispatcherTimer newTimer2 = new DispatcherTimer();
 
+        public System.Timers.Timer newTimer2 = new System.Timers.Timer();
 
-        int _time;
       //  Form2 fm2;
 
         //
@@ -64,14 +71,17 @@ namespace windowMediaPlayerDM
 
             //comment settings
 
-            speed_control = 2;
+            speed_control = 1;
 
             time_offset = 0;
 
-            move_distance = 6;
+            move_distance = 13;
 
             timer1.Interval = 1;
 
+            commentdestroy = -100;
+
+            sommentswitch = true;
 
          //   newtimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
 
@@ -79,10 +89,15 @@ namespace windowMediaPlayerDM
 
             newtimer.Tick += new EventHandler(newtimer_Tick);
 
+            //newTimer2.Tick += new EventHandler(newTimer2_Tick);
 
+            newTimer2.Elapsed += new System.Timers.ElapsedEventHandler(newTimer2_Elapsed);
 
+            newtimer.Interval= TimeSpan.FromMilliseconds(.1);
 
-          //  newtimer.Interval= TimeSpan.FromMilliseconds(.05);
+            //newTimer2.Interval = TimeSpan.FromMilliseconds(.1);
+
+            newTimer2.Interval = 1;
 
             //
           
@@ -114,6 +129,16 @@ namespace windowMediaPlayerDM
   
    */
             
+        }
+
+        void newTimer2_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            moveComment_thread();
+        }
+
+        void newTimer2_Tick(object sender, EventArgs e)
+        {
+          //  moveComment();
         }
 
         void newtimer_Tick(object sender, EventArgs e)
@@ -179,9 +204,9 @@ namespace windowMediaPlayerDM
 
             if (d.ContainsKey(currenttime))
             {
+                playedcomment++;
                 createLabel(d[currenttime]);
 
-                playedcomment++;
             }
         
         }
@@ -190,8 +215,9 @@ namespace windowMediaPlayerDM
 
             if (currenttime == time) {
 
-                createLabel(comment);
                 playedcomment++;
+                createLabel(comment);
+                
             }
         }
 
@@ -209,6 +235,7 @@ namespace windowMediaPlayerDM
             {
                 timer1.Start();
                 newtimer.Start();
+                newTimer2.Start();
 
               //  while (Media_Player.playState.ToString().Equals("wmppsPlaying")) {
 
@@ -221,8 +248,12 @@ namespace windowMediaPlayerDM
                 timer1.Stop();
 
                 newtimer.Stop();
-                
+
+                newTimer2.Stop();
+                playedcomment = 0;
+
                 resetComment(comment_storage);
+
             
             }
             else {
@@ -230,6 +261,8 @@ namespace windowMediaPlayerDM
 
 
                 newtimer.Stop();
+
+                newTimer2.Stop();
             }
 
             switch (e.newState) { 
@@ -326,6 +359,8 @@ namespace windowMediaPlayerDM
                     timer1.Start();
 
                     newtimer.Start();
+
+                    newTimer2.Start();
                     break;
 
                 case "wmppsPaused":
@@ -334,6 +369,8 @@ namespace windowMediaPlayerDM
 
 
                     newtimer.Start();
+
+                    newTimer2.Start();
                     break;
 
                 case "wmppsPlaying":
@@ -343,12 +380,15 @@ namespace windowMediaPlayerDM
 
                     newtimer.Stop();
 
+                    newTimer2.Stop();
                     break;
                 case "wmppsReady":
                     Media_Player.Ctlcontrols.play();
                     timer1.Start();
 
                     newtimer.Start();
+
+                    newTimer2.Start();
                     break;
 
             }
@@ -386,7 +426,7 @@ namespace windowMediaPlayerDM
             
             // where the DM start to hit
             int xstart = ClientRectangle.Right;
-            int xend = -200;
+            int xend = commentdestroy;
             //where the DM ends
 
 
@@ -408,6 +448,94 @@ namespace windowMediaPlayerDM
                 remove_list.Add(l);
                 l.Dispose();
               
+            
+            }
+        
+        }
+
+        void MoveLabel_thread(Label l) {
+
+            // where the DM start to hit
+            int xstart = ClientRectangle.Right;
+            int xend = commentdestroy;
+            //where the DM ends
+
+
+            //adjest height position range from 0 to height using random to generate ?
+            // not needed for now will use this when creating new labels for DM
+            // int ydown = this.Height;
+            // int yup = 0;
+
+            int initialx = l.Location.X;
+            if (initialx > xend)
+            {
+             //   l.Location = new Point(initialx - move_distance, l.Location.Y);
+                LabelLocation_thread(l, initialx - move_distance, l.Location.Y);
+            }
+            else
+            {
+                //need to de comment this when the xml actually loads since it's going to add the comments on depending on the time counter real time
+
+
+                //  comment_storage.Remove(l);
+                remove_list.Add(l);
+                l.Dispose();
+
+
+            }
+        
+        
+        }
+        void MoveLabel_threadEX(Label l){
+
+            if (l.InvokeRequired) {
+                exmovelabel n = new exmovelabel(MoveLabel_threadEX);
+                this.Invoke(n, new object[] { l });
+            
+            } else {
+
+                // where the DM start to hit
+                int xstart = ClientRectangle.Right;
+                int xend = commentdestroy;
+                //where the DM ends
+
+
+                //adjest height position range from 0 to height using random to generate ?
+                // not needed for now will use this when creating new labels for DM
+                // int ydown = this.Height;
+                // int yup = 0;
+
+                int initialx = l.Location.X;
+                if (initialx > xend)
+                {
+                    l.Location = new Point(initialx - move_distance, l.Location.Y);
+                }
+                else
+                {
+                    //need to de comment this when the xml actually loads since it's going to add the comments on depending on the time counter real time
+
+
+                    //  comment_storage.Remove(l);
+                    remove_list.Add(l);
+                    l.Dispose();
+
+
+                }
+            
+            }
+        
+        
+        }
+        void LabelLocation_thread(Label l,int x,int y) {
+
+            if (l.InvokeRequired)
+            {
+                tmovelabel n = new tmovelabel(LabelLocation_thread);
+
+                this.Invoke(n, new object[] { l,x,y });
+            }
+            else {
+                l.Location = new Point(x, y);
             
             }
         
@@ -436,10 +564,15 @@ namespace windowMediaPlayerDM
         }
         private void setDMToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            media_dir=setFile(media);
+            String[] medias = setFile(media);
+            media_dir=medias[0];
+            
+           
             if (media_dir != null)
             {
                 Media_status.Text = "Media Set";
+                Media_list.Add(medias);
+                
             }
             else {
                 Media_status.Text = "No Media";
@@ -451,14 +584,19 @@ namespace windowMediaPlayerDM
         private void setDMToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             comment.Clear();
-            
-          danmoku_dir= setFile(danmoku);
+            comment2.Clear();
+
+            String[] danmokus = setFile(danmoku);
+            danmoku_dir = danmokus[0];
+          
           
            String [] temp_comment = new String[2];
-            
+          
+
           if (danmoku_dir != null)
           {
               Danmoku_status.Text = "DM Set";
+              DM_list.Add(danmokus);
               dm_comment = new XmlTextReader(danmoku_dir);
               
               //reader.name is the name of the element/attribute
@@ -490,9 +628,10 @@ namespace windowMediaPlayerDM
                       if (comment2.ContainsKey(vpos)) {
 
                           string tempc = comment2[vpos]+Environment.NewLine+temp_comment[1];
+                          playedcomment++;
                           comment2.Remove(vpos);
                           comment2.Add(vpos, tempc);
-                          playedcomment++;
+                          
                       
                       }
                       else
@@ -516,7 +655,7 @@ namespace windowMediaPlayerDM
               
               }
               }
-
+              danmoku_dir = null;
               Danmoku_status.Text = "DM Ready";
 
           }
@@ -525,7 +664,7 @@ namespace windowMediaPlayerDM
           }
         }
 
-        private string setFile(OpenFileDialog ofd){
+        private string[] setFile(OpenFileDialog ofd){
         
         
             if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
@@ -533,7 +672,8 @@ namespace windowMediaPlayerDM
                 int end = ofd.FileName.LastIndexOf("\\");
                 string dir = ofd.FileName.Substring(0, end);
                 ofd.InitialDirectory = dir;
-                return ofd.FileName;
+                String [] result = {ofd.FileName,ofd.SafeFileName};
+                return result;
 
             
             }else{
@@ -563,8 +703,7 @@ namespace windowMediaPlayerDM
 
             debugtab2.Text = s;
         }
-
-        void commentEngine() {
+        void makeComment() {
 
             time_counter++;
             //time_counter = (int)(Media_Player.Ctlcontrols.currentPosition * 100);
@@ -583,6 +722,9 @@ namespace windowMediaPlayerDM
 
             addComment(comment_time, comment2);
 
+        
+        }
+        void moveComment() {
 
 
             if (time_counter % speed_control == 0)
@@ -602,6 +744,42 @@ namespace windowMediaPlayerDM
 
                 remove_list.Clear();
             }
+        
+        }
+        void moveComment_thread() {
+            if (time_counter % speed_control == 0)
+            {
+                try
+                {
+                    foreach (Label l in comment_storage)
+                    {
+
+                        MoveLabel_threadEX(l);
+
+
+                    }
+                    foreach (Label l in remove_list)
+                    {
+
+                        comment_storage.Remove(l);
+                    }
+
+                    remove_list.Clear();
+                }catch(InvalidOperationException){
+                }
+            }
+            
+        
+        }
+        void commentEngine() {
+
+            if(sommentswitch ==true){
+
+                makeComment();
+
+                //moveComment();
+
+            }
              
         
         
@@ -610,7 +788,9 @@ namespace windowMediaPlayerDM
         private void timer1_Tick(object sender, EventArgs e)
         {
             
-       //   commentEngine();   
+       //   commentEngine(); 
+
+         //   moveComment();
             
         }
 
@@ -619,7 +799,12 @@ namespace windowMediaPlayerDM
             Form2 fm2 = new Form2();
             if (danmoku_dir != null)
             {
-                fm2.writeDMdir(danmoku_dir);
+
+                fm2.setDMList(DM_list);
+            }
+            if (media_dir != null) {
+
+                fm2.setMediaList(Media_list);
             }
             fm2.Show();
          
