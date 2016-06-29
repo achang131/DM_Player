@@ -85,9 +85,9 @@ namespace windowMediaPlayerDM
           //  newtimer.Interval= TimeSpan.FromMilliseconds(.05);
 
             //
-          //  Media_Player.ClickEvent += new System.EventHandler(this.MediaPlayerClick);
+          
             Media_Player.ClickEvent += new AxWMPLib._WMPOCXEvents_ClickEventHandler(Media_Player_ClickEvent);
-            //initialize the y value to 0 so it will default start at 0
+            //initialize the y value to 40 so it will default start at 40
             ycurrent = 40;
             xstart = ClientRectangle.Right;
             Media_Player.PlayStateChange += new AxWMPLib._WMPOCXEvents_PlayStateChangeEventHandler(Media_Player_PlayStateChange);
@@ -276,6 +276,7 @@ namespace windowMediaPlayerDM
             dm.Font = new Font("Microsoft Sans Serif", 20);
             dm.MouseClick += new MouseEventHandler(dm_MouseClick);
             
+            
             dm.Size = new System.Drawing.Size(35, 15);
 /*
             var position = this.PointToScreen(dm.Location);
@@ -355,7 +356,26 @@ namespace windowMediaPlayerDM
         }
         void dm_MouseClick(object sender, MouseEventArgs e)
         {
+
+            //check whick button is pressed on label , if right then bring it to front else stop/continue video
+            switch(e.Button.ToString()){
+          
+              
+            
+            case "Right":
+            Label temp = (Label)sender;
+            temp.BringToFront();
+            break;
+
+            default:
+
             Media_Player_ClickAction();
+            
+            break;
+
+        }
+
+            
                         
         }
         void resetLabelPos(Label l) {
