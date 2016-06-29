@@ -11,3 +11,8 @@ c:\users\alan\documents\visual studio 2010\Projects\windowMediaPlayerDM\windowMe
 c:\users\alan\documents\visual studio 2010\Projects\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\windowMediaPlayerDM.exe
 c:\users\alan\documents\visual studio 2010\Projects\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\windowMediaPlayerDM.pdb
 c:\users\alan\documents\visual studio 2010\Projects\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\windowMediaPlayerDM.Form2.resources
+C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\Interop.WMPLib.dll
+C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\AxInterop.WMPLib.dll
+C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\windowMediaPlayerDM.csproj.ResolveComReference.cache
+C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\windowMediaPlayerDM.exe
+C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\windowMediaPlayerDM.pdb
