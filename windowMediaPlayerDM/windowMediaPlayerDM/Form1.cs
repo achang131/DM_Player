@@ -23,6 +23,7 @@ namespace windowMediaPlayerDM
         int xstart;
         int time_counter;
         int speed_control;
+        Color userColor;
       //  LinkedList<Label> comment_storage = new LinkedList<Label>();
         XmlTextReader dm_comment;
         LinkedList<String[]> comment = new LinkedList<String[]>();
@@ -61,7 +62,7 @@ namespace windowMediaPlayerDM
 
 
 
-
+        int replacetimer1_interval;
 
         BackgroundWorker replacetimer1;
 
@@ -94,7 +95,7 @@ namespace windowMediaPlayerDM
 
             time_offset = 0;
 
-            move_distance = 6;
+            move_distance = 3;
 
             timer1.Interval = 1;
 
@@ -105,6 +106,10 @@ namespace windowMediaPlayerDM
             threading_mode = false;
 
             vpos = -1;
+
+            userColor = Color.DarkGray;
+
+            replacetimer1_interval = 5;
 
          //   newtimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
 
@@ -230,7 +235,7 @@ namespace windowMediaPlayerDM
 
                 moveComment_thread();
 
-                System.Threading.Thread.Sleep(2);
+                System.Threading.Thread.Sleep(replacetimer1_interval);
 
             }
         
@@ -442,9 +447,9 @@ namespace windowMediaPlayerDM
             
             //
             Random ypos = new Random();
-            if (40 < ClientRectangle.Bottom - 80)
+            if (40 < fm3.ClientRectangle.Bottom - 80)
             {
-                ycurrent = ypos.Next(40, ClientRectangle.Bottom - 80);
+                ycurrent = ypos.Next(40, fm3.ClientRectangle.Bottom-80);
             }
             else {
 
@@ -468,8 +473,9 @@ namespace windowMediaPlayerDM
             dm.TabIndex = 3;
             dm.Visible = true;
             dm.AutoSize = true;
-            dm.Font = new Font("Microsoft Sans Serif", 20);
-            dm.ForeColor = Color.White;
+            
+            dm.Font = new Font("Microsoft Sans Serif", 24, FontStyle.Bold);
+            dm.ForeColor = userColor;
             dm.MouseClick += new MouseEventHandler(dm_MouseClick);
             
             
@@ -489,7 +495,7 @@ namespace windowMediaPlayerDM
         label1.BackColor = Color.Transparent;
              */
 
-            Controls.Add(dm);
+            fm3.Controls.Add(dm);
 
            // safecontrol(dm);
 
@@ -508,7 +514,7 @@ namespace windowMediaPlayerDM
             }
             else {
 
-                this.Controls.Add(dm);
+                fm3.Controls.Add(dm);
             }
         
         }
@@ -749,7 +755,7 @@ namespace windowMediaPlayerDM
         
         }
         void resetComment() {
-            foreach (TransparentLabel l in Controls.OfType<TransparentLabel>()) {
+            foreach (TransparentLabel l in fm3.Controls.OfType<TransparentLabel>()) {
 
                 resetLabelPos(l);
             }
@@ -771,7 +777,10 @@ namespace windowMediaPlayerDM
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            replacetimer1.Dispose();
             this.Close();
+
+            
 
         }
         private void MediaPlayerClick(object sender, MouseEventArgs e) {
@@ -987,10 +996,10 @@ namespace windowMediaPlayerDM
                 }
 
 */
-                for (int i = 0; i < Controls.OfType<TransparentLabel>().Count(); i++) {
+                for (int i = 0; i < fm3.Controls.OfType<TransparentLabel>().Count(); i++) {
 
 
-                    MoveLabel(Controls.OfType<TransparentLabel>().ElementAt(i));
+                    MoveLabel(fm3.Controls.OfType<TransparentLabel>().ElementAt(i));
                 
                 
                 
@@ -1029,10 +1038,10 @@ namespace windowMediaPlayerDM
 
 */
 
-                    for (int i = 0; i < Controls.OfType<TransparentLabel>().Count();i++ )
+                    for (int i = 0; i < fm3.Controls.OfType<TransparentLabel>().Count();i++ )
                     {
 
-                        MoveLabel_threadEX(Controls.OfType<TransparentLabel>().ElementAt(i));
+                        MoveLabel_threadEX(fm3.Controls.OfType<TransparentLabel>().ElementAt(i));
 
 
 
