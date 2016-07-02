@@ -165,11 +165,33 @@ namespace windowMediaPlayerDM
 
             this.LocationChanged += new EventHandler(Form1_LocationChanged);
 
-
+            
 
 
 
             
+        }
+
+        void Form1_MouseWheel(object sender, MouseEventArgs e)
+        {
+
+            print(e.Delta.ToString());
+            switch (e.Delta)
+            {
+                case 120:
+
+                    Media_Player.settings.volume++;
+
+                    break;
+
+
+                case -120:
+
+                    Media_Player.settings.volume--;
+
+                    break;
+
+            }
         }
 
         void Form1_LocationChanged(object sender, EventArgs e)
@@ -615,8 +637,14 @@ namespace windowMediaPlayerDM
               
             
             case "Right":
-            Label temp = (Label)sender;
-            temp.BringToFront();
+                    try
+                    {
+                        Label temp = (Label)sender;
+                        temp.BringToFront();
+                    }
+                    catch (Exception) { 
+                    
+                    }
             break;
 
             default:
@@ -906,6 +934,7 @@ namespace windowMediaPlayerDM
                   fm3.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
                   fm3.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
                   fm3.MouseClick +=new MouseEventHandler(dm_MouseClick);
+                  fm3.MouseWheel += new MouseEventHandler(Form1_MouseWheel);
               }
               else {
                   fm3.setTopMost = true;
