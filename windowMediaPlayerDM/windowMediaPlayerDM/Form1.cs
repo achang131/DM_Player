@@ -26,7 +26,7 @@ namespace windowMediaPlayerDM
       //  LinkedList<Label> comment_storage = new LinkedList<Label>();
         XmlTextReader dm_comment;
         LinkedList<String[]> comment = new LinkedList<String[]>();
-        LinkedList<Label> remove_LinkedList = new LinkedList<Label>();
+        LinkedList<TransparentLabel> remove_LinkedList = new LinkedList<TransparentLabel>();
         int time_offset;
         int move_distance;
         int playedcomment;
@@ -39,9 +39,9 @@ namespace windowMediaPlayerDM
 
         bool threading_mode;
 
-        delegate void tmovelabel(Label l,int x, int y);
+        delegate void tmovelabel(TransparentLabel l,int x, int y);
 
-        delegate void exmovelabel(Label l);
+        delegate void exmovelabel(TransparentLabel l);
 
         delegate void commentEnginecomp();
 
@@ -58,6 +58,10 @@ namespace windowMediaPlayerDM
       //  Form2 fm2;
 
         //
+
+        BackgroundWorker replacetimer1;
+
+        bool _isPlaying;
 
         // Next try add setting (new window)  and Play/DM LinkedList(new window possible tabs ?)
         public Form1()
@@ -80,7 +84,7 @@ namespace windowMediaPlayerDM
 
             time_offset = 0;
 
-            move_distance = 26;
+            move_distance = 6;
 
             timer1.Interval = 1;
 
@@ -94,7 +98,7 @@ namespace windowMediaPlayerDM
 
          //   newtimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
 
-
+            _isPlaying = true;
 
             newtimer.Tick += new EventHandler(newtimer_Tick);
 
@@ -131,16 +135,64 @@ namespace windowMediaPlayerDM
             
             });
 
- /*
-             
-            BackgroundWorker t1 = new BackgroundWorker();
-            t1.RunWorkerAsync();
-  
-   */
+
+           */
+
+            replacetimer1 = new BackgroundWorker();
+            replacetimer1.DoWork += new DoWorkEventHandler(replacetimer1_DoWork);
+            
 
             this.vposChangingEvent += new PropertyChangingEventHandler(Form1_vposChangingEvent);
+
+            Media_Player.SendToBack();
+
+
+
+
+
+
+
+
+
             
         }
+
+
+        void replacetimer1_start() {
+
+            if (replacetimer1.IsBusy != true) {
+
+                replacetimer1.RunWorkerAsync();
+            }
+        
+        
+        }
+        void replacetimer1_stop() {
+            try
+            {
+                replacetimer1.CancelAsync();
+            }
+            catch (InvalidOperationException) { };
+        
+        }
+        private void replacetimer1_DoWork(object sender, DoWorkEventArgs e) {
+
+
+            while (_isPlaying)
+            {
+
+ //               moveComment_thread();
+                commentEngine_thread();
+
+                moveComment_thread();
+
+                System.Threading.Thread.Sleep(2);
+
+            }
+        
+        
+        }
+
 
         void Form1_vposChangingEvent(object sender, PropertyChangingEventArgs e)
         {
@@ -174,7 +226,7 @@ namespace windowMediaPlayerDM
         {
             if (threading_mode)
             {
-                moveComment_thread();
+ //               moveComment_thread();
             }
            // commentEngine();
 
@@ -191,13 +243,13 @@ namespace windowMediaPlayerDM
 
         void newtimer_Tick(object sender, EventArgs e)
         {
-            commentEngine();
+//            commentEngine();
 
 
 //            moveComment();
 
 
-            //moveComment_thread();
+//            moveComment_thread();
 
            // moveComment();
 
@@ -293,6 +345,8 @@ namespace windowMediaPlayerDM
                 timer1.Start();
                 newtimer.Start();
                 newTimer2.Start();
+                _isPlaying = true;
+                replacetimer1_start();
 
               //  while (Media_Player.playState.ToString().Equals("wmppsPlaying")) {
 
@@ -308,6 +362,8 @@ namespace windowMediaPlayerDM
 
                 newTimer2.Stop();
                 playedcomment = 0;
+                _isPlaying = false;
+                replacetimer1_stop();
 
                // resetComment(comment_storage);
                 resetComment();
@@ -320,6 +376,8 @@ namespace windowMediaPlayerDM
                 newtimer.Stop();
 
                 newTimer2.Stop();
+                _isPlaying = false;
+                replacetimer1_stop();
             }
 
             switch (e.newState) { 
@@ -333,7 +391,7 @@ namespace windowMediaPlayerDM
             }
         }
         void createLabel(string comment) {
-            Label dm = new Label();
+            TransparentLabel dm = new TransparentLabel();
             
             //
             Random ypos = new Random();
@@ -364,6 +422,7 @@ namespace windowMediaPlayerDM
             dm.Visible = true;
             dm.AutoSize = true;
             dm.Font = new Font("Microsoft Sans Serif", 20);
+            dm.ForeColor = Color.White;
             dm.MouseClick += new MouseEventHandler(dm_MouseClick);
             
             
@@ -389,10 +448,11 @@ namespace windowMediaPlayerDM
 
            // comment_storage.Add(dm);
             dm.BringToFront();
+            dm.Show();
         
         }
 
-        void safecontrol(Label dm) {
+        void safecontrol(TransparentLabel dm) {
 
             if (this.InvokeRequired)
             {
@@ -418,6 +478,9 @@ namespace windowMediaPlayerDM
                     newtimer.Start();
 
                     newTimer2.Start();
+
+                    _isPlaying = true;
+                    replacetimer1_start();
                     break;
 
                 case "wmppsPaused":
@@ -428,6 +491,9 @@ namespace windowMediaPlayerDM
                     newtimer.Start();
 
                     newTimer2.Start();
+
+                    _isPlaying = true;
+                    replacetimer1_start();
                     break;
 
                 case "wmppsPlaying":
@@ -438,6 +504,9 @@ namespace windowMediaPlayerDM
                     newtimer.Stop();
 
                     newTimer2.Stop();
+
+                    _isPlaying = false;
+                    replacetimer1_stop();
                     break;
                 case "wmppsReady":
                     Media_Player.Ctlcontrols.play();
@@ -446,6 +515,9 @@ namespace windowMediaPlayerDM
                     newtimer.Start();
 
                     newTimer2.Start();
+
+                    _isPlaying = true;
+                    replacetimer1_start();
                     break;
 
             }
@@ -460,7 +532,7 @@ namespace windowMediaPlayerDM
               
             
             case "Right":
-            Label temp = (Label)sender;
+            TransparentLabel temp = (TransparentLabel)sender;
             temp.BringToFront();
             break;
 
@@ -475,11 +547,11 @@ namespace windowMediaPlayerDM
             
                         
         }
-        void resetLabelPos(Label l) {
+        void resetLabelPos(TransparentLabel l) {
             l.Location = new Point(ClientRectangle.Right, l.Location.Y);
         
         }
-        void MoveLabel(Label l) {
+        void MoveLabel(TransparentLabel l) {
             
             // where the DM start to hit
             int xstart = ClientRectangle.Right;
@@ -488,7 +560,7 @@ namespace windowMediaPlayerDM
 
 
             //adjest height position range from 0 to height using random to generate ?
-            // not needed for now will use this when creating new labels for DM
+            // not needed for now will use this when creating new TransparentLabels for DM
             // int ydown = this.Height;
             // int yup = 0;
 
@@ -511,7 +583,7 @@ namespace windowMediaPlayerDM
         
         }
 
-        void MoveLabel_thread(Label l) {
+        void MoveLabel_thread(TransparentLabel l) {
 
             // where the DM start to hit
             int xstart = ClientRectangle.Right;
@@ -520,7 +592,7 @@ namespace windowMediaPlayerDM
 
 
             //adjest height position range from 0 to height using random to generate ?
-            // not needed for now will use this when creating new labels for DM
+            // not needed for now will use this when creating new TransparentLabels for DM
             // int ydown = this.Height;
             // int yup = 0;
 
@@ -545,7 +617,7 @@ namespace windowMediaPlayerDM
         
         
         }
-        void MoveLabel_threadEX(Label l){
+        void MoveLabel_threadEX(TransparentLabel l){
 
             if (l.InvokeRequired) {
                 exmovelabel n = new exmovelabel(MoveLabel_threadEX);
@@ -560,7 +632,7 @@ namespace windowMediaPlayerDM
 
 
                 //adjest height position range from 0 to height using random to generate ?
-                // not needed for now will use this when creating new labels for DM
+                // not needed for now will use this when creating new TransparentLabels for DM
                 // int ydown = this.Height;
                 // int yup = 0;
 
@@ -600,16 +672,16 @@ namespace windowMediaPlayerDM
         
         }
         void resetComment() {
-            foreach (Label l in Controls.OfType<Label>()) {
+            foreach (TransparentLabel l in Controls.OfType<TransparentLabel>()) {
 
                 resetLabelPos(l);
             }
         
         
         }
-        void resetComment(LinkedList<Label> l) {
+        void resetComment(LinkedList<TransparentLabel> l) {
 
-            foreach (Label comment in l) {
+            foreach (TransparentLabel comment in l) {
                 resetLabelPos(comment);
             
             }
@@ -808,10 +880,10 @@ namespace windowMediaPlayerDM
                 }
 
 */
-                for (int i = 0; i < Controls.OfType<Label>().Count(); i++) {
+                for (int i = 0; i < Controls.OfType<TransparentLabel>().Count(); i++) {
 
 
-                    MoveLabel(Controls.OfType<Label>().ElementAt(i));
+                    MoveLabel(Controls.OfType<TransparentLabel>().ElementAt(i));
                 
                 
                 
@@ -850,10 +922,10 @@ namespace windowMediaPlayerDM
 
 */
 
-                    for (int i = 0; i < Controls.OfType<Label>().Count();i++ )
+                    for (int i = 0; i < Controls.OfType<TransparentLabel>().Count();i++ )
                     {
 
-                        MoveLabel_threadEX(Controls.OfType<Label>().ElementAt(i));
+                        MoveLabel_threadEX(Controls.OfType<TransparentLabel>().ElementAt(i));
 
 
 

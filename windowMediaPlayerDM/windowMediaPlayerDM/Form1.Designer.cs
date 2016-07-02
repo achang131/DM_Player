@@ -52,6 +52,7 @@
             // 
             // Media_Player
             // 
+            this.Media_Player.AllowDrop = true;
             this.Media_Player.Enabled = true;
             this.Media_Player.Location = new System.Drawing.Point(0, 29);
             this.Media_Player.Name = "Media_Player";

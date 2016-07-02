@@ -22,6 +22,9 @@ namespace windowMediaPlayerDM
            
 
             this.ClientSizeChanged += new EventHandler(Form2_SizeChanged);
+
+
+            this.ShowInTaskbar = false;
            
             
         }
