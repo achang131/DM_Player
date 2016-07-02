@@ -27,7 +27,7 @@ namespace windowMediaPlayerDM
       //  LinkedList<Label> comment_storage = new LinkedList<Label>();
         XmlTextReader dm_comment;
         LinkedList<String[]> comment = new LinkedList<String[]>();
-        LinkedList<TransparentLabel> remove_LinkedList = new LinkedList<TransparentLabel>();
+        LinkedList<Label> remove_LinkedList = new LinkedList<Label>();
         int time_offset;
         int move_distance;
         int playedcomment;
@@ -40,9 +40,9 @@ namespace windowMediaPlayerDM
 
         bool threading_mode;
 
-        delegate void tmovelabel(TransparentLabel l,int x, int y);
+        delegate void tmovelabel(Label l,int x, int y);
 
-        delegate void exmovelabel(TransparentLabel l);
+        delegate void exmovelabel(Label l);
 
         delegate void commentEnginecomp();
 
@@ -443,7 +443,7 @@ namespace windowMediaPlayerDM
             }
         }
         void createLabel(string comment) {
-            TransparentLabel dm = new TransparentLabel();
+            Label dm = new Label();
             
             //
             Random ypos = new Random();
@@ -505,7 +505,7 @@ namespace windowMediaPlayerDM
         
         }
 
-        void safecontrol(TransparentLabel dm) {
+        void safecontrol(Label dm) {
 
             if (this.InvokeRequired)
             {
@@ -615,7 +615,7 @@ namespace windowMediaPlayerDM
               
             
             case "Right":
-            TransparentLabel temp = (TransparentLabel)sender;
+            Label temp = (Label)sender;
             temp.BringToFront();
             break;
 
@@ -630,11 +630,11 @@ namespace windowMediaPlayerDM
             
                         
         }
-        void resetLabelPos(TransparentLabel l) {
+        void resetLabelPos(Label l) {
             l.Location = new Point(ClientRectangle.Right, l.Location.Y);
         
         }
-        void MoveLabel(TransparentLabel l) {
+        void MoveLabel(Label l) {
             
             // where the DM start to hit
             int xstart = ClientRectangle.Right;
@@ -666,7 +666,7 @@ namespace windowMediaPlayerDM
         
         }
 
-        void MoveLabel_thread(TransparentLabel l) {
+        void MoveLabel_thread(Label l) {
 
             // where the DM start to hit
             int xstart = ClientRectangle.Right;
@@ -700,7 +700,7 @@ namespace windowMediaPlayerDM
         
         
         }
-        void MoveLabel_threadEX(TransparentLabel l){
+        void MoveLabel_threadEX(Label l){
 
             if (l.InvokeRequired) {
                 exmovelabel n = new exmovelabel(MoveLabel_threadEX);
@@ -755,16 +755,16 @@ namespace windowMediaPlayerDM
         
         }
         void resetComment() {
-            foreach (TransparentLabel l in fm3.Controls.OfType<TransparentLabel>()) {
+            foreach (Label l in fm3.Controls.OfType<Label>()) {
 
                 resetLabelPos(l);
             }
         
         
         }
-        void resetComment(LinkedList<TransparentLabel> l) {
+        void resetComment(LinkedList<Label> l) {
 
-            foreach (TransparentLabel comment in l) {
+            foreach (Label comment in l) {
                 resetLabelPos(comment);
             
             }
@@ -965,9 +965,12 @@ namespace windowMediaPlayerDM
 
             time_counter++;
             //time_counter = (int)(Media_Player.Ctlcontrols.currentPosition * 100);
-
-            int comment_time = (int)(Media_Player.Ctlcontrols.currentPosition * 100) + time_offset;
-
+            int comment_time;
+            try
+            {
+                 comment_time = (int)(Media_Player.Ctlcontrols.currentPosition * 100) + time_offset;
+            }
+            catch (Exception) { comment_time = 0; }
             print(comment_time.ToString() + "/" + time_counter.ToString());
             print2(playedcomment.ToString() + "/" + comment.Count.ToString());
 
@@ -996,10 +999,10 @@ namespace windowMediaPlayerDM
                 }
 
 */
-                for (int i = 0; i < fm3.Controls.OfType<TransparentLabel>().Count(); i++) {
+                for (int i = 0; i < fm3.Controls.OfType<Label>().Count(); i++) {
 
 
-                    MoveLabel(fm3.Controls.OfType<TransparentLabel>().ElementAt(i));
+                    MoveLabel(fm3.Controls.OfType<Label>().ElementAt(i));
                 
                 
                 
@@ -1038,10 +1041,10 @@ namespace windowMediaPlayerDM
 
 */
 
-                    for (int i = 0; i < fm3.Controls.OfType<TransparentLabel>().Count();i++ )
+                    for (int i = 0; i < fm3.Controls.OfType<Label>().Count();i++ )
                     {
 
-                        MoveLabel_threadEX(fm3.Controls.OfType<TransparentLabel>().ElementAt(i));
+                        MoveLabel_threadEX(fm3.Controls.OfType<Label>().ElementAt(i));
 
 
 
