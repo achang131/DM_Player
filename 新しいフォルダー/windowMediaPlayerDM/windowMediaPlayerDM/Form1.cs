@@ -23,21 +23,25 @@ namespace windowMediaPlayerDM
         int xstart;
         int time_counter;
         int speed_control;
-      //  LinkedList<Label> comment_storage = new LinkedList<Label>();
+        List<Label> comment_storage = new List<Label>();
+        Label[] comment_storageA = new Label[0];
         XmlTextReader dm_comment;
-        LinkedList<String[]> comment = new LinkedList<String[]>();
-        LinkedList<Label> remove_LinkedList = new LinkedList<Label>();
+        List<String[]> comment = new List<String[]>();
+        List<Label> remove_list = new List<Label>();
         int time_offset;
         int move_distance;
         int playedcomment;
-        LinkedList<String[]> Media_LinkedList = new LinkedList<String[]>();
-        LinkedList<String[]> DM_LinkedList = new LinkedList<String[]>();
+        List<String[]> Media_list = new List<String[]>();
+        List<String[]> DM_list = new List<String[]>();
         bool sommentswitch;
         int commentdestroy;
+        List<int> usedVpos = new List<int>();
 
-        int vpos;
+        bool thread_mode;
 
-        bool threading_mode;
+        int TrueVpos;
+
+        delegate void VposChanged(int vpos);
 
         delegate void tmovelabel(Label l,int x, int y);
 
@@ -45,13 +49,21 @@ namespace windowMediaPlayerDM
 
         delegate void commentEnginecomp();
 
+        delegate void CommentEnginecomp2();
+
+        int vpos_old;
+
+        int vpos_new;
+
+        Thread CommentMoving_T;
+
         Dictionary<int, String> comment2 = new Dictionary<int, string>();
 
         TaskFactory th1 = new TaskFactory();
 
         public DispatcherTimer newtimer = new DispatcherTimer();
 
-    //    public DispatcherTimer newTimer2 = new DispatcherTimer();
+        //public DispatcherTimer newTimer2 = new DispatcherTimer();
 
         public System.Timers.Timer newTimer2 = new System.Timers.Timer();
 
@@ -59,7 +71,11 @@ namespace windowMediaPlayerDM
 
         //
 
-        // Next try add setting (new window)  and Play/DM LinkedList(new window possible tabs ?)
+        bool play;
+
+        int commentTime;
+
+        // Next try add setting (new window)  and Play/DM List(new window possible tabs ?)
         public Form1()
         {
             InitializeComponent();
@@ -80,31 +96,37 @@ namespace windowMediaPlayerDM
 
             time_offset = 0;
 
-            move_distance = 26;
+            move_distance = 6;
 
             timer1.Interval = 1;
 
-            commentdestroy = -200;
+            commentdestroy = -250;
 
             sommentswitch = true;
 
-            threading_mode = false;
+            vpos_old = (int)(Media_Player.Ctlcontrols.currentPosition * 100);
+            vpos_new = vpos_old;
 
-            vpos = -1;
+            //set to true if want multi threading moving comment
+          
+            thread_mode = true;
+
 
          //   newtimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
 
-
+            
 
             newtimer.Tick += new EventHandler(newtimer_Tick);
 
-        //    newTimer2.Tick += new EventHandler(newTimer2_Tick);
+            //newTimer2.Tick += new EventHandler(newTimer2_Tick);
 
             newTimer2.Elapsed += new System.Timers.ElapsedEventHandler(newTimer2_Elapsed);
 
-  //          newtimer.Interval= TimeSpan.FromMilliseconds(.1);
+            
 
-        //    newTimer2.Interval = TimeSpan.FromMilliseconds(.1);
+            newtimer.Interval= TimeSpan.FromMilliseconds(.1);
+
+            //newTimer2.Interval = TimeSpan.FromMilliseconds(.1);
 
             newTimer2.Interval = .1;
 
@@ -137,44 +159,62 @@ namespace windowMediaPlayerDM
             t1.RunWorkerAsync();
   
    */
+      //      CommentMoving_T = new Thread(Thead_CEngine);
 
-            this.vposChangingEvent += new PropertyChangingEventHandler(Form1_vposChangingEvent);
-            
+      //      play = true;
+
+      //      CommentMoving_T.IsBackground = true;
+
+           // CommentMoving_T.Start();
         }
 
-        void Form1_vposChangingEvent(object sender, PropertyChangingEventArgs e)
-        {
-        //    commentEngine();
-        //    moveComment();
-        }
 
-        string positionChanging {
-            get { return (Media_Player.Ctlcontrols.currentPositionString); }
 
-            set {
-                sendvposChangingEvent(value);
-               Media_Player.Ctlcontrols.currentPosition = Int32.Parse(value);
-            
+        void Thead_CEngine() {
+            if (this.InvokeRequired) 
+            {
+                CommentEnginecomp2 c = new CommentEnginecomp2(Thead_CEngine);
+
+                this.Invoke(c, new object[] { });
+            } 
+  
+            else 
+            {
+
+
+                while (play)
+                {
+
+                    vpos_new = (int)(Media_Player.Ctlcontrols.currentPosition * 100);
+
+                    if (vpos_new != vpos_old)
+                    {
+
+                        commentEngine();
+                        moveComment();
+
+
+                    }
+
+
+
+
+                    vpos_old = (int)(Media_Player.Ctlcontrols.currentPosition * 100);
+
+                    
+
+                }
+
             }
         
-        
         }
 
-        private void sendvposChangingEvent(string pos) {
-            if (this.positionChanging !="00:00:00") {
-
-                this.vposChangingEvent(this, new PropertyChangingEventArgs(pos));
-            }
-        
-        }
-
-        public event PropertyChangingEventHandler vposChangingEvent;
 
         void newTimer2_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            if (threading_mode)
+            if (thread_mode)
             {
-                moveComment_thread();
+               moveComment_thread();
             }
            // commentEngine();
 
@@ -183,68 +223,30 @@ namespace windowMediaPlayerDM
 
         void newTimer2_Tick(object sender, EventArgs e)
         {
-            if (threading_mode)
-            {
-                moveComment();
-            }
+          //  moveComment();
         }
 
         void newtimer_Tick(object sender, EventArgs e)
         {
-            commentEngine();
-
-
-//            moveComment();
-
+             commentEngine();
 
             //moveComment_thread();
 
-           // moveComment();
+       //     moveComment();
 
         }
-        void runEngine(int a) {
-            while (a != 1) {
-
-                commentEngine();
-            
-            
-            }
-        
-        
-        }
-
-        private void backgroundWorker1_RunWorkerCompleted(
-    object sender,
-    RunWorkerCompletedEventArgs e)
-        {
-            runEngine(2);
-        }
-
-        public int newTimer {
-
-            get { return (int)(Media_Player.Ctlcontrols.currentPosition*100); }
-            set{
 
 
-                Media_Player.Ctlcontrols.currentPosition = value;
-                if (Media_Player.Ctlcontrols.currentPosition != 1)
-                {
 
-                    commentEngine();
-                
-                }
-            
-            }
-        
-        
-        }
+
+
         void changeSpeed(int s) {
 
             speed_control = s;
         
         }
 
-        //load xml into a LinkedList and foreach addcomment ?
+        //load xml into a list and foreach addcomment ?
         void addComment(int time,string comment) { 
 
 
@@ -259,22 +261,22 @@ namespace windowMediaPlayerDM
         }
         void addComment(int currenttime,Dictionary<int,String> d) {
 
-            if (currenttime!=vpos && d.ContainsKey(currenttime))
+            if (!usedVpos.Contains(currenttime) && d.ContainsKey(currenttime)) 
             {
-                playedcomment++;
                 createLabel(d[currenttime]);
-                vpos = currenttime;
+                playedcomment++;
+                usedVpos.Add(currenttime);
             }
         
         }
 
         void addComment(int currenttime, int time, string comment) {
 
-            if (currenttime == time) {
+            if (currenttime == time && !usedVpos.Contains(currenttime)) {
 
                 playedcomment++;
                 createLabel(comment);
-                
+                usedVpos.Add(currenttime);
             }
         }
 
@@ -290,9 +292,16 @@ namespace windowMediaPlayerDM
         {
             if (Media_Player.playState.ToString().Equals("wmppsPlaying"))
             {
-                timer1.Start();
+                if (!thread_mode)
+                {
+                    timer1.Start();
+                }
+                else {
+                    newTimer2.Start();
+                }
                 newtimer.Start();
-                newTimer2.Start();
+
+         //       CommentMoving_T.Start();
 
               //  while (Media_Player.playState.ToString().Equals("wmppsPlaying")) {
 
@@ -302,40 +311,62 @@ namespace windowMediaPlayerDM
                 //}
                // newTimer;
             }else if(Media_Player.playState.ToString().Equals("wmppsStopped")){
-                timer1.Stop();
+
 
                 newtimer.Stop();
 
-                newTimer2.Stop();
+      
+
+                if (!thread_mode)
+                {
+                    timer1.Stop();
+                }
+                else
+                {
+                    newTimer2.Stop();
+                }
                 playedcomment = 0;
 
-               // resetComment(comment_storage);
-                resetComment();
+                resetComment(comment_storage);
+
+                usedVpos.Clear();
+
             
             }
             else {
-                timer1.Stop();
+
 
 
                 newtimer.Stop();
 
-                newTimer2.Stop();
+
+                if (!thread_mode)
+                {
+                    timer1.Stop();
+                }
+                else
+                {
+                    newTimer2.Stop();
+                }
             }
+            /*
 
             switch (e.newState) { 
                 case 3:
-                    commentEngine();
+                  //  commentEngine();
                     break;
             
                 default:
 
                 break;
             }
+             */
         }
         void createLabel(string comment) {
             Label dm = new Label();
             
             //
+
             Random ypos = new Random();
             if (40 < ClientRectangle.Bottom - 80)
             {
@@ -384,11 +415,12 @@ namespace windowMediaPlayerDM
              */
 
             Controls.Add(dm);
-
+            
            // safecontrol(dm);
-
-           // comment_storage.Add(dm);
+        
+            comment_storage.Add(dm);
             dm.BringToFront();
+                
         
         }
 
@@ -413,39 +445,68 @@ namespace windowMediaPlayerDM
 
                 case "wmppsStopped":
                     Media_Player.Ctlcontrols.play();
-                    timer1.Start();
+
 
                     newtimer.Start();
 
-                    newTimer2.Start();
+
+                    if (!thread_mode)
+                    {
+                        timer1.Start();
+                    }
+                    else
+                    {
+                        newTimer2.Start();
+                    }
                     break;
 
                 case "wmppsPaused":
                     Media_Player.Ctlcontrols.play();
-                    timer1.Start();
+
 
 
                     newtimer.Start();
-
-                    newTimer2.Start();
+                    if (!thread_mode)
+                    {
+                        timer1.Start();
+                    }
+                    else
+                    {
+                        newTimer2.Start();
+                    }
                     break;
 
                 case "wmppsPlaying":
                     Media_Player.Ctlcontrols.pause();
-                    timer1.Stop();
+                   
 
 
                     newtimer.Stop();
 
-                    newTimer2.Stop();
+                   
+
+                    if (!thread_mode)
+                    {
+                        timer1.Stop();
+                    }
+                    else
+                    {
+                        newTimer2.Stop();
+                    }
                     break;
                 case "wmppsReady":
                     Media_Player.Ctlcontrols.play();
-                    timer1.Start();
-
+                    
                     newtimer.Start();
 
-                    newTimer2.Start();
+                    if (!thread_mode)
+                    {
+                        timer1.Start();
+                    }
+                    else
+                    {
+                        newTimer2.Start();
+                    }
                     break;
 
             }
@@ -502,9 +563,8 @@ namespace windowMediaPlayerDM
 
 
               //  comment_storage.Remove(l);
-             //   remove_LinkedList.Add(l);
-                remove_LinkedList.AddLast(l);
-                l.Dispose();
+                remove_list.Add(l);
+                
               
             
             }
@@ -536,9 +596,8 @@ namespace windowMediaPlayerDM
 
 
                 //  comment_storage.Remove(l);
-                
-                remove_LinkedList.AddLast(l);
-                l.Dispose();
+                remove_list.Add(l);
+              //  l.Dispose();
 
 
             }
@@ -553,6 +612,8 @@ namespace windowMediaPlayerDM
             
             } else {
 
+                MoveLabel(l);
+                /*
                 // where the DM start to hit
                 int xstart = ClientRectangle.Right;
                 int xend = commentdestroy;
@@ -575,12 +636,12 @@ namespace windowMediaPlayerDM
 
 
                     //  comment_storage.Remove(l);
-                    remove_LinkedList.AddLast(l);
-                    l.Dispose();
+                    remove_list.Add(l);
+
 
 
                 }
-            
+            */
             }
         
         
@@ -599,21 +660,20 @@ namespace windowMediaPlayerDM
             }
         
         }
-        void resetComment() {
-            foreach (Label l in Controls.OfType<Label>()) {
+        void resetComment(List<Label> l) {
 
-                resetLabelPos(l);
-            }
-        
-        
-        }
-        void resetComment(LinkedList<Label> l) {
+            for (int i = 0; i < l.Count(); i++) {
 
-            foreach (Label comment in l) {
-                resetLabelPos(comment);
-            
+                resetLabelPos(l.ElementAt(i));
             }
-        
+
+            /*
+                foreach (Label comment in l)
+                {
+                    resetLabelPos(comment);
+
+                }
+        */
         }
         void Media_Player_ClickEvent(object sender, AxWMPLib._WMPOCXEvents_ClickEvent e)
         {
@@ -639,7 +699,7 @@ namespace windowMediaPlayerDM
             {
                 media_dir = medias[0];
                 Media_status.Text = "Media Set";
-                Media_LinkedList.AddLast(medias);
+                Media_list.Add(medias);
                 
             }
             else {
@@ -647,6 +707,7 @@ namespace windowMediaPlayerDM
             }
             Media_Player.URL = media_dir;
             Media_Player.Ctlcontrols.stop();
+            usedVpos.Clear();
         }
 
         private void setDMToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -659,13 +720,14 @@ namespace windowMediaPlayerDM
           
           
            String [] temp_comment = new String[2];
+          
 
-
-           if (danmokus[0] != null)
+          if (danmokus[0] != null)
           {
+
               danmoku_dir = danmokus[0];
               Danmoku_status.Text = "DM Set";
-              DM_LinkedList.AddLast(danmokus);
+              DM_list.Add(danmokus);
               dm_comment = new XmlTextReader(danmoku_dir);
               
               //reader.name is the name of the element/attribute
@@ -692,7 +754,7 @@ namespace windowMediaPlayerDM
                   
                   case XmlNodeType.Text:
                   temp_comment[1] = dm_comment.Value;
-                      comment.AddLast(temp_comment);
+                      comment.Add(temp_comment);
                       int vpos = Int32.Parse(temp_comment[0]);
                       if (comment2.ContainsKey(vpos)) {
 
@@ -707,7 +769,7 @@ namespace windowMediaPlayerDM
                       {
                           comment2.Add(vpos, temp_comment[1]);
                       }
-                      //temp_comment = new String[2];
+                      temp_comment = new string[2];
                   
                   
                   break;
@@ -715,12 +777,11 @@ namespace windowMediaPlayerDM
                   case XmlNodeType.EndElement:
                   if (dm_comment.Name == "</chat>") {
 
-                      temp_comment = new String[2];
                   
                   }
 
                   break;
-             
+              
               
               
               }
@@ -775,12 +836,16 @@ namespace windowMediaPlayerDM
         }
         void makeComment() {
 
+             commentTime = (int)(Media_Player.Ctlcontrols.currentPosition * 100) + time_offset;
+
+            addComment(commentTime, comment2);
+
             time_counter++;
             //time_counter = (int)(Media_Player.Ctlcontrols.currentPosition * 100);
 
-            int comment_time = (int)(Media_Player.Ctlcontrols.currentPosition * 100) + time_offset;
 
-            print(comment_time.ToString() + "/" + time_counter.ToString());
+
+            print(commentTime.ToString() + "/" + time_counter.ToString());
             print2(playedcomment.ToString() + "/" + comment.Count.ToString());
 
             /*
@@ -790,47 +855,52 @@ namespace windowMediaPlayerDM
             }
             */
 
-            addComment(comment_time, comment2);
+          
 
         
         }
         void moveComment() {
+            /*
 
+            for (int i = 0; i < comment_storage.Count(); i++) {
 
-            if (time_counter % speed_control == 0)
+                MoveLabel(comment_storage.ElementAt(i));
+            
+            }
+            
+            for (int i = 0; i < remove_list.Count(); i++)
             {
- /*               foreach (Label l in Controls.OfType<Label>())
+                
+                comment_storage.Remove(remove_list.ElementAt(i));
+                Controls.Remove(remove_list.ElementAt(i));
+                remove_list.ElementAt(i).Dispose();
+
+
+            }
+            remove_list.Clear();
+
+             */
+            
+
+             //old code 
+             
+                foreach (Label l in comment_storage)
                 {
 
                     MoveLabel(l);
-
+                    // moves labels and add labels that's over at end point to the removelist
 
                 }
-
-*/
-                for (int i = 0; i < Controls.OfType<Label>().Count(); i++) {
-
-
-                    MoveLabel(Controls.OfType<Label>().ElementAt(i));
-                
-                
-                
-                }
-                
-                
-                
-                
-                
-                /*
-                foreach (Label l in remove_LinkedList)
+                foreach (Label l in remove_list)
                 {
+
+                    comment_storage.Remove(l);
                     Controls.Remove(l);
-                  //  comment_storage.Remove(l);
+                    l.Dispose();
                 }
 
-                remove_LinkedList.Clear();
-                  */
-            }
+                remove_list.Clear();
+            
         
         }
         void moveComment_thread() {
@@ -839,38 +909,45 @@ namespace windowMediaPlayerDM
                 try
                 {
 
-/*
-                    foreach (Label l in Controls.OfType<Label>())
+                    /*
+                    for (int i = 0; i < comment_storage.Count(); i++)
+                    {
+
+                        MoveLabel_threadEX(comment_storage.ElementAt(i));
+
+                    }
+
+                    for (int i = 0; i < remove_list.Count(); i++)
+                    {
+                        
+                        comment_storage.Remove(remove_list.ElementAt(i));
+                        Controls.Remove(remove_list.ElementAt(i));
+                        remove_list.ElementAt(i).Dispose();
+
+                    }
+                    remove_list.Clear();
+
+                    */
+                    
+                    foreach (Label l in comment_storage)
                     {
 
                         MoveLabel_threadEX(l);
+                        
+                        
 
 
                     }
-
-*/
-
-                    for (int i = 0; i < Controls.OfType<Label>().Count();i++ )
+                    foreach (Label l in remove_list)
                     {
 
-                        MoveLabel_threadEX(Controls.OfType<Label>().ElementAt(i));
-
-
-
-                    }
-
-
-
-
-                    /*
-                    foreach (Label l in remove_LinkedList)
-                    {
+                        comment_storage.Remove(l);
                         Controls.Remove(l);
-                        //comment_storage.Remove(l);
+                        l.Dispose();
                     }
 
-                    remove_LinkedList.Clear();
-                     */
+                    remove_list.Clear();
+
                 }catch(InvalidOperationException){
                 }
             }
@@ -932,12 +1009,13 @@ namespace windowMediaPlayerDM
         {
             
        //   commentEngine(); 
-            if (!threading_mode)
+
+            if (!thread_mode)
             {
-                   moveComment();
+                    moveComment();
+                     
 
             }
-            
         }
 
         private void Media_DM_menu_Click(object sender, EventArgs e)
@@ -946,11 +1024,11 @@ namespace windowMediaPlayerDM
             if (danmoku_dir != null)
             {
 
-                fm2.setDMList(DM_LinkedList);
+                fm2.setDMList(DM_list);
             }
             if (media_dir != null) {
 
-                fm2.setMediaList(Media_LinkedList);
+                fm2.setMediaList(Media_list);
             }
             fm2.Show();
          

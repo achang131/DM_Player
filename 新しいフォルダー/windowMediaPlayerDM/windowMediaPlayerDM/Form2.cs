@@ -11,8 +11,8 @@ namespace windowMediaPlayerDM
 {
     public partial class Form2 : Form
     {
-        public LinkedList<String[]> DM_L = new LinkedList<string[]>();
-        public LinkedList<String[]> Media_L = new LinkedList<string[]>();
+        public List<String[]> DM_L = new List<string[]>();
+        public List<String[]> Media_L = new List<string[]>();
 
 
         public Form2()
@@ -35,7 +35,7 @@ namespace windowMediaPlayerDM
             Media_List_Box.Size = new Size(Media_List.ClientRectangle.Right,Media_List.ClientRectangle.Bottom);
             DM_List_Box.Size = new Size(DM_List.ClientRectangle.Right, DM_List.ClientRectangle.Bottom);
         }
-        public void setDMList(LinkedList<String[]> s) {
+        public void setDMList(List<String[]> s) {
             DM_L = s;
             foreach (string[] c in DM_L)
             {
@@ -44,13 +44,13 @@ namespace windowMediaPlayerDM
             }
         
         }
-        public LinkedList<String[]> getDMList() {
+        public List<String[]> getDMList() {
 
             return DM_L;
         
         }
 
-        public void setMediaList(LinkedList<String[]> s)
+        public void setMediaList(List<String[]> s)
         {
             Media_L = s;
             foreach (string[] c in Media_L) {
@@ -59,7 +59,7 @@ namespace windowMediaPlayerDM
             }
 
         }
-        public LinkedList<String[]> getMediaList()
+        public List<String[]> getMediaList()
         {
 
             return Media_L;
