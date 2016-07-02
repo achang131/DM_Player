@@ -34,7 +34,7 @@ namespace windowMediaPlayerDM
         LinkedList<String[]> DM_LinkedList = new LinkedList<String[]>();
         bool sommentswitch;
         int commentdestroy;
-
+        
         int vpos;
 
         bool threading_mode;
@@ -59,9 +59,17 @@ namespace windowMediaPlayerDM
 
         //
 
+
+
+
+
         BackgroundWorker replacetimer1;
 
         bool _isPlaying;
+
+        Comment_window fm3;
+
+
 
         // Next try add setting (new window)  and Play/DM LinkedList(new window possible tabs ?)
         public Form1()
@@ -71,6 +79,8 @@ namespace windowMediaPlayerDM
             media = new OpenFileDialog();
             danmoku = new OpenFileDialog();
             danmoku.Filter = "xml |*.xml";
+
+           
 
             playedcomment = 0;
 
@@ -148,13 +158,47 @@ namespace windowMediaPlayerDM
 
 
 
-
+            this.LocationChanged += new EventHandler(Form1_LocationChanged);
 
 
 
 
 
             
+        }
+
+        void Form1_LocationChanged(object sender, EventArgs e)
+        {
+            if (fm3 != null)
+            {
+                fm3.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
+               // fm3.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
+
+            }
+        }
+        public Size currentMediaWindowSize {
+            
+           
+            get {
+                Size temp =new Size ( Media_Player.ClientSize.Width, Media_Player.ClientSize.Height-40 );
+                
+                
+                return temp ;}
+        
+        
+        
+        }
+
+        public  Point currentMediaWindowLocation {
+
+            get { 
+            
+                Point temp = new Point(this.ClientRectangle.Left,this.ClientRectangle.Bottom);
+
+                return temp;
+            
+            }
+        
         }
 
 
@@ -333,6 +377,9 @@ namespace windowMediaPlayerDM
         void Form1_ClientSizeChanged(object sender, EventArgs e)
         {
             Media_Player.Size = new System.Drawing.Size(ClientRectangle.Width,ClientRectangle.Height-50);
+
+            fm3.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
+            fm3.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
             
         }
 
@@ -465,8 +512,38 @@ namespace windowMediaPlayerDM
             }
         
         }
+        public string External_Media_PlayerClick {
 
-        void Media_Player_ClickAction() {
+            set {
+                
+                 switch (value)
+                 { 
+                
+                    case "play":
+                        Media_Player.Ctlcontrols.play();
+                    break;
+
+                    case "stop":
+
+                    Media_Player.Ctlcontrols.stop();
+                    break;
+                    case "pause":
+
+                    Media_Player.Ctlcontrols.pause();
+                    break;
+                
+                
+                
+                
+                }
+            
+            }
+
+            get { return Media_Player.playState.ToString(); }
+        
+        
+        }
+       public void Media_Player_ClickAction() {
             test_label.Text = Media_Player.playState.ToString();
             switch (Media_Player.playState.ToString())
             {
@@ -687,7 +764,7 @@ namespace windowMediaPlayerDM
             }
         
         }
-        void Media_Player_ClickEvent(object sender, AxWMPLib._WMPOCXEvents_ClickEvent e)
+         void Media_Player_ClickEvent(object sender, AxWMPLib._WMPOCXEvents_ClickEvent e)
         {
             Media_Player_ClickAction();
         }
@@ -703,11 +780,17 @@ namespace windowMediaPlayerDM
         }
         private void setDMToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (fm3 != null)
+            {
+                fm3.setTopMost = false;
+
+            }
+
             String[] medias = setFile(media);
-           
+
             
            
-            if (medias[0] != null)
+            if (medias != null)
             {
                 media_dir = medias[0];
                 Media_status.Text = "Media Set";
@@ -719,13 +802,21 @@ namespace windowMediaPlayerDM
             }
             Media_Player.URL = media_dir;
             Media_Player.Ctlcontrols.stop();
+            if (fm3 != null) {
+
+                fm3.setTopMost = true;
+            }
         }
 
         private void setDMToolStripMenuItem1_Click(object sender, EventArgs e)
         {
+
             comment.Clear();
             comment2.Clear();
-
+            if (fm3 != null) {
+                fm3.setTopMost = false;
+            
+            }
             String[] danmokus = setFile(danmoku);
            
           
@@ -733,7 +824,7 @@ namespace windowMediaPlayerDM
            String [] temp_comment = new String[2];
 
 
-           if (danmokus[0] != null)
+           if (danmokus!= null)
           {
               danmoku_dir = danmokus[0];
               Danmoku_status.Text = "DM Set";
@@ -800,9 +891,25 @@ namespace windowMediaPlayerDM
               danmoku_dir = null;
               Danmoku_status.Text = "DM Ready";
 
+              if (fm3 == null)
+              {
+                  fm3 = new Comment_window();
+                  fm3.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
+                  fm3.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
+                  fm3.MouseClick +=new MouseEventHandler(dm_MouseClick);
+              }
+              else {
+                  fm3.setTopMost = true;
+              
+              }
+             
+
           }
           else {
               Danmoku_status.Text = "No DM";
+              if (fm3 != null) {
+                  fm3.setTopMost = true;
+              }
           }
         }
 
@@ -1032,6 +1139,11 @@ namespace windowMediaPlayerDM
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
             
+        }
+
+        private void openMeidaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

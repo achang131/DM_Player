@@ -38,7 +38,6 @@
             this.ControlBox = false;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "Comment_window";
-            this.Opacity = 0.5D;
             this.Text = "Form3";
             this.TransparencyKey = System.Drawing.Color.White;
             this.ResumeLayout(false);
@@ -46,5 +45,6 @@
         }
 
         #endregion
+
     }
 }

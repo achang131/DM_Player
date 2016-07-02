@@ -84,6 +84,7 @@
             this.openMeidaToolStripMenuItem.Name = "openMeidaToolStripMenuItem";
             this.openMeidaToolStripMenuItem.Size = new System.Drawing.Size(50, 22);
             this.openMeidaToolStripMenuItem.Text = "Open";
+            this.openMeidaToolStripMenuItem.Click += new System.EventHandler(this.openMeidaToolStripMenuItem_Click);
             // 
             // setDMToolStripMenuItem
             // 
