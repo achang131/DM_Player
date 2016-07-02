@@ -70,6 +70,7 @@ namespace windowMediaPlayerDM
 
         Comment_window fm3;
 
+        bool multi_dm_mode;
 
 
         // Next try add setting (new window)  and Play/DM LinkedList(new window possible tabs ?)
@@ -85,6 +86,18 @@ namespace windowMediaPlayerDM
 
             playedcomment = 0;
 
+
+            multi_dm_mode = false;
+            if (multi_dm_mode)
+            {
+
+                setDMsToolStripMenuItem.Text = setDMsToolStripMenuItem.Text + " Multi On";
+
+            }
+            else {
+
+                setDMsToolStripMenuItem.Text = setDMsToolStripMenuItem.Text + "Multi Off";
+            }
           //  fm2 = new Form2();
 
             // controls the speed of the DM  default at 5? the lesser the faster 
@@ -142,6 +155,10 @@ namespace windowMediaPlayerDM
             time_counter = 0;
 
             Media_Player.windowlessVideo = true;
+
+            Media_Player.stretchToFit = true;
+
+            
 
            /*
             
@@ -815,6 +832,7 @@ namespace windowMediaPlayerDM
             test_label.Text = Media_Player.playState.ToString();
         
         }
+        
         private void setDMToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (fm3 != null)
@@ -822,112 +840,190 @@ namespace windowMediaPlayerDM
                 fm3.setTopMost = false;
 
             }
-
-            String[] medias = setFile(media);
-
             
-           
-            if (medias != null)
-            {
-                media_dir = medias[0];
-                Media_status.Text = "Media Set";
-                Media_LinkedList.AddLast(medias);
-                
-            }
-            else {
-                Media_status.Text = "No Media";
-            }
-            Media_Player.URL = media_dir;
-            Media_Player.Ctlcontrols.stop();
-            if (fm3 != null) {
 
-                fm3.setTopMost = true;
+            LinkedList<String[]> medias = setFile(media);
+
+            bool multi_media;
+            if (medias.Count > 1)
+            {
+                //multiple media file is selected;
+                multi_media = true;
+            }else{
+            
+            multi_media=false;
+            }
+
+            if (multi_media)
+            {
+                for (int i = 0; i < medias.Count(); i++)
+                {
+                    Media_Player.newPlaylist(medias.ElementAt(i)[1], medias.ElementAt(i)[0]);
+                    Media_LinkedList.AddLast(medias.ElementAt(i));
+
+                }
+                media_dir = medias.ElementAt(0)[0];
+                Media_status.Text = "Playlist Set";
+                
+
+            }else{
+                if (medias != null)
+                {
+                    media_dir = medias.ElementAt(0)[0];
+                    Media_status.Text = "Media Set";
+                    Media_LinkedList.AddLast(medias.ElementAt(0));
+
+                    if (fm3 != null) {
+                        fm3.setTopMost = true;
+                    
+                    }
+
+                }
+                else
+                {
+                    Media_status.Text = "No Media";
+                }
+                Media_Player.settings.autoStart=false;
+                Media_Player.URL = media_dir;
+                Media_Player.Ctlcontrols.stop();
+                if (fm3 != null)
+                {
+
+                    fm3.setTopMost = true;
+                }
+
+
             }
         }
+        private void readXML(string danmoku_dir)
+        {
+            String[] temp_comment = new String[2];
 
+            dm_comment = new XmlTextReader(danmoku_dir);
+
+            while (dm_comment.Read())
+            {
+
+                switch (dm_comment.NodeType)
+                {
+
+                    case XmlNodeType.Element:
+
+
+
+                        while (dm_comment.MoveToNextAttribute())
+                        {
+
+                            //get the time value if the attribute is vpos
+                            if (dm_comment.Name == "vpos")
+                            {
+                                temp_comment[0] = dm_comment.Value;
+
+                            }
+
+                        }
+                        break;
+
+                    case XmlNodeType.Text:
+                        temp_comment[1] = dm_comment.Value;
+                        comment.AddLast(temp_comment);
+                        int vpos = Int32.Parse(temp_comment[0]);
+                        if (comment2.ContainsKey(vpos))
+                        {
+
+                            string tempc = comment2[vpos] + Environment.NewLine + temp_comment[1];
+                            playedcomment++;
+                            comment2.Remove(vpos);
+                            comment2.Add(vpos, tempc);
+
+
+                        }
+                        else
+                        {
+                            comment2.Add(vpos, temp_comment[1]);
+                        }
+                        //temp_comment = new String[2];
+
+
+                        break;
+
+                    case XmlNodeType.EndElement:
+                        if (dm_comment.Name == "</chat>")
+                        {
+
+                            temp_comment = new String[2];
+
+                        }
+
+                        break;
+
+
+
+                }
+            }
+        
+        
+        }
         private void setDMToolStripMenuItem1_Click(object sender, EventArgs e)
         {
+            if (multi_dm_mode == false)
+            {
+                comment.Clear();
+                comment2.Clear();
 
-            comment.Clear();
-            comment2.Clear();
+
+            }
             if (fm3 != null) {
                 fm3.setTopMost = false;
             
             }
-            String[] danmokus = setFile(danmoku);
-           
+           LinkedList< String[]> danmokus = setFile(danmoku);
+
+           if (danmokus != null)
+           {
+           if (danmokus.Count > 1) {
+
+               multi_dm_mode = true;
+               setDMsToolStripMenuItem.Text = "Set DMs" + " Multi On ";
+           }
           
           
-           String [] temp_comment = new String[2];
+          
+
+    
+              if (danmokus.Count == 1)
+              {
+                  danmoku_dir = danmokus.ElementAt(0)[0];
+                  Danmoku_status.Text = "DM Set";
+                  DM_LinkedList.AddLast(danmokus.ElementAt(0));
 
 
-           if (danmokus!= null)
-          {
-              danmoku_dir = danmokus[0];
-              Danmoku_status.Text = "DM Set";
-              DM_LinkedList.AddLast(danmokus);
-              dm_comment = new XmlTextReader(danmoku_dir);
-              
-              //reader.name is the name of the element/attribute
-              //reader.value is the value of the attribute/text
+                  //reader.name is the name of the element/attribute
+                  //reader.value is the value of the attribute/text
 
-              while (dm_comment.Read()) { 
-              
-              switch(dm_comment.NodeType){
-              
-                  case XmlNodeType.Element:
+                  readXML(danmoku_dir);
+
+                  danmoku_dir = null;
+                  Danmoku_status.Text = "DM Ready";
+
+              }
+              else {
+
+                  for (int i = 0; i < danmokus.Count(); i++) {
 
 
-
-                      while(dm_comment.MoveToNextAttribute()){
-
-                          //get the time value if the attribute is vpos
-                          if (dm_comment.Name == "vpos") {
-                              temp_comment[0] = dm_comment.Value;
-                              
-                          }
-                      
-                      }
-                  break;
+                      danmoku_dir = danmokus.ElementAt(i)[0];
+                      DM_LinkedList.AddLast(danmokus.ElementAt(i));
+                      readXML(danmoku_dir);
                   
-                  case XmlNodeType.Text:
-                  temp_comment[1] = dm_comment.Value;
-                      comment.AddLast(temp_comment);
-                      int vpos = Int32.Parse(temp_comment[0]);
-                      if (comment2.ContainsKey(vpos)) {
-
-                          string tempc = comment2[vpos]+Environment.NewLine+temp_comment[1];
-                          playedcomment++;
-                          comment2.Remove(vpos);
-                          comment2.Add(vpos, tempc);
-                          
-                      
-                      }
-                      else
-                      {
-                          comment2.Add(vpos, temp_comment[1]);
-                      }
-                      //temp_comment = new String[2];
-                  
-                  
-                  break;
-
-                  case XmlNodeType.EndElement:
-                  if (dm_comment.Name == "</chat>") {
-
-                      temp_comment = new String[2];
                   
                   }
 
-                  break;
-             
+                  danmoku_dir = null;
+                  Danmoku_status.Text = "DM Ready";
               
               
               }
-              }
-              danmoku_dir = null;
-              Danmoku_status.Text = "DM Ready";
-
               if (fm3 == null)
               {
                   fm3 = new Comment_window();
@@ -951,16 +1047,25 @@ namespace windowMediaPlayerDM
           }
         }
 
-        private string[] setFile(OpenFileDialog ofd){
-        
+        //modified from string[] to LinkedList so multiple files can be selected at once.
+
+        private LinkedList<string[]> setFile(OpenFileDialog ofd){
+            ofd.Multiselect = true;
         
             if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
 
-                int end = ofd.FileName.LastIndexOf("\\");
-                string dir = ofd.FileName.Substring(0, end);
+                int end = ofd.FileNames.ElementAt(0).LastIndexOf("\\");
+                string dir = ofd.FileNames.ElementAt(0).Substring(0, end);
                 ofd.InitialDirectory = dir;
-                String [] result = {ofd.FileName,ofd.SafeFileName};
-                return result;
+                LinkedList<String[]> temp = new LinkedList<string[]>();
+                for (int i = 0; i < ofd.FileNames.Count(); i++)
+                {
+                    String[] result = { ofd.FileNames.ElementAt(i), ofd.SafeFileNames.ElementAt(i) };
+                    temp.AddLast(result);
+
+
+                }
+                return temp;
 
             
             }else{
@@ -970,6 +1075,7 @@ namespace windowMediaPlayerDM
         
         
         }
+
 
         void change_timeoffset(int s) {
             time_offset = s;
@@ -1163,18 +1269,35 @@ namespace windowMediaPlayerDM
         private void Media_DM_menu_Click(object sender, EventArgs e)
         {
             Form2 fm2 = new Form2();
-            if (danmoku_dir != null)
+
+            if (fm3 != null)
+            {
+                fm3.setTopMost = false;
+            }
+            fm2.Disposed += new EventHandler(fm2_Disposed);
+
+
+            if (DM_LinkedList != null)
             {
 
                 fm2.setDMList(DM_LinkedList);
             }
-            if (media_dir != null) {
+            if (Media_LinkedList != null)
+            {
 
                 fm2.setMediaList(Media_LinkedList);
             }
             fm2.Show();
          
             
+        }
+
+        void fm2_Disposed(object sender, EventArgs e)
+        {
+            if (fm3 != null)
+            {
+                fm3.setTopMost = true;
+            }
         }
        
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
@@ -1184,6 +1307,14 @@ namespace windowMediaPlayerDM
 
         private void openMeidaToolStripMenuItem_Click(object sender, EventArgs e)
         {
+
+        }
+
+        private void setDMsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // loads multiple XML files here
+            multi_dm_mode = true;
+            setDMsToolStripMenuItem.Text = "Set DMs" + " Multi On";
 
         }
     }

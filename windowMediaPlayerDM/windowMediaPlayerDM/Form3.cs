@@ -26,7 +26,7 @@ namespace windowMediaPlayerDM
             this.Show();
             this.TopMost = true;
             this.BringToFront();
-          
+            this.ShowInTaskbar = false;
         }
 
 

@@ -45,6 +45,7 @@
             this.debugtab = new System.Windows.Forms.ToolStripStatusLabel();
             this.debugtab2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.setDMsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.Media_Player)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -89,21 +90,23 @@
             // setDMToolStripMenuItem
             // 
             this.setDMToolStripMenuItem.Name = "setDMToolStripMenuItem";
-            this.setDMToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.setDMToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.setDMToolStripMenuItem.Text = "Set Meida";
             this.setDMToolStripMenuItem.Click += new System.EventHandler(this.setDMToolStripMenuItem_Click);
             // 
             // setDMToolStripMenuItem1
             // 
+            this.setDMToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.setDMsToolStripMenuItem});
             this.setDMToolStripMenuItem1.Name = "setDMToolStripMenuItem1";
-            this.setDMToolStripMenuItem1.Size = new System.Drawing.Size(134, 22);
+            this.setDMToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.setDMToolStripMenuItem1.Text = "Set DM";
             this.setDMToolStripMenuItem1.Click += new System.EventHandler(this.setDMToolStripMenuItem1_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -159,6 +162,13 @@
             // 
             this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
             // 
+            // setDMsToolStripMenuItem
+            // 
+            this.setDMsToolStripMenuItem.Name = "setDMsToolStripMenuItem";
+            this.setDMsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.setDMsToolStripMenuItem.Text = "Set DMs";
+            this.setDMsToolStripMenuItem.Click += new System.EventHandler(this.setDMsToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AllowDrop = true;
@@ -199,6 +209,7 @@
         private System.Windows.Forms.ToolStripStatusLabel debugtab2;
         private System.Windows.Forms.ToolStripMenuItem Media_DM_menu;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.ToolStripMenuItem setDMsToolStripMenuItem;
     }
 }
 
