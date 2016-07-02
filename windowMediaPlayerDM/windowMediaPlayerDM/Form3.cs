@@ -24,9 +24,10 @@ namespace windowMediaPlayerDM
             this.Size = fm1.currentMediaWindowSize;
             this.Location = fm1.currentMediaWindowLocation;
             this.Show();
-            this.TopMost = true;
+            this.TopMost = false;
             this.BringToFront();
             this.ShowInTaskbar = false;
+            
         }
 
 

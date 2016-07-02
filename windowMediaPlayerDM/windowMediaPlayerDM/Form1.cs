@@ -837,7 +837,7 @@ namespace windowMediaPlayerDM
         {
             if (fm3 != null)
             {
-                fm3.setTopMost = false;
+                fm3.Owner = this;
 
             }
             
@@ -874,8 +874,9 @@ namespace windowMediaPlayerDM
                     Media_LinkedList.AddLast(medias.ElementAt(0));
 
                     if (fm3 != null) {
-                        fm3.setTopMost = true;
-                    
+
+                        fm3.Owner = this;
+
                     }
 
                 }
@@ -889,7 +890,7 @@ namespace windowMediaPlayerDM
                 if (fm3 != null)
                 {
 
-                    fm3.setTopMost = true;
+                    fm3.Owner = this;
                 }
 
 
@@ -974,7 +975,7 @@ namespace windowMediaPlayerDM
 
             }
             if (fm3 != null) {
-                fm3.setTopMost = false;
+                this.Owner = fm3;
             
             }
            LinkedList< String[]> danmokus = setFile(danmoku);
@@ -1031,9 +1032,10 @@ namespace windowMediaPlayerDM
                   fm3.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
                   fm3.MouseClick +=new MouseEventHandler(dm_MouseClick);
                   fm3.MouseWheel += new MouseEventHandler(Form1_MouseWheel);
+                  fm3.Owner = this;
               }
               else {
-                  fm3.setTopMost = true;
+                  fm3.Owner = this;
               
               }
              
@@ -1042,7 +1044,7 @@ namespace windowMediaPlayerDM
           else {
               Danmoku_status.Text = "No DM";
               if (fm3 != null) {
-                  fm3.setTopMost = true;
+                  fm3.Owner = this;
               }
           }
         }
@@ -1272,7 +1274,7 @@ namespace windowMediaPlayerDM
 
             if (fm3 != null)
             {
-                fm3.setTopMost = false;
+                fm2.Owner = fm3;
             }
             fm2.Disposed += new EventHandler(fm2_Disposed);
 
@@ -1291,12 +1293,15 @@ namespace windowMediaPlayerDM
          
             
         }
-
+        
         void fm2_Disposed(object sender, EventArgs e)
         {
             if (fm3 != null)
             {
-                fm3.setTopMost = true;
+
+                fm3.Owner = this;
+
+                
             }
         }
        

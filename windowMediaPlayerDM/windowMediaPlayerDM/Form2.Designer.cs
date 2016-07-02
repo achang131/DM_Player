@@ -75,7 +75,7 @@
             this.DM_List.Padding = new System.Windows.Forms.Padding(3);
             this.DM_List.Size = new System.Drawing.Size(290, 408);
             this.DM_List.TabIndex = 1;
-            this.DM_List.Text = "DM List";
+            this.DM_List.Text = "Loaded DM_List";
             this.DM_List.UseVisualStyleBackColor = true;
             // 
             // DM_List_Box
