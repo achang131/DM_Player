@@ -10,7 +10,6 @@ using System.Xml;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
-using System.Drawing.Drawing2D;
 
 
 namespace windowMediaPlayerDM
@@ -72,17 +71,6 @@ namespace windowMediaPlayerDM
         Comment_window fm3;
 
         bool multi_dm_mode;
-
-
-        ///////////////////////////////
-
-
-
-
-
-
-
-
 
 
         // Next try add setting (new window)  and Play/DM LinkedList(new window possible tabs ?)
@@ -200,9 +188,6 @@ namespace windowMediaPlayerDM
 
             
         }
-
-
-        ///////////////////////////////////////////////////////////////
 
         void Form1_MouseWheel(object sender, MouseEventArgs e)
         {
@@ -1214,7 +1199,7 @@ namespace windowMediaPlayerDM
 
                     remove_LinkedList.Clear();
                      */
-                }catch(Exception){
+                }catch(InvalidOperationException){
                 }
             }
             
