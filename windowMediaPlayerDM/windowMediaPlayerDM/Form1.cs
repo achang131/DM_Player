@@ -92,7 +92,15 @@ namespace windowMediaPlayerDM
 
         BackgroundWorker replacetimer2;
 
+        double replacetimer2_interval;
+
+        BackgroundWorker replacetimer3;
+        double replacetimer3_interval;
+
+        double _timer1, _timer3;
         int lcount;
+
+        int _distance;
         // Next try add setting (new window)  and Play/DM LinkedList(new window possible tabs ?)
         public Form1()
         {
@@ -128,7 +136,9 @@ namespace windowMediaPlayerDM
 
             time_offset = 0;
 
-            move_distance = 5;
+            move_distance = 10;
+
+            _distance = move_distance;
 
             timer1.Interval = 1;
 
@@ -142,7 +152,9 @@ namespace windowMediaPlayerDM
 
             userColor = Color.DarkGray;
 
-            replacetimer1_interval = 5;
+            replacetimer1_interval = 30;
+            replacetimer3_interval = 29;
+            replacetimer2_interval = 9;
 
             auto_TimeMatch = true;
 
@@ -150,6 +162,9 @@ namespace windowMediaPlayerDM
             //-1400 for gp movie
             offset_auto = -400;
 
+
+            _timer1 = replacetimer1_interval;
+            _timer3 = replacetimer3_interval;
 
          //   newtimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
 
@@ -205,6 +220,8 @@ namespace windowMediaPlayerDM
 
 
            */
+            //maybe add a 3rd backgroundworker to move comment will make the programe even more smoother ?
+
 
             replacetimer1 = new BackgroundWorker();
             replacetimer1.DoWork += new DoWorkEventHandler(replacetimer1_DoWork);
@@ -212,8 +229,11 @@ namespace windowMediaPlayerDM
             replacetimer2 = new BackgroundWorker();
             replacetimer2.DoWork += new DoWorkEventHandler(replacetimer2_DoWork);
             replacetimer2.WorkerSupportsCancellation = true;
-         
 
+            replacetimer3 = new BackgroundWorker();
+            replacetimer3.DoWork += new DoWorkEventHandler(replacetimer3_DoWork);
+            replacetimer3.WorkerSupportsCancellation = true;
+            
             Media_Player.SendToBack();
             
 
@@ -232,6 +252,47 @@ namespace windowMediaPlayerDM
 
         }
 
+        void changingSpeedontime() {
+
+
+            int lnumber = fm3.Controls.OfType<Label>().Count();
+            
+            if (lnumber > 50)
+            {
+                move_distance = _distance * 2;
+
+            }
+            else if(lnumber >40){
+
+                move_distance = (int)(_distance * 1.7);
+            
+            }
+            else if(lnumber >30){
+
+                move_distance =(int)(_distance * 1.3);
+            }
+            else
+            {
+
+                move_distance = _distance;
+            }
+        
+        }
+        void replacetimer3_DoWork(object sender, DoWorkEventArgs e)
+        {
+            while (!replacetimer3.CancellationPending)
+            {
+
+                changingSpeedontime();
+                moveComment_thread();
+
+                //commentEngine_thread();
+
+                System.Threading.Thread.Sleep(TimeSpan.FromMilliseconds(replacetimer3_interval));
+
+            }
+        }
+
         void replacetimer2_DoWork(object sender, DoWorkEventArgs e)
         {
             while (!replacetimer2.CancellationPending) {
@@ -240,11 +301,25 @@ namespace windowMediaPlayerDM
 
                 commentEngine_thread();
 
-                System.Threading.Thread.Sleep(TimeSpan.FromMilliseconds(.5));
+                System.Threading.Thread.Sleep(TimeSpan.FromMilliseconds(replacetimer2_interval));
             
             }
         }
+        void replacetimer3_start()
+        {
+            if (!replacetimer3.IsBusy)
+                replacetimer3.RunWorkerAsync();
 
+        }
+        void replacetimer3_stop()
+        {
+
+            try
+            {
+                replacetimer3.CancelAsync();
+            }
+            catch (Exception) { }
+        }
         void replacetimer2_start() {
             if(!replacetimer2.IsBusy)
             replacetimer2.RunWorkerAsync();
@@ -338,6 +413,8 @@ namespace windowMediaPlayerDM
             while (_isPlaying)
             {
 
+                changingSpeedontime();
+
   //               commentEngine_thread();
 
                 moveComment_thread();
@@ -397,7 +474,8 @@ namespace windowMediaPlayerDM
         }
 
         // form1 ends
-        void autoTimesetup() {
+        void autoTimesetup()
+        {
             try
             {
                 var tconsol = ((WMPLib.IWMPControls3)Media_Player.Ctlcontrols);
@@ -414,7 +492,8 @@ namespace windowMediaPlayerDM
                     auto_TimeMatch = false;
 
                 }
-                else {
+                else
+                {
 
                     auto_TimeMatch = true;
                 }
@@ -425,6 +504,31 @@ namespace windowMediaPlayerDM
                 }
             }
             catch (NullReferenceException) { }
+        }
+        
+        
+            void timerStart(){
+                
+                _isPlaying = true;
+                replacetimer1_start();
+
+                replacetimer2_start();
+            
+                replacetimer3_start();
+            
+            
+        }
+        void timerStop(){
+        
+                  
+            _isPlaying = false;
+                
+            replacetimer1_stop();
+
+            
+            replacetimer2_stop();
+
+            replacetimer3_stop();
         
         
         }
@@ -432,46 +536,36 @@ namespace windowMediaPlayerDM
         {
             autoTimesetup();
 
-            if (Media_Player.playState.ToString().Equals("wmppsPlaying"))
-            {
+            switch(Media_Player.playState.ToString()){
+            
+            
+                case "wmppsPlaying":
 
+                    timerStart();
+                    break;
+                case "wmppsStopped":
+                                  
+                    playedcomment = 0;
+
+                    timerStop();
                 
+                    resetComment();
+            
 
-                _isPlaying = true;
-                replacetimer1_start();
-
-                replacetimer2_start();
-
-              //  while (Media_Player.playState.ToString().Equals("wmppsPlaying")) {
-
-                  //  commentEngine();
-                
-                
-                //}
-               // newTimer;
-            }else if(Media_Player.playState.ToString().Equals("wmppsStopped")){
+                    break;
 
 
+                default:
+
+                    timerStop();
+
+                break;
 
 
-                playedcomment = 0;
-                _isPlaying = false;
-                replacetimer1_stop();
-
-
-                replacetimer2_stop();
-               // resetComment(comment_storage);
-                resetComment();
+            
             
             }
-            else {
 
-
-                _isPlaying = false;
-                replacetimer1_stop();
-
-                replacetimer2_stop();
-            }
 
           
         }
@@ -593,38 +687,28 @@ namespace windowMediaPlayerDM
                     Media_Player.Ctlcontrols.play();
 
 
-                    _isPlaying = true;
-                    replacetimer1_start();
 
-                    replacetimer2_start();
+                    timerStart();
+
                     break;
 
                 case "wmppsPaused":
                     Media_Player.Ctlcontrols.play();
+                    
+                    timerStart();
 
-
-                    _isPlaying = true;
-                    replacetimer1_start();
-
-                    replacetimer2_start();
                     break;
 
                 case "wmppsPlaying":
                     Media_Player.Ctlcontrols.pause();
 
-
-                    _isPlaying = false;
-                    replacetimer1_stop();
-
-                    replacetimer2_stop();
+                    timerStop();
                     break;
                 case "wmppsReady":
                     Media_Player.Ctlcontrols.play();
+                    
+                    timerStart();
 
-                    _isPlaying = true;
-                    replacetimer1_start();
-
-                    replacetimer2_start();
                     break;
 
             }
@@ -740,7 +824,10 @@ namespace windowMediaPlayerDM
 
                 // where the DM start to hit
                 int xstart = ClientRectangle.Right;
-                int xend = commentdestroy;
+
+             //   int xend = commentdestroy;
+
+                int xend = 0 - l.Size.Width;
                 //where the DM ends
 
 
@@ -750,6 +837,7 @@ namespace windowMediaPlayerDM
                 // int yup = 0;
 
                 int initialx = l.Location.X;
+                
                 if (initialx > xend)
                 {
                     l.Location = new Point(initialx - move_distance, l.Location.Y);
@@ -1449,7 +1537,7 @@ namespace windowMediaPlayerDM
                 fm4.auto_mode_check.Checked = this.auto_TimeMatch;
 
                 loadCheck();
-                fm4.Cspeed.Text = this.move_distance.ToString();
+                fm4.Cspeed.Text = this._distance.ToString();
                 fm4.Cend.Text = this.commentdestroy.ToString();
                 loadAudio();
                 
@@ -1515,8 +1603,9 @@ namespace windowMediaPlayerDM
                         this.time_offset = Int32.Parse(fm4.timeoffset.Text);
 
                     }
-
+                    this._distance = Int32.Parse(fm4.Cspeed.Text);
                     this.move_distance = Int32.Parse(fm4.Cspeed.Text);
+
                     this.commentdestroy = Int32.Parse(fm4.Cend.Text);
 
                     
