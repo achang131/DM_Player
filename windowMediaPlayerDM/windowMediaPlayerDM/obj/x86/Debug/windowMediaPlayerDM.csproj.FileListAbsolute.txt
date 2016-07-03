@@ -25,3 +25,6 @@ C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM
 C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\windowMediaPlayerDM.Properties.Resources.resources
 C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\windowMediaPlayerDM.csproj.GenerateResource.Cache
 C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\windowMediaPlayerDM.Comment_window.resources
+C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\windowMediaPlayerDM.Settings.resources
+C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\Interop.WMLSS.dll
+C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\Interop.MediaPlayer.dll

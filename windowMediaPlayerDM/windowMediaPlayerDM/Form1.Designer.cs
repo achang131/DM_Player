@@ -47,6 +47,7 @@
             this.debugtab2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.Video_comment = new System.Windows.Forms.ToolStripStatusLabel();
+            this.Settings_menu = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.Media_Player)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -70,7 +71,8 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openMeidaToolStripMenuItem,
-            this.Media_DM_menu});
+            this.Media_DM_menu,
+            this.Settings_menu});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(996, 26);
@@ -91,7 +93,7 @@
             // setDMToolStripMenuItem
             // 
             this.setDMToolStripMenuItem.Name = "setDMToolStripMenuItem";
-            this.setDMToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.setDMToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.setDMToolStripMenuItem.Text = "Set Meida";
             this.setDMToolStripMenuItem.Click += new System.EventHandler(this.setDMToolStripMenuItem_Click);
             // 
@@ -100,7 +102,7 @@
             this.setDMToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.setDMsToolStripMenuItem});
             this.setDMToolStripMenuItem1.Name = "setDMToolStripMenuItem1";
-            this.setDMToolStripMenuItem1.Size = new System.Drawing.Size(134, 22);
+            this.setDMToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.setDMToolStripMenuItem1.Text = "Set DM";
             this.setDMToolStripMenuItem1.Click += new System.EventHandler(this.setDMToolStripMenuItem1_Click);
             // 
@@ -114,7 +116,7 @@
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -176,6 +178,13 @@
             this.Video_comment.Name = "Video_comment";
             this.Video_comment.Size = new System.Drawing.Size(0, 18);
             // 
+            // Settings_menu
+            // 
+            this.Settings_menu.Name = "Settings_menu";
+            this.Settings_menu.Size = new System.Drawing.Size(68, 22);
+            this.Settings_menu.Text = "Settings";
+            this.Settings_menu.Click += new System.EventHandler(this.Settings_menu_Click);
+            // 
             // Form1
             // 
             this.AllowDrop = true;
@@ -218,6 +227,7 @@
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.ToolStripMenuItem setDMsToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel Video_comment;
+        private System.Windows.Forms.ToolStripMenuItem Settings_menu;
     }
 }
 

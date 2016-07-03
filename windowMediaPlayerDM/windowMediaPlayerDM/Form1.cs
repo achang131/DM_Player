@@ -34,9 +34,13 @@ namespace windowMediaPlayerDM
         LinkedList<String[]> Media_LinkedList = new LinkedList<String[]>();
         LinkedList<String[]> DM_LinkedList = new LinkedList<String[]>();
         bool sommentswitch;
+
+        Settings fm4;
         int commentdestroy;
         
         int vpos;
+
+        int currentLanguage;
 
         int vpos_end;
 
@@ -55,6 +59,8 @@ namespace windowMediaPlayerDM
         Dictionary<int, String> comment2 = new Dictionary<int, string>();
 
         TaskFactory th1 = new TaskFactory();
+
+        Form2 fm2;
 
         public DispatcherTimer newtimer = new DispatcherTimer();
 
@@ -79,6 +85,10 @@ namespace windowMediaPlayerDM
         bool multi_dm_mode;
 
         bool auto_TimeMatch;
+
+        string audioinfo;
+
+        int lcount;
         // Next try add setting (new window)  and Play/DM LinkedList(new window possible tabs ?)
         public Form1()
         {
@@ -130,9 +140,9 @@ namespace windowMediaPlayerDM
 
             replacetimer1_interval = 5;
 
-            auto_TimeMatch = true;
-
-            offset_auto = -1000;
+            auto_TimeMatch = false;
+            //-1400 for gp movie
+            offset_auto = 0;
 
 
          //   newtimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
@@ -155,6 +165,8 @@ namespace windowMediaPlayerDM
             vpos_end = 0;
             vpos_video = 0;
 
+            Media_Player.enableContextMenu = true;
+            
 
             //
           
@@ -174,8 +186,10 @@ namespace windowMediaPlayerDM
 
             Media_Player.stretchToFit = true;
 
-            
 
+
+            audioinfo = "test";
+           
            /*
             
             this.th1.StartNew(()=>{
@@ -449,8 +463,14 @@ namespace windowMediaPlayerDM
         {
             try
             {
-                print3(vpos_video.ToString() + "/" + vpos_end);
+                var tconsol = ((WMPLib.IWMPControls3)Media_Player.Ctlcontrols);
+
+                currentLanguage = tconsol.currentAudioLanguageIndex;
+
+                lcount = tconsol.audioLanguageCount;
                 vpos_video = (int)(Media_Player.currentMedia.duration * 100);
+                print3("Video Length: " + vpos_video.ToString() + "/" + "Comment time: " + vpos_end + "  CL: " + currentLanguage.ToString()+" total: "+lcount.ToString());
+                
                 if (auto_TimeMatch && vpos_video != 0)
                 {
                     time_offset = vpos_end-vpos_video+offset_auto;
@@ -898,8 +918,8 @@ namespace windowMediaPlayerDM
                 }
                 media_dir = medias.ElementAt(0)[0];
                 Media_status.Text = "Playlist Set";
-       
-                
+
+
                 
 
             }else{
@@ -1194,17 +1214,21 @@ namespace windowMediaPlayerDM
 
 
                 }
-
+                
 */
-                for (int i = 0; i < fm3.Controls.OfType<Label>().Count(); i++) {
+                try
+                {
+                    for (int i = 0; i < fm3.Controls.OfType<Label>().Count(); i++)
+                    {
 
 
-                    MoveLabel(fm3.Controls.OfType<Label>().ElementAt(i));
-                
-                
-                
+                        MoveLabel(fm3.Controls.OfType<Label>().ElementAt(i));
+
+
+
+                    }
                 }
-                
+                catch (Exception) { };
                 
                 
                 
@@ -1332,28 +1356,31 @@ namespace windowMediaPlayerDM
 
         private void Media_DM_menu_Click(object sender, EventArgs e)
         {
-            Form2 fm2 = new Form2();
-
-            if (fm3 != null)
+            if (fm2 == null)
             {
-                fm2.Owner = fm3;
+                fm2 = new Form2();
+
+                if (fm3 != null)
+                {
+                    fm2.Owner = fm3;
+                }
+                fm2.Disposed += new EventHandler(fm2_Disposed);
+
+
+                if (DM_LinkedList != null)
+                {
+
+                    fm2.setDMList(DM_LinkedList);
+                }
+                if (Media_LinkedList != null)
+                {
+
+                    fm2.setMediaList(Media_LinkedList);
+                }
+                fm2.Show();
+
+
             }
-            fm2.Disposed += new EventHandler(fm2_Disposed);
-
-
-            if (DM_LinkedList != null)
-            {
-
-                fm2.setDMList(DM_LinkedList);
-            }
-            if (Media_LinkedList != null)
-            {
-
-                fm2.setMediaList(Media_LinkedList);
-            }
-            fm2.Show();
-         
-            
         }
         
         void fm2_Disposed(object sender, EventArgs e)
@@ -1365,6 +1392,7 @@ namespace windowMediaPlayerDM
 
                 
             }
+            fm2 = null;
         }
        
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
@@ -1383,6 +1411,183 @@ namespace windowMediaPlayerDM
             multi_dm_mode = true;
             setDMsToolStripMenuItem.Text = "Set DMs" + " Multi On";
 
+        }
+
+        private void Settings_menu_Click(object sender, EventArgs e)
+        {
+            if (fm4 == null)
+            {
+                // open up a new form for displaying settings options
+                var tconsol = ((WMPLib.IWMPControls3)Media_Player.Ctlcontrols);
+
+                currentLanguage = tconsol.currentAudioLanguageIndex;
+
+                lcount = tconsol.audioLanguageCount;
+                if (lcount > 0)
+                {
+                    
+                    audioinfo = tconsol.getAudioLanguageDescription((Int32)currentLanguage);
+                    
+                }
+                fm4 = new Settings();
+                fm4.Disposed += new EventHandler(fm4_Disposed);
+                fm4.getapply.Click += new EventHandler(fm4_apply);
+                fm4.getconfirm.Click += new EventHandler(getconfirm_Click);
+                fm4.getcancel.Click += new EventHandler(getcancel_Click);
+                fm4.getdefault.Click += new EventHandler(getdefault_Click);
+                fm4.getAudio_down.Click += new EventHandler(getAudio_down_Click);
+                fm4.getAudio_up.Click += new EventHandler(getAudio_up_Click);
+                this.loadAll();
+                if (fm3 != null)
+                {
+                    fm4.Owner = fm3;
+                }
+                fm4.Show();
+
+            }
+           
+
+        }
+
+        void getAudio_up_Click(object sender, EventArgs e)
+        {
+            if (lcount > currentLanguage) {
+
+                var tconsol = ((WMPLib.IWMPControls3)Media_Player.Ctlcontrols);
+                tconsol.currentAudioLanguageIndex = currentLanguage + 1;
+                currentLanguage++;
+                audioinfo = tconsol.getAudioLanguageDescription((Int32)currentLanguage);
+                
+                loadAudio();
+            }
+        }
+
+        void getAudio_down_Click(object sender, EventArgs e)
+        {
+            if ( currentLanguage>1)
+            {
+
+                var tconsol = ((WMPLib.IWMPControls3)Media_Player.Ctlcontrols);
+                tconsol.currentAudioLanguageIndex = currentLanguage - 1;
+                currentLanguage--;
+                audioinfo = tconsol.getAudioLanguageDescription((Int32)currentLanguage);
+                loadAudio();
+            }
+        }
+
+        void getdefault_Click(object sender, EventArgs e)
+        {
+            loadAll();
+        }
+
+        void getcancel_Click(object sender, EventArgs e)
+        {
+            
+            fm4.Dispose();
+        }
+
+        void getconfirm_Click(object sender, EventArgs e)
+        {
+            applyAll();
+            fm4.Dispose();
+        }
+        void loadAll() {
+            if (fm4 != null) {
+                switch (this.sommentswitch) { 
+                
+                    case true:
+                        fm4.select_commentswitch.SelectedItem = "ON";
+
+                        break;
+
+
+                    case false:
+                        fm4.select_commentswitch.SelectedItem = "OFF";
+
+                        break;
+                
+                }
+                fm4.auto_mode_check.Checked = this.auto_TimeMatch;
+
+                if (auto_TimeMatch)
+                {
+                    fm4.timeoffset.Text = offset_auto.ToString();
+
+                }
+                else {
+
+                    fm4.timeoffset.Text = time_offset.ToString();
+                }
+                fm4.Cspeed.Text = this.move_distance.ToString();
+                fm4.Cend.Text = this.commentdestroy.ToString();
+                loadAudio();
+                
+            
+            }
+        
+        
+        }
+        void loadAudio() {
+
+            fm4.getCurrentAudio.Text = this.currentLanguage.ToString();
+            fm4.getTotalAudio.Text = this.lcount.ToString();
+            fm4.getAudioInfo.Text = this.audioinfo;
+        
+        }
+        void applyAll() {
+            if (fm4 != null) {
+
+                try
+                {
+                    switch (fm4.select_commentswitch.SelectedItem.ToString()) { 
+                    
+                        case "On":
+                            this.sommentswitch = true;
+                            break;
+
+                        case "Off":
+                            this.sommentswitch = false;
+                            break;
+                    
+                    
+                    
+                    }
+
+
+                    this.auto_TimeMatch = fm4.auto_mode_check.Checked;
+                    if (auto_TimeMatch) {
+
+                        this.offset_auto = Int32.Parse(fm4.timeoffset.Text);
+                    
+                    }
+                    else
+                    {
+                        this.time_offset = Int32.Parse(fm4.timeoffset.Text);
+
+                    }
+
+                    this.move_distance = Int32.Parse(fm4.Cspeed.Text);
+                    this.commentdestroy = Int32.Parse(fm4.Cend.Text);
+
+                    
+
+
+                }
+                catch (Exception) { }
+            
+            
+            
+            }
+        }
+        void fm4_apply(object sender, EventArgs e) {
+            applyAll();
+        
+        }
+        void fm4_Disposed(object sender, EventArgs e)
+        {
+            // save all the changes here
+
+            fm4 = null;
         }
     }
 }
