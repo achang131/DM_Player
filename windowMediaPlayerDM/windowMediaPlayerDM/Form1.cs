@@ -27,7 +27,7 @@ namespace windowMediaPlayerDM
       //  LinkedList<Label> comment_storage = new LinkedList<Label>();
         XmlTextReader dm_comment;
         LinkedList<String[]> comment = new LinkedList<String[]>();
-        LinkedList<Label> remove_LinkedList = new LinkedList<Label>();
+      //  LinkedList<Label> remove_LinkedList = new LinkedList<Label>();
         int time_offset;
         int move_distance;
         int playedcomment;
@@ -64,11 +64,11 @@ namespace windowMediaPlayerDM
 
         Form2 fm2;
 
-        public DispatcherTimer newtimer = new DispatcherTimer();
+  //      public DispatcherTimer newtimer = new DispatcherTimer();
 
     //    public DispatcherTimer newTimer2 = new DispatcherTimer();
 
-        public System.Timers.Timer newTimer2 = new System.Timers.Timer();
+//        public System.Timers.Timer newTimer2 = new System.Timers.Timer();
 
       //  Form2 fm2;
 
@@ -76,7 +76,7 @@ namespace windowMediaPlayerDM
 
 
 
-        int replacetimer1_interval;
+        double replacetimer1_interval;
 
         BackgroundWorker replacetimer1;
 
@@ -89,6 +89,8 @@ namespace windowMediaPlayerDM
         bool auto_TimeMatch;
 
         string audioinfo;
+
+        BackgroundWorker replacetimer2;
 
         int lcount;
         // Next try add setting (new window)  and Play/DM LinkedList(new window possible tabs ?)
@@ -126,11 +128,11 @@ namespace windowMediaPlayerDM
 
             time_offset = 0;
 
-            move_distance = 3;
+            move_distance = 5;
 
             timer1.Interval = 1;
 
-            commentdestroy = -200;
+            commentdestroy = -100;
 
             sommentswitch = true;
 
@@ -153,17 +155,17 @@ namespace windowMediaPlayerDM
 
             _isPlaying = true;
 
-            newtimer.Tick += new EventHandler(newtimer_Tick);
+   //         newtimer.Tick += new EventHandler(newtimer_Tick);
 
         //    newTimer2.Tick += new EventHandler(newTimer2_Tick);
 
-            newTimer2.Elapsed += new System.Timers.ElapsedEventHandler(newTimer2_Elapsed);
+  //          newTimer2.Elapsed += new System.Timers.ElapsedEventHandler(newTimer2_Elapsed);
 
   //          newtimer.Interval= TimeSpan.FromMilliseconds(.1);
 
         //    newTimer2.Interval = TimeSpan.FromMilliseconds(.1);
 
-            newTimer2.Interval = .1;
+   //         newTimer2.Interval = .1;
 
 
             vpos_end = 0;
@@ -206,9 +208,11 @@ namespace windowMediaPlayerDM
 
             replacetimer1 = new BackgroundWorker();
             replacetimer1.DoWork += new DoWorkEventHandler(replacetimer1_DoWork);
-            
 
-            this.vposChangingEvent += new PropertyChangingEventHandler(Form1_vposChangingEvent);
+            replacetimer2 = new BackgroundWorker();
+            replacetimer2.DoWork += new DoWorkEventHandler(replacetimer2_DoWork);
+            replacetimer2.WorkerSupportsCancellation = true;
+         
 
             Media_Player.SendToBack();
             
@@ -221,10 +225,38 @@ namespace windowMediaPlayerDM
             Media_Playlist = Media_Player.playlistCollection.newPlaylist("My_List");
 
 
-
             
+            //replacetimer1.WorkerSupportsCancellation = true;
+            
+
+
         }
 
+        void replacetimer2_DoWork(object sender, DoWorkEventArgs e)
+        {
+            while (!replacetimer2.CancellationPending) {
+
+               // moveComment_thread();
+
+                commentEngine_thread();
+
+                System.Threading.Thread.Sleep(TimeSpan.FromMilliseconds(.5));
+            
+            }
+        }
+
+        void replacetimer2_start() {
+            if(!replacetimer2.IsBusy)
+            replacetimer2.RunWorkerAsync();
+        
+        }
+        void replacetimer2_stop() {
+
+            try
+            {
+                replacetimer2.CancelAsync();
+            }catch(Exception){}
+        }
         void Form1_MouseWheel(object sender, MouseEventArgs e)
         {
 
@@ -302,123 +334,24 @@ namespace windowMediaPlayerDM
         private void replacetimer1_DoWork(object sender, DoWorkEventArgs e) {
 
 
+           // while (!replacetimer1.CancellationPending)
             while (_isPlaying)
             {
 
- //               moveComment_thread();
-                commentEngine_thread();
+  //               commentEngine_thread();
 
                 moveComment_thread();
 
-                System.Threading.Thread.Sleep(replacetimer1_interval);
-
+              //  System.Threading.Thread.Sleep(replacetimer1_interval);
+                System.Threading.Thread.Sleep(TimeSpan.FromMilliseconds(replacetimer1_interval));
             }
         
         
         }
 
 
-        void Form1_vposChangingEvent(object sender, PropertyChangingEventArgs e)
-        {
-        //    commentEngine();
-        //    moveComment();
-        }
-
-        string positionChanging {
-            get { return (Media_Player.Ctlcontrols.currentPositionString); }
-
-            set {
-                sendvposChangingEvent(value);
-               Media_Player.Ctlcontrols.currentPosition = Int32.Parse(value);
-            
-            }
-        
-        
-        }
-
-        private void sendvposChangingEvent(string pos) {
-            if (this.positionChanging !="00:00:00") {
-
-                this.vposChangingEvent(this, new PropertyChangingEventArgs(pos));
-            }
-        
-        }
-
-        public event PropertyChangingEventHandler vposChangingEvent;
-
-        void newTimer2_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            if (threading_mode)
-            {
- //               moveComment_thread();
-            }
-           // commentEngine();
-
-           // commentEngine_thread();
-        }
-
-        void newTimer2_Tick(object sender, EventArgs e)
-        {
-            if (threading_mode)
-            {
-                moveComment();
-            }
-        }
-
-        void newtimer_Tick(object sender, EventArgs e)
-        {
-//            commentEngine();
 
 
-//            moveComment();
-
-
-//            moveComment_thread();
-
-           // moveComment();
-
-        }
-        void runEngine(int a) {
-            while (a != 1) {
-
-                commentEngine();
-            
-            
-            }
-        
-        
-        }
-
-        private void backgroundWorker1_RunWorkerCompleted(
-    object sender,
-    RunWorkerCompletedEventArgs e)
-        {
-            runEngine(2);
-        }
-
-        public int newTimer {
-
-            get { return (int)(Media_Player.Ctlcontrols.currentPosition*100); }
-            set{
-
-
-                Media_Player.Ctlcontrols.currentPosition = value;
-                if (Media_Player.Ctlcontrols.currentPosition != 1)
-                {
-
-                    commentEngine();
-                
-                }
-            
-            }
-        
-        
-        }
-        void changeSpeed(int s) {
-
-            speed_control = s;
-        
-        }
 
         //load xml into a LinkedList and foreach addcomment ?
         void addComment(int time,string comment) { 
@@ -503,11 +436,11 @@ namespace windowMediaPlayerDM
             {
 
                 
-                timer1.Start();
-                newtimer.Start();
-                newTimer2.Start();
+
                 _isPlaying = true;
                 replacetimer1_start();
+
+                replacetimer2_start();
 
               //  while (Media_Player.playState.ToString().Equals("wmppsPlaying")) {
 
@@ -520,29 +453,24 @@ namespace windowMediaPlayerDM
 
 
 
-                timer1.Stop();
 
-                newtimer.Stop();
-
-                newTimer2.Stop();
                 playedcomment = 0;
                 _isPlaying = false;
                 replacetimer1_stop();
 
+
+                replacetimer2_stop();
                // resetComment(comment_storage);
                 resetComment();
             
             }
             else {
 
-                timer1.Stop();
 
-
-                newtimer.Stop();
-
-                newTimer2.Stop();
                 _isPlaying = false;
                 replacetimer1_stop();
+
+                replacetimer2_stop();
             }
 
           
@@ -663,51 +591,40 @@ namespace windowMediaPlayerDM
 
                 case "wmppsStopped":
                     Media_Player.Ctlcontrols.play();
-                    timer1.Start();
 
-                    newtimer.Start();
-
-                    newTimer2.Start();
 
                     _isPlaying = true;
                     replacetimer1_start();
+
+                    replacetimer2_start();
                     break;
 
                 case "wmppsPaused":
                     Media_Player.Ctlcontrols.play();
-                    timer1.Start();
 
-
-                    newtimer.Start();
-
-                    newTimer2.Start();
 
                     _isPlaying = true;
                     replacetimer1_start();
+
+                    replacetimer2_start();
                     break;
 
                 case "wmppsPlaying":
                     Media_Player.Ctlcontrols.pause();
-                    timer1.Stop();
 
-
-                    newtimer.Stop();
-
-                    newTimer2.Stop();
 
                     _isPlaying = false;
                     replacetimer1_stop();
+
+                    replacetimer2_stop();
                     break;
                 case "wmppsReady":
                     Media_Player.Ctlcontrols.play();
-                    timer1.Start();
-
-                    newtimer.Start();
-
-                    newTimer2.Start();
 
                     _isPlaying = true;
                     replacetimer1_start();
+
+                    replacetimer2_start();
                     break;
 
             }
@@ -771,7 +688,7 @@ namespace windowMediaPlayerDM
 
               //  comment_storage.Remove(l);
              //   remove_LinkedList.Add(l);
-                remove_LinkedList.AddLast(l);
+                //remove_LinkedList.AddLast(l);
                 l.Dispose();
               
             
@@ -805,7 +722,7 @@ namespace windowMediaPlayerDM
 
                 //  comment_storage.Remove(l);
                 
-                remove_LinkedList.AddLast(l);
+                //remove_LinkedList.AddLast(l);
                 l.Dispose();
 
 
@@ -843,7 +760,7 @@ namespace windowMediaPlayerDM
 
 
                     //  comment_storage.Remove(l);
-                    remove_LinkedList.AddLast(l);
+                   // remove_LinkedList.AddLast(l);
                     l.Dispose();
 
 
@@ -1207,7 +1124,7 @@ namespace windowMediaPlayerDM
             }
             catch (Exception) { comment_time = 0; }
             print(comment_time.ToString() + "/" + time_counter.ToString());
-            print2(playedcomment.ToString() + "/" + comment.Count.ToString());
+            print2("L: "+fm3.Controls.OfType<Label>().Count().ToString()+" "+playedcomment.ToString() + "/" + comment.Count.ToString());
         
             /*
             foreach(string[] c in comment){
@@ -1266,8 +1183,6 @@ namespace windowMediaPlayerDM
         void moveComment_thread() {
             if (time_counter % speed_control == 0)
             {
-                try
-                {
 
 /*
                     foreach (Label l in Controls.OfType<Label>())
@@ -1290,21 +1205,9 @@ namespace windowMediaPlayerDM
 
                         }
                     }
-                    catch (NullReferenceException) { }
+                    catch (Exception) { }
 
 
-
-                    /*
-                    foreach (Label l in remove_LinkedList)
-                    {
-                        Controls.Remove(l);
-                        //comment_storage.Remove(l);
-                    }
-
-                    remove_LinkedList.Clear();
-                     */
-                }catch(InvalidOperationException){
-                }
             }
             
         
@@ -1413,10 +1316,6 @@ namespace windowMediaPlayerDM
             fm2 = null;
         }
        
-        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
-        {
-            
-        }
 
         private void openMeidaToolStripMenuItem_Click(object sender, EventArgs e)
         {
