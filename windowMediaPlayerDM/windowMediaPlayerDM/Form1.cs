@@ -33,6 +33,8 @@ namespace windowMediaPlayerDM
         int playedcomment;
         LinkedList<String[]> Media_LinkedList = new LinkedList<String[]>();
         LinkedList<String[]> DM_LinkedList = new LinkedList<String[]>();
+
+        WMPLib.IWMPPlaylist Media_Playlist;
         bool sommentswitch;
 
         Settings fm4;
@@ -140,9 +142,11 @@ namespace windowMediaPlayerDM
 
             replacetimer1_interval = 5;
 
-            auto_TimeMatch = false;
+            auto_TimeMatch = true;
+
+
             //-1400 for gp movie
-            offset_auto = 0;
+            offset_auto = -400;
 
 
          //   newtimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
@@ -207,12 +211,14 @@ namespace windowMediaPlayerDM
             this.vposChangingEvent += new PropertyChangingEventHandler(Form1_vposChangingEvent);
 
             Media_Player.SendToBack();
-
+            
 
 
             this.LocationChanged += new EventHandler(Form1_LocationChanged);
 
-            
+
+
+            Media_Playlist = Media_Player.playlistCollection.newPlaylist("My_List");
 
 
 
@@ -458,9 +464,7 @@ namespace windowMediaPlayerDM
         }
 
         // form1 ends
-
-        void Media_Player_PlayStateChange(object sender, AxWMPLib._WMPOCXEvents_PlayStateChangeEvent e)
-        {
+        void autoTimesetup() {
             try
             {
                 var tconsol = ((WMPLib.IWMPControls3)Media_Player.Ctlcontrols);
@@ -469,19 +473,35 @@ namespace windowMediaPlayerDM
 
                 lcount = tconsol.audioLanguageCount;
                 vpos_video = (int)(Media_Player.currentMedia.duration * 100);
-                print3("Video Length: " + vpos_video.ToString() + "/" + "Comment time: " + vpos_end + "  CL: " + currentLanguage.ToString()+" total: "+lcount.ToString());
-                
-                if (auto_TimeMatch && vpos_video != 0)
+                print3("Video Length: " + vpos_video.ToString() + "/" + "Comment time: " + vpos_end + "  CL: " + currentLanguage.ToString() + " total: " + lcount.ToString());
+
+                if (vpos_end > vpos_video * 1.5)
                 {
-                    time_offset = vpos_end-vpos_video+offset_auto;
+
+                    auto_TimeMatch = false;
+
+                }
+                else {
+
+                    auto_TimeMatch = true;
+                }
+                if (auto_TimeMatch && vpos_video > 0)
+                {
+                    time_offset = vpos_end - vpos_video + offset_auto;
 
                 }
             }
             catch (NullReferenceException) { }
+        
+        
+        }
+        void Media_Player_PlayStateChange(object sender, AxWMPLib._WMPOCXEvents_PlayStateChangeEvent e)
+        {
+            autoTimesetup();
 
             if (Media_Player.playState.ToString().Equals("wmppsPlaying"))
             {
-           
+
                 
                 timer1.Start();
                 newtimer.Start();
@@ -499,6 +519,7 @@ namespace windowMediaPlayerDM
             }else if(Media_Player.playState.ToString().Equals("wmppsStopped")){
 
 
+
                 timer1.Stop();
 
                 newtimer.Stop();
@@ -513,6 +534,7 @@ namespace windowMediaPlayerDM
             
             }
             else {
+
                 timer1.Stop();
 
 
@@ -523,15 +545,7 @@ namespace windowMediaPlayerDM
                 replacetimer1_stop();
             }
 
-            switch (e.newState) { 
-                case 3:
-                    commentEngine();
-                    break;
-            
-                default:
-
-                break;
-            }
+          
         }
         void createLabel(string comment) {
             Label dm = new Label();
@@ -642,6 +656,8 @@ namespace windowMediaPlayerDM
         }
        public void Media_Player_ClickAction() {
             test_label.Text = Media_Player.playState.ToString();
+            autoTimesetup();
+
             switch (Media_Player.playState.ToString())
             {
 
@@ -912,14 +928,14 @@ namespace windowMediaPlayerDM
             {
                 for (int i = 0; i < medias.Count(); i++)
                 {
-                    Media_Player.newPlaylist(medias.ElementAt(i)[1], medias.ElementAt(i)[0]);
+                    Media_Playlist.appendItem(Media_Player.newMedia(medias.ElementAt(i)[0]));
                     Media_LinkedList.AddLast(medias.ElementAt(i));
 
                 }
                 media_dir = medias.ElementAt(0)[0];
                 Media_status.Text = "Playlist Set";
-
-
+                Media_Player.currentPlaylist = Media_Playlist;
+                Media_Player.Ctlcontrols.stop();
                 
 
             }else{
@@ -942,7 +958,7 @@ namespace windowMediaPlayerDM
                 {
                     Media_status.Text = "No Media";
                 }
-                Media_Player.settings.autoStart=false;
+             //   Media_Player.settings.autoStart=false;
                 Media_Player.URL = media_dir;
                 Media_Player.Ctlcontrols.stop();
                 if (fm3 != null)
@@ -1043,7 +1059,7 @@ namespace windowMediaPlayerDM
             {
                 comment.Clear();
                 comment2.Clear();
-
+                DM_LinkedList.Clear();
 
             }
             if (fm3 != null) {
@@ -1071,9 +1087,11 @@ namespace windowMediaPlayerDM
               {
                   danmoku_dir = danmokus.ElementAt(0)[0];
                   Danmoku_status.Text = "DM Set";
-                  DM_LinkedList.AddLast(danmokus.ElementAt(0));
+                  if (!DM_LinkedList.Contains(danmokus.ElementAt(0)))
+                  {
+                      DM_LinkedList.AddLast(danmokus.ElementAt(0));
 
-
+                  }
                   //reader.name is the name of the element/attribute
                   //reader.value is the value of the attribute/text
 
@@ -1408,8 +1426,16 @@ namespace windowMediaPlayerDM
         private void setDMsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // loads multiple XML files here
-            multi_dm_mode = true;
-            setDMsToolStripMenuItem.Text = "Set DMs" + " Multi On";
+            if (multi_dm_mode == false)
+            {
+                multi_dm_mode = true;
+                setDMsToolStripMenuItem.Text = "Set DMs" + " Multi On";
+            }
+            else {
+                multi_dm_mode = false;
+                setDMsToolStripMenuItem.Text = "Set DMs" + "Multi Off";
+                
+            }
 
         }
 
@@ -1425,8 +1451,8 @@ namespace windowMediaPlayerDM
                 lcount = tconsol.audioLanguageCount;
                 if (lcount > 0)
                 {
-                    
-                    audioinfo = tconsol.getAudioLanguageDescription((Int32)currentLanguage);
+
+                    audioinfo = tconsol.getAudioLanguageDescription(currentLanguage);
                     
                 }
                 fm4 = new Settings();
@@ -1437,6 +1463,7 @@ namespace windowMediaPlayerDM
                 fm4.getdefault.Click += new EventHandler(getdefault_Click);
                 fm4.getAudio_down.Click += new EventHandler(getAudio_down_Click);
                 fm4.getAudio_up.Click += new EventHandler(getAudio_up_Click);
+                fm4.auto_mode_check.CheckStateChanged += new EventHandler(auto_mode_check_CheckStateChanged);
                 this.loadAll();
                 if (fm3 != null)
                 {
@@ -1447,6 +1474,12 @@ namespace windowMediaPlayerDM
             }
            
 
+        }
+
+        void auto_mode_check_CheckStateChanged(object sender, EventArgs e)
+        {
+            auto_TimeMatch = fm4.auto_mode_check.Checked;
+            loadCheck();
         }
 
         void getAudio_up_Click(object sender, EventArgs e)
@@ -1482,14 +1515,21 @@ namespace windowMediaPlayerDM
 
         void getcancel_Click(object sender, EventArgs e)
         {
-            
-            fm4.Dispose();
+
+
+                fm4.Dispose();
+                fm4 = null;
+           
         }
 
         void getconfirm_Click(object sender, EventArgs e)
         {
             applyAll();
+
             fm4.Dispose();
+            fm4 = null;
+
+
         }
         void loadAll() {
             if (fm4 != null) {
@@ -1509,15 +1549,7 @@ namespace windowMediaPlayerDM
                 }
                 fm4.auto_mode_check.Checked = this.auto_TimeMatch;
 
-                if (auto_TimeMatch)
-                {
-                    fm4.timeoffset.Text = offset_auto.ToString();
-
-                }
-                else {
-
-                    fm4.timeoffset.Text = time_offset.ToString();
-                }
+                loadCheck();
                 fm4.Cspeed.Text = this.move_distance.ToString();
                 fm4.Cend.Text = this.commentdestroy.ToString();
                 loadAudio();
@@ -1532,6 +1564,24 @@ namespace windowMediaPlayerDM
             fm4.getCurrentAudio.Text = this.currentLanguage.ToString();
             fm4.getTotalAudio.Text = this.lcount.ToString();
             fm4.getAudioInfo.Text = this.audioinfo;
+            print3("Video Length: " + vpos_video.ToString() + "/" + "Comment time: " + vpos_end + "  CL: " + currentLanguage.ToString() + " total: " + lcount.ToString());
+                
+        
+        }
+        void loadCheck() {
+
+            fm4.auto_mode_check.Checked = this.auto_TimeMatch;
+
+            if (auto_TimeMatch==true)
+            {
+                fm4.timeoffset.Text = offset_auto.ToString();
+
+            }
+            else
+            {
+
+                fm4.timeoffset.Text = time_offset.ToString();
+            }
         
         }
         void applyAll() {
@@ -1541,11 +1591,11 @@ namespace windowMediaPlayerDM
                 {
                     switch (fm4.select_commentswitch.SelectedItem.ToString()) { 
                     
-                        case "On":
+                        case "ON":
                             this.sommentswitch = true;
                             break;
 
-                        case "Off":
+                        case "OFF":
                             this.sommentswitch = false;
                             break;
                     
@@ -1555,7 +1605,8 @@ namespace windowMediaPlayerDM
 
 
                     this.auto_TimeMatch = fm4.auto_mode_check.Checked;
-                    if (auto_TimeMatch) {
+                    if (fm4.auto_mode_check.Checked)
+                    {
 
                         this.offset_auto = Int32.Parse(fm4.timeoffset.Text);
                     
@@ -1583,11 +1634,13 @@ namespace windowMediaPlayerDM
             applyAll();
         
         }
+        
         void fm4_Disposed(object sender, EventArgs e)
         {
             // save all the changes here
-
+            fm4.Dispose();
             fm4 = null;
         }
+    
     }
 }

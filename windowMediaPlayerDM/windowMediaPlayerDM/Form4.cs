@@ -156,14 +156,14 @@ namespace windowMediaPlayerDM
             // save all changes here
 
 
-            this.Close();
+       
         }
 
         private void Cancel_Click(object sender, EventArgs e)
         {
 
 
-            this.Close();
+    
         }
 
         private void apply_button_Click(object sender, EventArgs e)
