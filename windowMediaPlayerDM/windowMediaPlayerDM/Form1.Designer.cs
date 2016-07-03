@@ -36,6 +36,7 @@
             this.openMeidaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setDMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setDMToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.setDMsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Media_DM_menu = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
@@ -45,7 +46,7 @@
             this.debugtab = new System.Windows.Forms.ToolStripStatusLabel();
             this.debugtab2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.setDMsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.Video_comment = new System.Windows.Forms.ToolStripStatusLabel();
             ((System.ComponentModel.ISupportInitialize)(this.Media_Player)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -90,7 +91,7 @@
             // setDMToolStripMenuItem
             // 
             this.setDMToolStripMenuItem.Name = "setDMToolStripMenuItem";
-            this.setDMToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.setDMToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.setDMToolStripMenuItem.Text = "Set Meida";
             this.setDMToolStripMenuItem.Click += new System.EventHandler(this.setDMToolStripMenuItem_Click);
             // 
@@ -99,14 +100,21 @@
             this.setDMToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.setDMsToolStripMenuItem});
             this.setDMToolStripMenuItem1.Name = "setDMToolStripMenuItem1";
-            this.setDMToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.setDMToolStripMenuItem1.Size = new System.Drawing.Size(134, 22);
             this.setDMToolStripMenuItem1.Text = "Set DM";
             this.setDMToolStripMenuItem1.Click += new System.EventHandler(this.setDMToolStripMenuItem1_Click);
+            // 
+            // setDMsToolStripMenuItem
+            // 
+            this.setDMsToolStripMenuItem.Name = "setDMsToolStripMenuItem";
+            this.setDMsToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.setDMsToolStripMenuItem.Text = "Set DMs";
+            this.setDMsToolStripMenuItem.Click += new System.EventHandler(this.setDMsToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -124,7 +132,8 @@
             this.Danmoku_status,
             this.test_label,
             this.debugtab,
-            this.debugtab2});
+            this.debugtab2,
+            this.Video_comment});
             this.statusStrip1.Location = new System.Drawing.Point(0, 559);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(996, 23);
@@ -162,12 +171,10 @@
             // 
             this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
             // 
-            // setDMsToolStripMenuItem
+            // Video_comment
             // 
-            this.setDMsToolStripMenuItem.Name = "setDMsToolStripMenuItem";
-            this.setDMsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.setDMsToolStripMenuItem.Text = "Set DMs";
-            this.setDMsToolStripMenuItem.Click += new System.EventHandler(this.setDMsToolStripMenuItem_Click);
+            this.Video_comment.Name = "Video_comment";
+            this.Video_comment.Size = new System.Drawing.Size(0, 18);
             // 
             // Form1
             // 
@@ -210,6 +217,7 @@
         private System.Windows.Forms.ToolStripMenuItem Media_DM_menu;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.ToolStripMenuItem setDMsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripStatusLabel Video_comment;
     }
 }
 

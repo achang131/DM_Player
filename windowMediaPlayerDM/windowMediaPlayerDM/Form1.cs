@@ -38,7 +38,13 @@ namespace windowMediaPlayerDM
         
         int vpos;
 
+        int vpos_end;
+
+        int vpos_video;
+
         bool threading_mode;
+
+        int offset_auto;
 
         delegate void tmovelabel(Label l,int x, int y);
 
@@ -72,7 +78,7 @@ namespace windowMediaPlayerDM
 
         bool multi_dm_mode;
 
-
+        bool auto_TimeMatch;
         // Next try add setting (new window)  and Play/DM LinkedList(new window possible tabs ?)
         public Form1()
         {
@@ -124,6 +130,11 @@ namespace windowMediaPlayerDM
 
             replacetimer1_interval = 5;
 
+            auto_TimeMatch = true;
+
+            offset_auto = -1000;
+
+
          //   newtimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
 
             _isPlaying = true;
@@ -139,6 +150,11 @@ namespace windowMediaPlayerDM
         //    newTimer2.Interval = TimeSpan.FromMilliseconds(.1);
 
             newTimer2.Interval = .1;
+
+
+            vpos_end = 0;
+            vpos_video = 0;
+
 
             //
           
@@ -431,8 +447,22 @@ namespace windowMediaPlayerDM
 
         void Media_Player_PlayStateChange(object sender, AxWMPLib._WMPOCXEvents_PlayStateChangeEvent e)
         {
+            try
+            {
+                print3(vpos_video.ToString() + "/" + vpos_end);
+                vpos_video = (int)(Media_Player.currentMedia.duration * 100);
+                if (auto_TimeMatch && vpos_video != 0)
+                {
+                    time_offset = vpos_end-vpos_video+offset_auto;
+
+                }
+            }
+            catch (NullReferenceException) { }
+
             if (Media_Player.playState.ToString().Equals("wmppsPlaying"))
             {
+           
+                
                 timer1.Start();
                 newtimer.Start();
                 newTimer2.Start();
@@ -447,6 +477,8 @@ namespace windowMediaPlayerDM
                 //}
                // newTimer;
             }else if(Media_Player.playState.ToString().Equals("wmppsStopped")){
+
+
                 timer1.Stop();
 
                 newtimer.Stop();
@@ -845,10 +877,12 @@ namespace windowMediaPlayerDM
             LinkedList<String[]> medias = setFile(media);
 
             bool multi_media;
-            if (medias.Count > 1)
+            if (medias!=null && medias.Count > 1)
             {
                 //multiple media file is selected;
                 multi_media = true;
+
+               
             }else{
             
             multi_media=false;
@@ -864,6 +898,8 @@ namespace windowMediaPlayerDM
                 }
                 media_dir = medias.ElementAt(0)[0];
                 Media_status.Text = "Playlist Set";
+       
+                
                 
 
             }else{
@@ -872,6 +908,8 @@ namespace windowMediaPlayerDM
                     media_dir = medias.ElementAt(0)[0];
                     Media_status.Text = "Media Set";
                     Media_LinkedList.AddLast(medias.ElementAt(0));
+                    
+
 
                     if (fm3 != null) {
 
@@ -894,7 +932,13 @@ namespace windowMediaPlayerDM
                 }
 
 
+
             }
+        }
+        void print3(string s) {
+
+            Video_comment.Text = s;
+        
         }
         private void readXML(string danmoku_dir)
         {
@@ -929,6 +973,14 @@ namespace windowMediaPlayerDM
                         temp_comment[1] = dm_comment.Value;
                         comment.AddLast(temp_comment);
                         int vpos = Int32.Parse(temp_comment[0]);
+
+                        //this will ends with the final vpos in the xml files
+                        if (vpos > vpos_end) {
+
+                            vpos_end = vpos;
+                        }
+
+
                         if (comment2.ContainsKey(vpos))
                         {
 
@@ -975,8 +1027,11 @@ namespace windowMediaPlayerDM
 
             }
             if (fm3 != null) {
-                this.Owner = fm3;
-            
+                try
+                {
+                    this.Owner = fm3;
+                }
+                catch (Exception) { }
             }
            LinkedList< String[]> danmokus = setFile(danmoku);
 
@@ -1013,9 +1068,14 @@ namespace windowMediaPlayerDM
                   for (int i = 0; i < danmokus.Count(); i++) {
 
 
-                      danmoku_dir = danmokus.ElementAt(i)[0];
-                      DM_LinkedList.AddLast(danmokus.ElementAt(i));
-                      readXML(danmoku_dir);
+                      //add only if it's not in the list to prevent dulplicate from being loaded
+                      if (!DM_LinkedList.Contains(danmokus.ElementAt(i)))
+                      {
+                          danmoku_dir = danmokus.ElementAt(i)[0];
+                          DM_LinkedList.AddLast(danmokus.ElementAt(i));
+                          readXML(danmoku_dir);
+
+                      }
                   
                   
                   }
@@ -1110,7 +1170,7 @@ namespace windowMediaPlayerDM
             catch (Exception) { comment_time = 0; }
             print(comment_time.ToString() + "/" + time_counter.ToString());
             print2(playedcomment.ToString() + "/" + comment.Count.ToString());
-
+        
             /*
             foreach(string[] c in comment){
                 addComment(comment_time,Int32.Parse(c[0]), c[1]);
@@ -1177,16 +1237,18 @@ namespace windowMediaPlayerDM
                     }
 
 */
-
-                    for (int i = 0; i < fm3.Controls.OfType<Label>().Count();i++ )
+                    try
                     {
+                        for (int i = 0; i < fm3.Controls.OfType<Label>().Count(); i++)
+                        {
 
-                        MoveLabel_threadEX(fm3.Controls.OfType<Label>().ElementAt(i));
+                            MoveLabel_threadEX(fm3.Controls.OfType<Label>().ElementAt(i));
 
 
 
+                        }
                     }
-
+                    catch (NullReferenceException) { }
 
 
 
