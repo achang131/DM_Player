@@ -39,15 +39,16 @@
             this.setDMsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Media_DM_menu = new System.Windows.Forms.ToolStripMenuItem();
+            this.Settings_menu = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.Media_status = new System.Windows.Forms.ToolStripStatusLabel();
             this.Danmoku_status = new System.Windows.Forms.ToolStripStatusLabel();
             this.test_label = new System.Windows.Forms.ToolStripStatusLabel();
             this.debugtab = new System.Windows.Forms.ToolStripStatusLabel();
             this.debugtab2 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.Video_comment = new System.Windows.Forms.ToolStripStatusLabel();
-            this.Settings_menu = new System.Windows.Forms.ToolStripMenuItem();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.Media_Player)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -72,7 +73,8 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openMeidaToolStripMenuItem,
             this.Media_DM_menu,
-            this.Settings_menu});
+            this.Settings_menu,
+            this.testToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(996, 26);
@@ -109,7 +111,7 @@
             // setDMsToolStripMenuItem
             // 
             this.setDMsToolStripMenuItem.Name = "setDMsToolStripMenuItem";
-            this.setDMsToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.setDMsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.setDMsToolStripMenuItem.Text = "Set DMs";
             this.setDMsToolStripMenuItem.Click += new System.EventHandler(this.setDMsToolStripMenuItem_Click);
             // 
@@ -126,6 +128,13 @@
             this.Media_DM_menu.Size = new System.Drawing.Size(104, 22);
             this.Media_DM_menu.Text = "Media/DM List";
             this.Media_DM_menu.Click += new System.EventHandler(this.Media_DM_menu_Click);
+            // 
+            // Settings_menu
+            // 
+            this.Settings_menu.Name = "Settings_menu";
+            this.Settings_menu.Size = new System.Drawing.Size(68, 22);
+            this.Settings_menu.Text = "Settings";
+            this.Settings_menu.Click += new System.EventHandler(this.Settings_menu_Click);
             // 
             // statusStrip1
             // 
@@ -169,21 +178,17 @@
             this.debugtab2.Name = "debugtab2";
             this.debugtab2.Size = new System.Drawing.Size(0, 18);
             // 
-            // backgroundWorker1
-            // 
-
-            // 
             // Video_comment
             // 
             this.Video_comment.Name = "Video_comment";
             this.Video_comment.Size = new System.Drawing.Size(0, 18);
             // 
-            // Settings_menu
+            // testToolStripMenuItem
             // 
-            this.Settings_menu.Name = "Settings_menu";
-            this.Settings_menu.Size = new System.Drawing.Size(68, 22);
-            this.Settings_menu.Text = "Settings";
-            this.Settings_menu.Click += new System.EventHandler(this.Settings_menu_Click);
+            this.testToolStripMenuItem.Name = "testToolStripMenuItem";
+            this.testToolStripMenuItem.Size = new System.Drawing.Size(43, 22);
+            this.testToolStripMenuItem.Text = "test";
+            this.testToolStripMenuItem.Click += new System.EventHandler(this.testToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -228,6 +233,7 @@
         private System.Windows.Forms.ToolStripMenuItem setDMsToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel Video_comment;
         private System.Windows.Forms.ToolStripMenuItem Settings_menu;
+        private System.Windows.Forms.ToolStripMenuItem testToolStripMenuItem;
     }
 }
 

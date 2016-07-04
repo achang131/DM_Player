@@ -174,6 +174,12 @@ namespace windowMediaPlayerDM
 
             Media_Player.settings.autoStart = true;
 
+
+
+
+
+
+
         }
 
         void CSettings() {
@@ -1795,6 +1801,16 @@ namespace windowMediaPlayerDM
 
 
         }
+
+        private void testToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            VLC_test test = new VLC_test();
+            test.Show();
+        }
+
+
+        //write to XML file to save user changes to settings
 
 
 
