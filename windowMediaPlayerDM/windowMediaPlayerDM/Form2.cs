@@ -38,6 +38,7 @@ namespace windowMediaPlayerDM
             Media_List_Box.Size = new Size(Media_List.ClientRectangle.Right,Media_List.ClientRectangle.Bottom);
             DM_List_Box.Size = new Size(DM_List.ClientRectangle.Right, DM_List.ClientRectangle.Bottom);
         }
+        /*
         public void setDMList(LinkedList<String[]> s) {
             DM_L = s;
             foreach (string[] c in DM_L)
@@ -47,12 +48,56 @@ namespace windowMediaPlayerDM
             }
         
         }
+         */
+
+        public LinkedList<String[]> setDMList {
+
+            set
+            {
+                DM_List_Box.Items.Clear();
+                DM_L = value;
+                for (int i = 0; i < value.Count();i++ ) {
+
+                    DM_List_Box.Items.Add(value.ElementAt(i)[1]);
+                
+                }
+            
+            }
+            get { return DM_L; }
+        
+        
+        
+        }
+
+
+
+        public LinkedList<String[]> setMediaList
+        {
+
+            set
+            {
+                Media_List_Box.Items.Clear();
+                Media_L = value;
+                for (int i = 0; i < value.Count(); i++)
+                {
+
+                    Media_List_Box.Items.Add(value.ElementAt(i)[1]);
+
+                }
+
+            }
+            get { return Media_L; }
+
+
+
+        }
+
         public LinkedList<String[]> getDMList() {
 
             return DM_L;
         
         }
-
+        /*
         public void setMediaList(LinkedList<String[]> s)
         {
             Media_L = s;
@@ -62,6 +107,7 @@ namespace windowMediaPlayerDM
             }
 
         }
+         */
         public LinkedList<String[]> getMediaList()
         {
 

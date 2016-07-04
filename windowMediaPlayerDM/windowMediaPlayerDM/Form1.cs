@@ -115,7 +115,69 @@ namespace windowMediaPlayerDM
 
            
 
-            playedcomment = 0;
+         
+
+          //  fm2 = new Form2();
+
+            // controls the speed of the DM  default at 5? the lesser the faster 
+
+            //comment settings
+
+
+            CSettings();
+          
+            Media_Player.ClickEvent += new AxWMPLib._WMPOCXEvents_ClickEventHandler(Media_Player_ClickEvent);
+
+            Media_Player.PlayStateChange += new AxWMPLib._WMPOCXEvents_PlayStateChangeEventHandler(Media_Player_PlayStateChange);
+
+
+            this.ClientSizeChanged += new EventHandler(Form1_ClientSizeChanged);
+
+
+
+            Media_Player.windowlessVideo = true;
+
+            Media_Player.stretchToFit = true;
+
+
+
+            audioinfo = "test";
+           
+           /*
+            
+            this.th1.StartNew(()=>{
+                this.runEngine(2);
+            
+            });
+
+
+           */
+            //maybe add a 3rd backgroundworker to move comment will make the programe even more smoother ?
+
+            BackgroundworkerSetup();
+
+
+            
+       //     Media_Player.SendToBack();
+            
+
+
+            this.LocationChanged += new EventHandler(Form1_LocationChanged);
+
+
+
+            Media_Playlist = Media_Player.playlistCollection.newPlaylist("My_List");
+
+
+            
+            //replacetimer1.WorkerSupportsCancellation = true;
+
+            Media_Player.settings.autoStart = true;
+
+        }
+
+        void CSettings() {
+
 
 
             multi_dm_mode = false;
@@ -125,15 +187,13 @@ namespace windowMediaPlayerDM
                 setDMsToolStripMenuItem.Text = setDMsToolStripMenuItem.Text + " Multi On";
 
             }
-            else {
+            else
+            {
 
                 setDMsToolStripMenuItem.Text = setDMsToolStripMenuItem.Text + "Multi Off";
             }
-          //  fm2 = new Form2();
 
-            // controls the speed of the DM  default at 5? the lesser the faster 
-
-            //comment settings
+            playedcomment = 0;
 
             speed_control = 1;
 
@@ -176,62 +236,47 @@ namespace windowMediaPlayerDM
             _timer1 = replacetimer1_interval;
             _timer3 = replacetimer3_interval;
 
-         //   newtimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
+            //   newtimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
 
             _isPlaying = true;
 
-   //         newtimer.Tick += new EventHandler(newtimer_Tick);
+            //         newtimer.Tick += new EventHandler(newtimer_Tick);
 
-        //    newTimer2.Tick += new EventHandler(newTimer2_Tick);
+            //    newTimer2.Tick += new EventHandler(newTimer2_Tick);
 
-  //          newTimer2.Elapsed += new System.Timers.ElapsedEventHandler(newTimer2_Elapsed);
+            //          newTimer2.Elapsed += new System.Timers.ElapsedEventHandler(newTimer2_Elapsed);
 
-  //          newtimer.Interval= TimeSpan.FromMilliseconds(.1);
+            //          newtimer.Interval= TimeSpan.FromMilliseconds(.1);
 
-        //    newTimer2.Interval = TimeSpan.FromMilliseconds(.1);
+            //    newTimer2.Interval = TimeSpan.FromMilliseconds(.1);
 
-   //         newTimer2.Interval = .1;
+            //         newTimer2.Interval = .1;
+
+
+
+            //timer1.interval default at 100 milli second
+            time_counter = 0;
 
 
             vpos_end = 0;
             vpos_video = 0;
 
-            Media_Player.enableContextMenu = true;
-            
 
-            //
-          
-            Media_Player.ClickEvent += new AxWMPLib._WMPOCXEvents_ClickEventHandler(Media_Player_ClickEvent);
             //initialize the y value to 40 so it will default start at 40
             ycurrent = 40;
             xstart = ClientRectangle.Right;
-            Media_Player.PlayStateChange += new AxWMPLib._WMPOCXEvents_PlayStateChangeEventHandler(Media_Player_PlayStateChange);
 
 
-            this.ClientSizeChanged += new EventHandler(Form1_ClientSizeChanged);
-
-            //timer1.interval default at 100 milli second
-            time_counter = 0;
-
-            Media_Player.windowlessVideo = true;
-
-            Media_Player.stretchToFit = true;
+            Media_Player.enableContextMenu = true;
 
 
+            //
 
-            audioinfo = "test";
-           
-           /*
-            
-            this.th1.StartNew(()=>{
-                this.runEngine(2);
-            
-            });
+        
+        
+        }
 
-
-           */
-            //maybe add a 3rd backgroundworker to move comment will make the programe even more smoother ?
-
+        void BackgroundworkerSetup() {
 
             replacetimer1 = new BackgroundWorker();
             replacetimer1.DoWork += new DoWorkEventHandler(replacetimer1_DoWork);
@@ -243,50 +288,40 @@ namespace windowMediaPlayerDM
             replacetimer3 = new BackgroundWorker();
             replacetimer3.DoWork += new DoWorkEventHandler(replacetimer3_DoWork);
             replacetimer3.WorkerSupportsCancellation = true;
-            
-            Media_Player.SendToBack();
-            
-
-
-            this.LocationChanged += new EventHandler(Form1_LocationChanged);
-
-
-
-            Media_Playlist = Media_Player.playlistCollection.newPlaylist("My_List");
-
-
-            
-            //replacetimer1.WorkerSupportsCancellation = true;
-
-            Media_Player.settings.autoStart = true;
-
+        
+        
         }
 
         void changingSpeedontime() {
 
-
-            int lnumber = fm3.Controls.OfType<Label>().Count();
-            
-            if (lnumber > 50)
+            try
             {
-                move_distance = _distance * 2;
+                int lnumber = fm3.Controls.OfType<Label>().Count();
+
+                if (lnumber > 50)
+                {
+                    move_distance = _distance * 2;
+
+                }
+                else if (lnumber > 40)
+                {
+
+                    move_distance = (int)(_distance * 1.7);
+
+                }
+                else if (lnumber > 30)
+                {
+
+                    move_distance = (int)(_distance * 1.3);
+                }
+                else
+                {
+
+                    move_distance = _distance;
+                }
 
             }
-            else if(lnumber >40){
-
-                move_distance = (int)(_distance * 1.7);
-            
-            }
-            else if(lnumber >30){
-
-                move_distance =(int)(_distance * 1.3);
-            }
-            else
-            {
-
-                move_distance = _distance;
-            }
-        
+            catch (Exception) { }
         }
         void replacetimer3_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -556,6 +591,22 @@ namespace windowMediaPlayerDM
         
         
         }
+        void removeAllComments() {
+
+
+            if (fm3 != null)
+            {
+
+                for (int i = 0; i < fm3.Controls.OfType<Label>().Count(); i++)
+                {
+
+                    fm3.Controls.OfType<Label>().ElementAt(i).Dispose();
+
+                }
+            }
+
+        
+        }
         void Media_Player_PlayStateChange(object sender, AxWMPLib._WMPOCXEvents_PlayStateChangeEvent e)
         {
             test_label.Text = Media_Player.playState.ToString();
@@ -581,7 +632,7 @@ namespace windowMediaPlayerDM
                     timerStop();
                 
   //                  resetComment();
-            
+                    removeAllComments();
 
                     break;
                 
@@ -1442,13 +1493,13 @@ namespace windowMediaPlayerDM
 
                 if (DM_LinkedList != null)
                 {
-
-                    fm2.setDMList(DM_LinkedList);
+                    fm2.setDMList = DM_LinkedList;
+                 //   fm2.setDMList(DM_LinkedList);
                 }
                 if (Media_LinkedList != null)
                 {
-
-                    fm2.setMediaList(Media_LinkedList);
+                    fm2.setMediaList = Media_LinkedList;
+                    //fm2.setMediaList(Media_LinkedList);
                 }
                 fm2.Show();
 
@@ -1719,6 +1770,8 @@ namespace windowMediaPlayerDM
                     time_counter = 0;
 
                     autoTimesetup();
+
+                    this.Text = "DM PLayer   :" + Media_Player.Ctlcontrols.currentItem.name;
                     _first_load = true;
                 }
 
