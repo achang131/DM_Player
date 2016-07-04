@@ -597,12 +597,17 @@ namespace windowMediaPlayerDM
             if (fm3 != null)
             {
 
+
+      
                 for (int i = 0; i < fm3.Controls.OfType<Label>().Count(); i++)
                 {
 
                     fm3.Controls.OfType<Label>().ElementAt(i).Dispose();
 
+                    
+
                 }
+                fm3.Refresh();
             }
 
         
@@ -623,6 +628,8 @@ namespace windowMediaPlayerDM
                     timerStart();
                     break;
                 case "wmppsStopped":
+
+                  
                     playedcomment = 0;
 
                     time_counter = 0;
@@ -632,8 +639,8 @@ namespace windowMediaPlayerDM
                     timerStop();
                 
   //                  resetComment();
-                    removeAllComments();
 
+                    removeAllComments();
                     break;
                 
                 case "wmppsReady":
@@ -1165,22 +1172,28 @@ namespace windowMediaPlayerDM
         }
         private void setDMToolStripMenuItem1_Click(object sender, EventArgs e)
         {
+            
             if (multi_dm_mode == false)
             {
                 comment.Clear();
                 comment2.Clear();
+
+                //clears all the dm that is current loaded
                 DM_LinkedList.Clear();
 
             }
             if (fm3 != null) {
                 try
                 {
-                    this.Owner = fm3;
+                     this.Owner = fm3;
+                    //fm3.Owner = this;
                 }
                 catch (Exception) { }
 
                 
             }
+
+
            LinkedList< String[]> danmokus = setFile(danmoku);
 
            if (danmokus != null)
