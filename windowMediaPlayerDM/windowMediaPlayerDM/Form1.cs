@@ -1949,9 +1949,13 @@ namespace windowMediaPlayerDM
             
             if (choose_player != 1)
             {
-                
-                manual_checkend((int)vlcPlayer.GetCurrentMedia().Duration.TotalMilliseconds, (int)vlcPlayer.Time);
-            }
+
+                try
+                {
+                    manual_checkend((int)vlcPlayer.GetCurrentMedia().Duration.TotalMilliseconds, (int)vlcPlayer.Time);
+                }
+                catch (NullReferenceException) { }
+                }
         
         }
         void moveComment() {
@@ -2091,6 +2095,11 @@ namespace windowMediaPlayerDM
 
         private void Media_DM_menu_Click(object sender, EventArgs e)
         {
+            List_menu_setup();
+        }
+
+        void List_menu_setup() {
+
             if (fm2 == null)
             {
                 fm2 = new Form2();
@@ -2105,19 +2114,82 @@ namespace windowMediaPlayerDM
                 if (DM_LinkedList != null)
                 {
                     fm2.setDMList = DM_LinkedList;
-                 //   fm2.setDMList(DM_LinkedList);
+                    //   fm2.setDMList(DM_LinkedList);
                 }
                 if (Media_LinkedList != null)
                 {
                     fm2.setMediaList = Media_LinkedList;
                     //fm2.setMediaList(Media_LinkedList);
                 }
-                fm2.Show();
+
+                fm2.setMListBox.DoubleClick += new EventHandler(setMListBox_DoubleClick);
+
+
+
+
+                    fm2.Show();
 
 
             }
-        }
         
+        
+        
+        
+        
+        
+        }
+        //only use when trying menual double click
+        String mdclick;
+        void setMListBox_DoubleClick(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
+
+            //implement set media by click method here
+            String result="";
+
+            ListBox mtemp =(ListBox)sender;
+
+            if (vlcPlayer.IsPlaying) {
+
+                vlcPlayer.Stop();
+            }
+            
+            for(int i=0;i<Media_LinkedList.Count();i++){
+            
+            if(Media_LinkedList.ElementAt(i)[1].Equals(mtemp.SelectedItem.ToString())){
+            
+            result=Media_LinkedList.ElementAt(i)[0];
+            
+            }
+            
+            
+            }
+            if (result != "")
+            {
+                FileInfo newMedia = new FileInfo(result);
+
+                vlcPlayer.SetMedia(newMedia);
+                vlcPlayer.Play();
+
+            }
+            /*
+
+            //this is manual double click code
+            if (mdclick == mtemp.SelectedValue) { 
+            
+            
+            
+            }
+            
+            
+            mdclick = mtemp.SelectedValue.ToString();
+
+            */
+
+
+
+
+        }
         void fm2_Disposed(object sender, EventArgs e)
         {
             if (fm3 != null)

@@ -50,6 +50,18 @@ namespace windowMediaPlayerDM
         }
          */
 
+        public ListBox setMListBox {
+            set { this.Media_List_Box = value; }
+            get { return this.Media_List_Box; }
+        
+        }
+        public ListBox setDMListBox
+        {
+            set { this.DM_List_Box = value; }
+            get { return this.DM_List_Box; }
+
+        }
+
         public LinkedList<String[]> setDMList {
 
             set
