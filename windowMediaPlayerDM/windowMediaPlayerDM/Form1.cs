@@ -215,12 +215,20 @@ namespace windowMediaPlayerDM
             VLC_track.MouseUp += new MouseEventHandler(VLC_track_MouseUp);
             VLC_track.ValueChanged += new EventHandler(VLC_track_ValueChanged);
 
-            
-            
-            
-     
 
-            vlcPlayer.SendToBack();
+
+
+
+
+            if (choose_player == 1)
+            {
+
+                vlcPlayer.Dispose();
+            }
+            else {
+
+                Media_Player.Dispose();
+            }
             
 
 
@@ -241,16 +249,20 @@ namespace windowMediaPlayerDM
 
         void VLC_track_ValueChanged(object sender, EventArgs e)
         {
-            if (mousedown == true && VLC_track.Value/10 != time_counter)
+            if (mousedown == true && VLC_track.Value != time_counter)
             {
-
-                vlcPlayer.Time=VLC_track.Value;
+               
+                vlcPlayer.Time=VLC_track.Value*10;
+               
+                
             }
         }
 
         void VLC_track_MouseUp(object sender, MouseEventArgs e)
         {
+
             mousedown = false;
+
         }
 
         void VLC_track_MouseDown(object sender, MouseEventArgs e)
@@ -294,21 +306,21 @@ namespace windowMediaPlayerDM
          //   print2("time: "+e.ToString()+" / "+e.NewTime.ToString());
           //  vlcTime = (int)e.NewTime;
 
-            if (auto_TimeMatch)
+            if (auto_TimeMatch==false)
             {
 
-                time_counter = (int)(e.NewTime) / 10 + time_offset;
+                time_counter = ((int)(e.NewTime) / 10 );
 
             }
             else
             {
 
-                time_counter = (int)(e.NewTime) / 10 + auto_base + offset_auto;
+                time_counter = ((int)(e.NewTime) / 10);
 
             }
 
 
-            setTime_track(time_counter*10);
+            setTime_track(time_counter);
 
 
         }
@@ -853,7 +865,7 @@ namespace windowMediaPlayerDM
 
         void cautoSet() {
 
-            if (vpos_end > vpos_video * 1.5)
+            if (vpos_end > vpos_video * 1.3)
             {
 
                 auto_TimeMatch = false;
@@ -864,7 +876,7 @@ namespace windowMediaPlayerDM
 
                 auto_TimeMatch = true;
             }
-            if (auto_TimeMatch && vpos_video > 0)
+            if (auto_TimeMatch==true && vpos_video > 0)
             {
                 auto_base = vpos_end - vpos_video;
 
@@ -879,6 +891,8 @@ namespace windowMediaPlayerDM
 
 
             vpos_video = (int)vlcPlayer.GetCurrentMedia().Duration.TotalMilliseconds / 10;
+
+          //  vpos_video = (int)vlcPlayer.Length / 10;
 
             currentLanguage = -1;
 
@@ -902,7 +916,7 @@ namespace windowMediaPlayerDM
 
             //VLC_track.Maximum = vpos_video;
 
-            setTrackMax((int)vlcPlayer.Length);
+            setTrackMax(vpos_video);
             VLC_track.Minimum = 0;
 
             vlcPlayer.Audio.Volume = 50;
@@ -970,7 +984,7 @@ namespace windowMediaPlayerDM
 
                 VLC_track.Maximum = time;
                 VLC_track.Minimum = 0;
-                VLC_track.TickFrequency = 5;
+                VLC_track.TickFrequency = 1;
             }
 
 
@@ -1634,28 +1648,28 @@ namespace windowMediaPlayerDM
                     case XmlNodeType.Text:
                         temp_comment[1] = dm_comment.Value;
                         comment.AddLast(temp_comment);
-                        int vpos = Int32.Parse(temp_comment[0]);
+                        int vpost = Int32.Parse(temp_comment[0]);
 
                         //this will ends with the final vpos in the xml files
-                        if (vpos > vpos_end) {
+                        if (vpost > vpos_end) {
 
-                            vpos_end = vpos;
+                            vpos_end = vpost;
                         }
 
 
-                        if (comment2.ContainsKey(vpos))
+                        if (comment2.ContainsKey(vpost))
                         {
 
-                            string tempc = comment2[vpos] + Environment.NewLine + temp_comment[1];
+                            string tempc = comment2[vpost] + Environment.NewLine + temp_comment[1];
                             _duplicates++;
-                            comment2.Remove(vpos);
-                            comment2.Add(vpos, tempc);
+                            comment2.Remove(vpost);
+                            comment2.Add(vpost, tempc);
 
 
                         }
                         else
                         {
-                            comment2.Add(vpos, temp_comment[1]);
+                            comment2.Add(vpost, temp_comment[1]);
                         }
                         //temp_comment = new String[2];
 
@@ -1868,24 +1882,13 @@ namespace windowMediaPlayerDM
                         if (auto_TimeMatch == false)
                         {
 
-                            
-                            
-                            
-                            //comment_time = vlcPlayer.GetCurrentMedia().Statistics.PlayedAudioBuffers;
-                            
-                           // comment_time = Int32.Parse(vlcPlayer.GetCurrentMedia().Duration.Ticks.ToString());
-                            //comment_time = vlcPlayer.GetCurrentMedia().Duration.Milliseconds + time_offset;
 
-                            comment_time = time_counter+time_offset;
+
+                            comment_time = time_counter+ time_offset;
                         }
                         else
                         {
-                           // comment_time = vlcPlayer.GetCurrentMedia().Statistics.PlayedAudioBuffers;
-                           // comment_time = (int)(vlcPlayer.Position * 100000);
 
-                          //  comment_time = Int32.Parse(vlcPlayer.GetCurrentMedia().Duration.Ticks.ToString());
-
-                            //comment_time = vlcPlayer.GetCurrentMedia().Duration.Duration().Milliseconds;
                             comment_time = time_counter + auto_base + offset_auto; 
 
                         }
@@ -1921,7 +1924,7 @@ namespace windowMediaPlayerDM
             }
             */
             vlcTIme = (int)(vlcPlayer.Time / 10);
-            print(((int)(vlcPlayer.Time) / 10 + 10) + "/" + comment_time + "/" + vlcTIme / 10);
+            print(((int)(vlcPlayer.Time) / 10 + 10) + "/" + comment_time + "/" + time_counter);
 
 
             if (fm3 != null)
@@ -1943,9 +1946,12 @@ namespace windowMediaPlayerDM
 
 
             addComment(comment_time, comment2);
-
-            manual_checkend((int)vlcPlayer.GetCurrentMedia().Duration.TotalMilliseconds, (int)vlcPlayer.Time);
-
+            
+            if (choose_player != 1)
+            {
+                
+                manual_checkend((int)vlcPlayer.GetCurrentMedia().Duration.TotalMilliseconds, (int)vlcPlayer.Time);
+            }
         
         }
         void moveComment() {
@@ -2221,6 +2227,12 @@ namespace windowMediaPlayerDM
         void auto_mode_check_CheckStateChanged(object sender, EventArgs e)
         {
             auto_TimeMatch = fm4.auto_mode_check.Checked;
+            CheckBox temp = (CheckBox)sender;
+
+            if (temp.Checked == true &&vpos_video>0 &&vpos_end>0) {
+                auto_base = vpos_end - vpos_video;
+            
+            }
             loadCheck();
         }
 
