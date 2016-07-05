@@ -812,11 +812,11 @@ namespace windowMediaPlayerDM
             vlcPlayer.Size = new Size(ClientRectangle.Width, ClientRectangle.Height - 94);
             vlcPlayer.Location = new Point(0, ClientRectangle.Top + 29);
 
-            vlcPlay_button.Location = new Point(32,ClientRectangle.Bottom-53);
+            vlcPlay_button.Location = new Point(32,ClientRectangle.Bottom-42);
 
-            vlcStop_button.Location = new Point(77, ClientRectangle.Bottom - 53);
+            vlcStop_button.Location = new Point(77, ClientRectangle.Bottom - 42);
             
-            vlcSound_button.Location = new Point(ClientRectangle.Right-81, ClientRectangle.Bottom - 53);
+            vlcSound_button.Location = new Point(ClientRectangle.Right-81, ClientRectangle.Bottom - 42);
 
             
         }
