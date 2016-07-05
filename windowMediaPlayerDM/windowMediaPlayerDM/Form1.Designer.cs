@@ -30,7 +30,6 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            this.Media_Player = new AxWMPLib.AxWindowsMediaPlayer();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.openMeidaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -49,20 +48,19 @@
             this.Video_comment = new System.Windows.Forms.ToolStripStatusLabel();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            ((System.ComponentModel.ISupportInitialize)(this.Media_Player)).BeginInit();
+            this.Media_Player = new AxWMPLib.AxWindowsMediaPlayer();
+            this.vlcPlayer = new Vlc.DotNet.Forms.VlcControl();
+            this.VLC_track = new System.Windows.Forms.TrackBar();
+            this.vlcStop_button = new System.Windows.Forms.Button();
+            this.vlcPlay_button = new System.Windows.Forms.Button();
+            this.vlcSound_button = new System.Windows.Forms.Button();
+            this.vlc_display = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Media_Player)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.vlcPlayer)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.VLC_track)).BeginInit();
             this.SuspendLayout();
-            // 
-            // Media_Player
-            // 
-            this.Media_Player.AllowDrop = true;
-            this.Media_Player.Enabled = true;
-            this.Media_Player.Location = new System.Drawing.Point(0, 29);
-            this.Media_Player.Name = "Media_Player";
-            this.Media_Player.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("Media_Player.OcxState")));
-            this.Media_Player.Size = new System.Drawing.Size(996, 527);
-            this.Media_Player.TabIndex = 0;
             // 
             // timer1
             // 
@@ -111,7 +109,7 @@
             // setDMsToolStripMenuItem
             // 
             this.setDMsToolStripMenuItem.Name = "setDMsToolStripMenuItem";
-            this.setDMsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.setDMsToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
             this.setDMsToolStripMenuItem.Text = "Set DMs";
             this.setDMsToolStripMenuItem.Click += new System.EventHandler(this.setDMsToolStripMenuItem_Click);
             // 
@@ -144,7 +142,8 @@
             this.test_label,
             this.debugtab,
             this.debugtab2,
-            this.Video_comment});
+            this.Video_comment,
+            this.vlc_display});
             this.statusStrip1.Location = new System.Drawing.Point(0, 559);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(996, 23);
@@ -190,6 +189,80 @@
             this.testToolStripMenuItem.Text = "test";
             this.testToolStripMenuItem.Click += new System.EventHandler(this.testToolStripMenuItem_Click);
             // 
+            // Media_Player
+            // 
+            this.Media_Player.AllowDrop = true;
+            this.Media_Player.Enabled = true;
+            this.Media_Player.Location = new System.Drawing.Point(0, 29);
+            this.Media_Player.Name = "Media_Player";
+            this.Media_Player.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("Media_Player.OcxState")));
+            this.Media_Player.Size = new System.Drawing.Size(996, 527);
+            this.Media_Player.TabIndex = 0;
+            // 
+            // vlcPlayer
+            // 
+            this.vlcPlayer.BackColor = System.Drawing.Color.Black;
+            this.vlcPlayer.Location = new System.Drawing.Point(0, 29);
+            this.vlcPlayer.Name = "vlcPlayer";
+            this.vlcPlayer.Size = new System.Drawing.Size(996, 479);
+            this.vlcPlayer.Spu = -1;
+            this.vlcPlayer.TabIndex = 3;
+            this.vlcPlayer.Text = "vlcControl1";
+            this.vlcPlayer.VlcLibDirectory = ((System.IO.DirectoryInfo)(resources.GetObject("vlcPlayer.VlcLibDirectory")));
+            this.vlcPlayer.VlcMediaplayerOptions = null;
+            // 
+            // VLC_track
+            // 
+            this.VLC_track.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.VLC_track.Location = new System.Drawing.Point(0, 514);
+            this.VLC_track.Name = "VLC_track";
+            this.VLC_track.Size = new System.Drawing.Size(996, 45);
+            this.VLC_track.TabIndex = 4;
+            // 
+            // vlcStop_button
+            // 
+            this.vlcStop_button.BackgroundImage = global::windowMediaPlayerDM.Properties.Resources.stop;
+            this.vlcStop_button.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.vlcStop_button.FlatAppearance.BorderSize = 0;
+            this.vlcStop_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.vlcStop_button.Location = new System.Drawing.Point(77, 529);
+            this.vlcStop_button.Name = "vlcStop_button";
+            this.vlcStop_button.Size = new System.Drawing.Size(30, 30);
+            this.vlcStop_button.TabIndex = 5;
+            this.vlcStop_button.UseVisualStyleBackColor = true;
+            this.vlcStop_button.Click += new System.EventHandler(this.vlcStop_button_Click);
+            // 
+            // vlcPlay_button
+            // 
+            this.vlcPlay_button.BackgroundImage = global::windowMediaPlayerDM.Properties.Resources.start;
+            this.vlcPlay_button.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.vlcPlay_button.FlatAppearance.BorderSize = 0;
+            this.vlcPlay_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.vlcPlay_button.Location = new System.Drawing.Point(32, 529);
+            this.vlcPlay_button.Name = "vlcPlay_button";
+            this.vlcPlay_button.Size = new System.Drawing.Size(30, 30);
+            this.vlcPlay_button.TabIndex = 5;
+            this.vlcPlay_button.UseVisualStyleBackColor = true;
+            this.vlcPlay_button.Click += new System.EventHandler(this.vlcPlay_button_Click);
+            // 
+            // vlcSound_button
+            // 
+            this.vlcSound_button.BackgroundImage = global::windowMediaPlayerDM.Properties.Resources.sound;
+            this.vlcSound_button.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.vlcSound_button.FlatAppearance.BorderSize = 0;
+            this.vlcSound_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.vlcSound_button.Location = new System.Drawing.Point(931, 529);
+            this.vlcSound_button.Name = "vlcSound_button";
+            this.vlcSound_button.Size = new System.Drawing.Size(30, 30);
+            this.vlcSound_button.TabIndex = 5;
+            this.vlcSound_button.UseVisualStyleBackColor = true;
+            this.vlcSound_button.Click += new System.EventHandler(this.vlcSound_button_Click);
+            // 
+            // vlc_display
+            // 
+            this.vlc_display.Name = "vlc_display";
+            this.vlc_display.Size = new System.Drawing.Size(0, 18);
+            // 
             // Form1
             // 
             this.AllowDrop = true;
@@ -197,17 +270,24 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(996, 582);
+            this.Controls.Add(this.vlcSound_button);
+            this.Controls.Add(this.vlcStop_button);
+            this.Controls.Add(this.vlcPlay_button);
+            this.Controls.Add(this.VLC_track);
+            this.Controls.Add(this.vlcPlayer);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.Media_Player);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "DM Player";
-            ((System.ComponentModel.ISupportInitialize)(this.Media_Player)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Media_Player)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.vlcPlayer)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.VLC_track)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -215,7 +295,6 @@
 
         #endregion
 
-        private AxWMPLib.AxWindowsMediaPlayer Media_Player;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem openMeidaToolStripMenuItem;
@@ -234,6 +313,13 @@
         private System.Windows.Forms.ToolStripStatusLabel Video_comment;
         private System.Windows.Forms.ToolStripMenuItem Settings_menu;
         private System.Windows.Forms.ToolStripMenuItem testToolStripMenuItem;
+        private AxWMPLib.AxWindowsMediaPlayer Media_Player;
+        private Vlc.DotNet.Forms.VlcControl vlcPlayer;
+        private System.Windows.Forms.TrackBar VLC_track;
+        private System.Windows.Forms.Button vlcPlay_button;
+        private System.Windows.Forms.Button vlcStop_button;
+        private System.Windows.Forms.Button vlcSound_button;
+        private System.Windows.Forms.ToolStripStatusLabel vlc_display;
     }
 }
 

@@ -10,7 +10,7 @@ using System.Xml;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
-
+using System.IO;
 
 namespace windowMediaPlayerDM
 {
@@ -61,6 +61,14 @@ namespace windowMediaPlayerDM
 
         delegate void commentEnginecomp();
 
+        delegate void setTrack_t(int time);
+
+        delegate void setDouble(double d);
+
+        delegate void setInt(int i);
+
+        delegate void setString(String s);
+
         Dictionary<int, String> comment2 = new Dictionary<int, string>();
 
         TaskFactory th1 = new TaskFactory();
@@ -105,6 +113,19 @@ namespace windowMediaPlayerDM
 
         int _distance;
         // Next try add setting (new window)  and Play/DM LinkedList(new window possible tabs ?)
+
+        int choose_player; //1 for Windows media player 2, for vlc player
+
+
+        int current_volume;
+
+        bool mousedown;
+
+        int vlcTIme;
+
+
+
+
         public Form1()
         {
             InitializeComponent();
@@ -164,22 +185,203 @@ namespace windowMediaPlayerDM
 
             this.LocationChanged += new EventHandler(Form1_LocationChanged);
 
+            if (choose_player == 1)
+            {
+
+                Media_Playlist = Media_Player.playlistCollection.newPlaylist("My_List");
 
 
-            Media_Playlist = Media_Player.playlistCollection.newPlaylist("My_List");
 
+                //replacetimer1.WorkerSupportsCancellation = true;
+
+                Media_Player.settings.autoStart = true;
+
+            }
+
+
+            vlcPlayer.MouseWheel+=new MouseEventHandler(Form1_MouseWheel);
+            vlcPlayer.MouseClick += new MouseEventHandler(vlcPlayer_MouseClick);
+            vlcPlayer.Playing += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerPlayingEventArgs>(vlcPlayer_Playing);
+            vlcPlayer.Stopped += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerStoppedEventArgs>(vlcPlayer_Stopped);
+            vlcPlayer.Paused += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerPausedEventArgs>(vlcPlayer_Paused);
+            vlcPlayer.MediaChanged += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerMediaChangedEventArgs>(vlcPlayer_MediaChanged);
+            vlcPlayer.TimeChanged += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerTimeChangedEventArgs>(vlcPlayer_TimeChanged);
+            vlcPlayer.EndReached += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerEndReachedEventArgs>(vlcPlayer_EndReached);
+            
+
+
+            VLC_track.MouseDown += new MouseEventHandler(VLC_track_MouseDown);
+            VLC_track.MouseUp += new MouseEventHandler(VLC_track_MouseUp);
+            VLC_track.ValueChanged += new EventHandler(VLC_track_ValueChanged);
 
             
-            //replacetimer1.WorkerSupportsCancellation = true;
+            
+            
+     
 
-            Media_Player.settings.autoStart = true;
-
-
-
-
-
+            vlcPlayer.SendToBack();
+            
 
 
+        }
+
+        void vlcPlayer_Paused(object sender, Vlc.DotNet.Core.VlcMediaPlayerPausedEventArgs e)
+        {
+            test_label.Text = vlcPlayer.State.ToString();
+
+
+
+
+            timerStop();
+
+        }
+
+
+
+        void VLC_track_ValueChanged(object sender, EventArgs e)
+        {
+            if (mousedown == true && VLC_track.Value/10 != time_counter)
+            {
+
+                vlcPlayer.Time=VLC_track.Value;
+            }
+        }
+
+        void VLC_track_MouseUp(object sender, MouseEventArgs e)
+        {
+            mousedown = false;
+        }
+
+        void VLC_track_MouseDown(object sender, MouseEventArgs e)
+        {
+            mousedown = true;
+        }
+
+        void vlcPlayer_EndReached(object sender, Vlc.DotNet.Core.VlcMediaPlayerEndReachedEventArgs e)
+        {
+            vlc_display.Text = "end reached";
+            vlcPlayer.Time = 0;
+            time_counter = 0;
+            timerStop();
+            if (vlcPlayer.IsPlaying)
+            {
+                vlcPlayer.Stop();
+            }
+
+        }
+
+        void manual_checkend(int end, int current) {
+
+            if (current >= end)
+            {
+
+                vlc_display.Text = "end reached";
+                vlcPlayer.Time = 0;
+                time_counter = 0;
+                timerStop();
+                if (vlcPlayer.IsPlaying)
+                {
+                    vlcPlayer.Stop();
+                }
+            }
+        
+        }
+    
+        void vlcPlayer_TimeChanged(object sender, Vlc.DotNet.Core.VlcMediaPlayerTimeChangedEventArgs e)
+        {
+         //   time_counter =(int) e.NewTime;
+         //   print2("time: "+e.ToString()+" / "+e.NewTime.ToString());
+          //  vlcTime = (int)e.NewTime;
+
+            if (auto_TimeMatch)
+            {
+
+                time_counter = (int)(e.NewTime) / 10 + time_offset;
+
+            }
+            else
+            {
+
+                time_counter = (int)(e.NewTime) / 10 + auto_base + offset_auto;
+
+            }
+
+
+            setTime_track(time_counter*10);
+
+
+        }
+        void setTime_track(int t) {
+
+            if (InvokeRequired) {
+
+                setInt st = new setInt(setTime_track);
+
+                this.Invoke(st, new object[] { t });
+            
+            }
+
+
+            else {
+                try
+                {
+                    VLC_track.Value = t;
+                }
+                catch (Exception) { };
+            }
+        
+        
+        
+        }
+        void vlcPlayer_MediaChanged(object sender, Vlc.DotNet.Core.VlcMediaPlayerMediaChangedEventArgs e)
+        {
+            test_label.Text = vlcPlayer.State.ToString();
+
+            _first_load = false;
+
+            playedcomment = 0;
+
+            time_counter = 0;
+
+
+            timerStop();
+
+
+            removeAllComments();
+        }
+
+        void vlcPlayer_Stopped(object sender, Vlc.DotNet.Core.VlcMediaPlayerStoppedEventArgs e)
+        {
+            test_label.Text = vlcPlayer.State.ToString();
+
+            playedcomment = 0;
+
+            time_counter = 0;
+
+    
+
+            timerStop();
+
+       
+
+            removeAllComments();
+        }
+
+        void vlcPlayer_Playing(object sender, Vlc.DotNet.Core.VlcMediaPlayerPlayingEventArgs e)
+        {
+            onLoadUp();
+            
+            test_label.Text = vlcPlayer.State.ToString();
+
+            
+
+            timerStart();
+            
+        }
+
+        void vlcPlayer_MouseClick(object sender, MouseEventArgs e)
+        {
+            Media_Player_ClickAction();
         }
 
         void CSettings() {
@@ -227,7 +429,7 @@ namespace windowMediaPlayerDM
 
             replacetimer1_interval = 30;
             replacetimer3_interval = 29;
-            replacetimer2_interval = 9;
+            replacetimer2_interval = 10;
 
             auto_TimeMatch = true;
 
@@ -278,6 +480,41 @@ namespace windowMediaPlayerDM
 
             //
 
+
+            choose_player = 2;
+
+            switchPlayer(choose_player);
+
+            current_volume = vlcPlayer.Audio.Volume;
+
+            mousedown = false;
+        
+        
+        }
+        void switchPlayer(int c) {
+
+            switch (c) { 
+            
+                case 1:
+                    vlcPlayer.Hide();
+                    VLC_track.Hide();
+
+                    vlcPlay_button.Hide();
+                    vlcSound_button.Hide();
+                    vlcStop_button.Hide();
+
+
+                    break;
+
+
+                case 2:
+                    Media_Player.Hide();
+
+                    break;
+            
+            
+            
+            }
         
         
         }
@@ -383,22 +620,43 @@ namespace windowMediaPlayerDM
                 replacetimer2.CancelAsync();
             }catch(Exception){}
         }
+
+        void printvlc(String s) {
+            this.vlc_display.Text = s;
+        
+        }
         void Form1_MouseWheel(object sender, MouseEventArgs e)
         {
 
-            print(e.Delta.ToString());
+           
             switch (e.Delta)
             {
                 case 120:
 
-                    Media_Player.settings.volume++;
+                    if (choose_player == 1)
+                    {
+                        Media_Player.settings.volume++;
+                    }
+                    else {
+
+                        vlcPlayer.Audio.Volume++;
+                        printvlc("Volume: "+vlcPlayer.Audio.Volume);
+                    }
 
                     break;
 
 
                 case -120:
+                    if (choose_player == 1)
+                    {
+                        Media_Player.settings.volume--;
+                    }
+                    else
+                    {
 
-                    Media_Player.settings.volume--;
+                        vlcPlayer.Audio.Volume--;
+                        printvlc("Volume: " + vlcPlayer.Audio.Volume);
+                    }
 
                     break;
 
@@ -519,10 +777,24 @@ namespace windowMediaPlayerDM
 
         void Form1_ClientSizeChanged(object sender, EventArgs e)
         {
-            Media_Player.Size = new System.Drawing.Size(ClientRectangle.Width,ClientRectangle.Height-50);
+            Media_Player.Size = new System.Drawing.Size(ClientRectangle.Width,ClientRectangle.Height-49);
 
-            fm3.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
-            fm3.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
+            if (fm3 != null)
+            {
+                fm3.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
+                fm3.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
+            }
+         
+
+            vlcPlayer.Size = new Size(ClientRectangle.Width, ClientRectangle.Height - 94);
+            vlcPlayer.Location = new Point(0, ClientRectangle.Top + 29);
+
+            vlcPlay_button.Location = new Point(32,ClientRectangle.Bottom-53);
+
+            vlcStop_button.Location = new Point(77, ClientRectangle.Bottom - 53);
+            
+            vlcSound_button.Location = new Point(ClientRectangle.Right-81, ClientRectangle.Bottom - 53);
+
             
         }
 
@@ -531,17 +803,60 @@ namespace windowMediaPlayerDM
         {
             try
             {
+                if (choose_player == 1)
+                {
+                    var tconsol = ((WMPLib.IWMPControls3)Media_Player.Ctlcontrols);
+
+                    currentLanguage = tconsol.currentAudioLanguageIndex;
+
+                    lcount = tconsol.audioLanguageCount;
+
+
+
+                    vpos_video = (int)(Media_Player.Ctlcontrols.currentItem.duration * 100);
+
+                }
+                else {
+
+                    
+                    
+
+                    vpos_video =(int) vlcPlayer.GetCurrentMedia().Duration.TotalMilliseconds/10;
+
+                    currentLanguage = -1;
+
+
+                        
+                    for (int i = 0; i < vlcPlayer.Audio.Tracks.Count; i++) {
+
+                        if(vlcPlayer.Audio.Tracks.All.ElementAt(i).ID.Equals(vlcPlayer.Audio.Tracks.Current.ID))
+
+                        
+                            currentLanguage = i;
+                        
+                    
+                    }
+
+
+                        lcount = vlcPlayer.Audio.Tracks.Count-1;
+
+                  //  vlcPlayer.Audio.Tracks.Current = vlcPlayer.Audio.Tracks.All.ElementAt(2);
+
+                    //VLC_track.Maximum = vpos_video;
+
+                    setTrackMax((int)vlcPlayer.Length);
+                    VLC_track.Minimum = 0;
+
+                    vlcPlayer.Audio.Volume = 50;
+
+                 //   vlcPlayer.GetCurrentMedia().StateChanged += new EventHandler<Vlc.DotNet.Core.VlcMediaStateChangedEventArgs>(Form1_StateChanged);
+         
                 
-                var tconsol = ((WMPLib.IWMPControls3)Media_Player.Ctlcontrols);
+                }
+            
 
-                currentLanguage = tconsol.currentAudioLanguageIndex;
 
-                lcount = tconsol.audioLanguageCount;
 
-                
-
-                vpos_video = (int)(Media_Player.Ctlcontrols.currentItem.duration * 100);
-              
               //  vpos_video = (int)(tconsol.currentItem.duration * 100);
                 
 
@@ -570,8 +885,71 @@ namespace windowMediaPlayerDM
             }
             catch (NullReferenceException) { }
         }
+
+        void Form1_StateChanged(object sender, Vlc.DotNet.Core.VlcMediaStateChangedEventArgs e)
+        {
+          switch(e.State.ToString()){
+          
+              case "Stopped":
+                  time_counter = 0;
+                  playedcomment = 0;
+                  resetComment();
+
+                  timerStop();
+
+
+                  break;
+              case "Playing":
+
+                  timerStart();
+
+                  break;
+              case "Paused":
+
+                  timerStop();
+
+                  break;
+
+
+
+              default:
+
+                  timerStop();
+
+                  break;
+                
+          
+          }
         
-        
+        }
+
+
+        void setTrackMax(int time)
+        {
+
+            if (this.InvokeRequired)
+            {
+
+                setTrack_t temp = new setTrack_t(setTrackMax);
+
+
+                this.Invoke(temp, new object[] { time });
+
+
+
+            }
+            else
+            {
+
+                VLC_track.Maximum = time;
+                VLC_track.Minimum = 0;
+                VLC_track.TickFrequency = 5;
+            }
+
+
+        }
+
+
             void timerStart(){
                 
                 _isPlaying = true;
@@ -660,14 +1038,9 @@ namespace windowMediaPlayerDM
                     
                     timerStop();
 
-                break;
-
-
-            
+                    break;
             
             }
-
-
           
         }
         void createLabel(string comment) {
@@ -748,44 +1121,110 @@ namespace windowMediaPlayerDM
         }
 
        public void Media_Player_ClickAction() {
-            test_label.Text = Media_Player.playState.ToString();
-         
 
-            switch (Media_Player.playState.ToString())
-            {
-
-                case "wmppsStopped":
-                    Media_Player.Ctlcontrols.play();
+           if (choose_player == 1)
+           {
+               test_label.Text = Media_Player.playState.ToString();
 
 
+               switch (Media_Player.playState.ToString())
+               {
 
-                    timerStart();
+                   case "wmppsStopped":
+                       Media_Player.Ctlcontrols.play();
 
-                    break;
 
-                case "wmppsPaused":
-                    Media_Player.Ctlcontrols.play();
-                    
-                    timerStart();
 
-                    break;
+                       timerStart();
 
-                case "wmppsPlaying":
-                    Media_Player.Ctlcontrols.pause();
+                       break;
 
-                    timerStop();
-                    break;
-                case "wmppsReady":
-          //          onLoadUp();
+                   case "wmppsPaused":
+                       Media_Player.Ctlcontrols.play();
 
-                    Media_Player.Ctlcontrols.play();
-                    
-                    timerStart();
+                       timerStart();
 
-                    
-                    break;
+                       break;
 
-            }
+                   case "wmppsPlaying":
+                       Media_Player.Ctlcontrols.pause();
+
+                       timerStop();
+                       break;
+                   case "wmppsReady":
+                       //          onLoadUp();
+
+                       Media_Player.Ctlcontrols.play();
+
+                       timerStart();
+
+
+                       break;
+
+               }
+           }
+           else {
+
+               test_label.Text = vlcPlayer.State.ToString();
+
+               switch (vlcPlayer.State.ToString())
+               {
+
+                   case "Stopped":
+
+                       test_label.Text = vlcPlayer.State.ToString();
+                       vlcPlay_button.BackgroundImage = Properties.Resources.pause;
+                       vlcPlayer.Play();
+
+                     
+
+                       timerStart();
+
+                       break;
+
+                   case "Paused":
+                       
+
+                       vlcPlay_button.BackgroundImage = Properties.Resources.pause;
+                       vlcPlayer.Play();
+
+                       test_label.Text = vlcPlayer.State.ToString();
+
+                      timerStart();
+
+                       break;
+
+                   case "Playing":
+                      
+
+                       vlcPlay_button.BackgroundImage = Properties.Resources.start;
+                       vlcPlayer.Pause();
+
+                       test_label.Text = vlcPlayer.State.ToString();
+
+                       timerStop();
+                       break;
+
+                   default:
+                       if (vlcPlayer.GetCurrentMedia() != null) {
+
+                           vlcPlay_button.BackgroundImage = Properties.Resources.pause;
+                           vlcPlayer.Play();
+
+                           test_label.Text = vlcPlayer.State.ToString();
+
+                           timerStart();
+                       
+                       }
+
+
+                       break;
+
+
+               }
+           
+           
+           }
         
         }
         void dm_MouseClick(object sender, MouseEventArgs e)
@@ -980,8 +1419,11 @@ namespace windowMediaPlayerDM
         
         }
         void setMedia_Multi(LinkedList<String[]> medias) {
-
-            for (int i = 0; i < medias.Count(); i++)
+            switch(choose_player){
+                case 1: 
+                    
+                    
+                    for (int i = 0; i < medias.Count(); i++)
             {
                 Media_Playlist.appendItem(Media_Player.newMedia(medias.ElementAt(i)[0]));
                 Media_LinkedList.AddLast(medias.ElementAt(i));
@@ -992,6 +1434,31 @@ namespace windowMediaPlayerDM
             Media_Player.currentPlaylist = Media_Playlist;
 
              Media_Player.Ctlcontrols.stop();
+
+
+                break;
+
+                case 2:
+                    for (int i = 0; i < medias.Count(); i++)
+            {
+                
+                Media_LinkedList.AddLast(medias.ElementAt(i));
+
+            }
+            media_dir = medias.ElementAt(0)[0];
+            Media_status.Text = "Playlist Set";
+
+            FileInfo temp = new FileInfo(medias.ElementAt(0)[0]);
+            vlcPlayer.SetMedia(temp);
+            //onLoadUp();
+            // need to manulally create a method to play the list of files in media_linklist after the first loaded video done playing
+            
+            break;
+                
+            
+            }
+
+            
         }
 
         void setMedia_Single(LinkedList<String[]> medias)
@@ -1018,9 +1485,23 @@ namespace windowMediaPlayerDM
                 Media_status.Text = "No Media";
             }
             //   Media_Player.settings.autoStart=false;
-            Media_Player.URL = media_dir;
+
+            switch(choose_player){
+                case 1:
+                Media_Player.URL = media_dir;
             Media_Player.Ctlcontrols.stop();
 
+            break;
+            case 2:
+            if (media_dir != null)
+            {
+                FileInfo temp = new FileInfo(media_dir);
+
+                vlcPlayer.SetMedia(temp);
+            }
+           // onLoadUp();
+            break;
+        }
 
             if (fm3 != null)
             {
@@ -1329,12 +1810,18 @@ namespace windowMediaPlayerDM
         }
         void makeComment() {
 
-            time_counter++;
+           
+
+
             //time_counter = (int)(Media_Player.Ctlcontrols.currentPosition * 100);
             int comment_time;
+
+            time_counter++;
             try
             {
-                if (auto_TimeMatch == false)
+                switch(choose_player){
+                    case 1:
+                        if (auto_TimeMatch == false)
                 {
                     comment_time = (int)(Media_Player.Ctlcontrols.currentPosition * 100) + time_offset;
                 }
@@ -1343,11 +1830,82 @@ namespace windowMediaPlayerDM
                     comment_time = (int)(Media_Player.Ctlcontrols.currentPosition * 100) + auto_base+offset_auto;
                 
                 }
+
+                        break;
+
+
+                    default:
+
+                       
+
+                        if (auto_TimeMatch == false)
+                        {
+
+                            
+                            
+                            
+                            //comment_time = vlcPlayer.GetCurrentMedia().Statistics.PlayedAudioBuffers;
+                            
+                           // comment_time = Int32.Parse(vlcPlayer.GetCurrentMedia().Duration.Ticks.ToString());
+                            //comment_time = vlcPlayer.GetCurrentMedia().Duration.Milliseconds + time_offset;
+
+                            comment_time = time_counter+time_offset;
+                        }
+                        else
+                        {
+                           // comment_time = vlcPlayer.GetCurrentMedia().Statistics.PlayedAudioBuffers;
+                           // comment_time = (int)(vlcPlayer.Position * 100000);
+
+                          //  comment_time = Int32.Parse(vlcPlayer.GetCurrentMedia().Duration.Ticks.ToString());
+
+                            //comment_time = vlcPlayer.GetCurrentMedia().Duration.Duration().Milliseconds;
+                            comment_time = time_counter + auto_base + offset_auto; 
+
+                        }
+                    break;
+            }
+
             }
             catch (Exception) { comment_time = 0; }
-            print(comment_time + "/" + time_counter);
-            print2("L: "+fm3.Controls.OfType<Label>().Count().ToString()+" "+playedcomment + "/" + (comment.Count()-_duplicates));
-        
+            int vlc_offset;
+
+            /*
+            if(auto_TimeMatch){
+
+              vlc_offset = (int)(vlcPlayer.Time)/10+time_offset;
+
+            }else{
+
+                vlc_offset = (int)(vlcPlayer.Time) / 10 + auto_base + offset_auto;
+
+            }
+
+            //if the counter is too slow or too fast it'll bring the counter back to the current vlc time 
+            if (time_counter > vlc_offset + 10 || time_counter < vlc_offset - 10)
+            {
+                if (auto_TimeMatch)
+                {
+                    time_counter = (int)(vlcPlayer.Time)/10+time_offset;
+                }
+                else {
+
+                    time_counter = (int)(vlcPlayer.Time) / 10 + auto_base + offset_auto;
+                }
+            }
+            */
+            vlcTIme = (int)(vlcPlayer.Time / 10);
+            print(((int)(vlcPlayer.Time) / 10 + 10) + "/" + comment_time + "/" + vlcTIme / 10);
+
+
+            if (fm3 != null)
+            {
+                print2(vlcPlayer.Length+"  L: " + fm3.Controls.OfType<Label>().Count().ToString() + " " + playedcomment + "/" + (comment.Count() - _duplicates));
+            }
+            else {
+
+                print2(playedcomment + "/" + (comment.Count() - _duplicates));
+            
+            }
             /*
             foreach(string[] c in comment){
                 addComment(comment_time,Int32.Parse(c[0]), c[1]);
@@ -1355,7 +1913,11 @@ namespace windowMediaPlayerDM
             }
             */
 
+
+
             addComment(comment_time, comment2);
+
+            manual_checkend((int)vlcPlayer.GetCurrentMedia().Duration.TotalMilliseconds, vlcTIme * 10);
 
         
         }
@@ -1457,12 +2019,9 @@ namespace windowMediaPlayerDM
                 try
                 {
                     this.Invoke(c, new object[] { });
-                }
-                catch (Exception) { 
-                
-                
-                }
 
+                }
+                catch (Exception) { }
 
 
             }
@@ -1572,16 +2131,45 @@ namespace windowMediaPlayerDM
             if (fm4 == null)
             {
                 // open up a new form for displaying settings options
-                var tconsol = ((WMPLib.IWMPControls3)Media_Player.Ctlcontrols);
 
-                currentLanguage = tconsol.currentAudioLanguageIndex;
-
-                lcount = tconsol.audioLanguageCount;
-                if (lcount > 0)
+                if (choose_player == 1)
                 {
+                    var tconsol = ((WMPLib.IWMPControls3)Media_Player.Ctlcontrols);
 
-                    audioinfo = tconsol.getAudioLanguageDescription(currentLanguage);
+                    currentLanguage = tconsol.currentAudioLanguageIndex;
 
+                    lcount = tconsol.audioLanguageCount;
+                    if (lcount > 0)
+                    {
+
+                        audioinfo = tconsol.getAudioLanguageDescription(currentLanguage);
+
+                    }
+                }
+                else {
+
+
+
+                    lcount = vlcPlayer.Audio.Tracks.Count-1;
+
+                    for (int i = 0; i < lcount; i++) {
+
+                        if (vlcPlayer.Audio.Tracks.Current.ID.Equals(vlcPlayer.Audio.Tracks.All.ElementAt(i))) {
+
+                            currentLanguage = i;
+                        
+                        }
+                    
+                    
+                    }
+                    try
+                    {
+                        audioinfo = vlcPlayer.Audio.Tracks.Current.Name;
+                       
+                    }
+                    catch (NullReferenceException) { }
+                
+                
                 }
                 fm4 = new Settings();
                 fm4.Disposed += new EventHandler(fm4_Disposed);
@@ -1613,11 +2201,20 @@ namespace windowMediaPlayerDM
         {
             if (lcount > currentLanguage) {
 
-                var tconsol = ((WMPLib.IWMPControls3)Media_Player.Ctlcontrols);
-                tconsol.currentAudioLanguageIndex = currentLanguage + 1;
-                currentLanguage++;
-                audioinfo = tconsol.getAudioLanguageDescription((Int32)currentLanguage);
-                
+                if (choose_player == 1)
+                {
+                    var tconsol = ((WMPLib.IWMPControls3)Media_Player.Ctlcontrols);
+                    tconsol.currentAudioLanguageIndex = currentLanguage + 1;
+                    currentLanguage++;
+                    audioinfo = tconsol.getAudioLanguageDescription((Int32)currentLanguage);
+                }
+                else {
+                    currentLanguage++;
+                    vlcPlayer.Audio.Tracks.Current=vlcPlayer.Audio.Tracks.All.ElementAt(currentLanguage);
+
+                    audioinfo = vlcPlayer.Audio.Tracks.Current.Name;
+
+                }
                 loadAudio();
             }
         }
@@ -1626,11 +2223,22 @@ namespace windowMediaPlayerDM
         {
             if ( currentLanguage>1)
             {
+                if (choose_player == 1)
+                {
+                    var tconsol = ((WMPLib.IWMPControls3)Media_Player.Ctlcontrols);
+                    tconsol.currentAudioLanguageIndex = currentLanguage - 1;
+                    currentLanguage--;
+                    audioinfo = tconsol.getAudioLanguageDescription((Int32)currentLanguage);
 
-                var tconsol = ((WMPLib.IWMPControls3)Media_Player.Ctlcontrols);
-                tconsol.currentAudioLanguageIndex = currentLanguage - 1;
-                currentLanguage--;
-                audioinfo = tconsol.getAudioLanguageDescription((Int32)currentLanguage);
+                }
+                else {
+                    currentLanguage--;
+                    vlcPlayer.Audio.Tracks.Current = vlcPlayer.Audio.Tracks.All.ElementAt(currentLanguage);
+                    
+
+                    audioinfo = vlcPlayer.Audio.Tracks.Current.Name;
+                
+                }
                 loadAudio();
             }
         }
@@ -1778,11 +2386,10 @@ namespace windowMediaPlayerDM
 
             if (comment2.Count > 0 && Media_LinkedList.Count > 0)
             {
- 
+
 
 
                 if (_first_load == false)
-
                 {
                     playedcomment = 0;
 
@@ -1790,16 +2397,39 @@ namespace windowMediaPlayerDM
 
                     autoTimesetup();
 
-                    this.Text = "DM PLayer   :" + Media_Player.Ctlcontrols.currentItem.name;
-                    _first_load = true;
+                    if (choose_player == 1)
+                    {
+                        this.Text = "DM PLayer   :" + Media_Player.Ctlcontrols.currentItem.name;
+                    }
+                    else
+                    {
+                        setDMtitle(vlcPlayer.GetCurrentMedia().Title);
+                        _first_load = true;
+                    }
+
+
+
                 }
 
 
 
             }
+        }
+        void setDMtitle(string s) {
 
+            if (InvokeRequired)
+            {
+                setString temp = new setString(setDMtitle);
 
+                this.Invoke(temp, new object[] {s });
 
+            }
+            else {
+
+                this.Text = "DM PLayer   :" + s;
+            }
+        
+        
         }
 
         private void testToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1809,8 +2439,58 @@ namespace windowMediaPlayerDM
             test.Show();
         }
 
+        private void vlcPlay_button_Click(object sender, EventArgs e)
+        {
+            if (!vlcPlayer.IsPlaying)
+            {
 
-        //write to XML file to save user changes to settings
+                vlcPlay_button.BackgroundImage = Properties.Resources.pause;
+                vlcPlayer.Play();
+
+
+            }
+            else {
+                vlcPlay_button.BackgroundImage = Properties.Resources.start;
+                vlcPlayer.Pause();
+            
+            }
+        }
+
+        private void vlcStop_button_Click(object sender, EventArgs e)
+        {
+            if (vlcPlayer.State.ToString()!="Stopped")
+            {
+
+                vlcPlayer.Stop();
+                VLC_track.Value = 0;
+
+                vlcPlay_button.BackgroundImage = Properties.Resources.start;
+
+            }
+
+        }
+
+        private void vlcSound_button_Click(object sender, EventArgs e)
+        {
+            if (!vlcPlayer.Audio.IsMute)
+            {
+                vlcSound_button.BackgroundImage = Properties.Resources.mute;
+                vlcPlayer.Audio.IsMute = true;
+
+            }
+            else
+            {
+
+                vlcSound_button.BackgroundImage = Properties.Resources.sound;
+
+                vlcPlayer.Audio.IsMute = false;
+                //vlcPlayer.Audio.Volume = current_volume;
+
+            }
+        }
+
+
+        //write to XML file to save user changes to settings?
 
 
 

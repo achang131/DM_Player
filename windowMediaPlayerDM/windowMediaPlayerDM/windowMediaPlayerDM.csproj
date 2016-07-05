@@ -120,6 +120,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -186,6 +187,45 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\start.JPG" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\stop.JPG" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\fastforward.JPG" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\fullscreen.JPG" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\last.JPG" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\menu.JPG" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\mute.JPG" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\next.JPG" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pause.JPG" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\quitfullscreen.JPG" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\repeat.JPG" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\rewand.JPG" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sound.JPG" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

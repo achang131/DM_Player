@@ -44,7 +44,7 @@ namespace windowMediaPlayerDM
 
                 vlcControl1.SetMedia(t);
 
-
+                
                
             }
 
@@ -56,7 +56,8 @@ namespace windowMediaPlayerDM
             if (vlcControl1.GetCurrentMedia() != null) {
 
                 vlcControl1.Play();
-                label1.Text = vlcControl1.GetCurrentMedia().Duration.Milliseconds + "/" + vlcControl1.GetCurrentMedia().Duration.TotalMilliseconds;
+
+                label1.Text = vlcControl1.State.ToString() +"   " + vlcControl1.GetCurrentMedia().Duration.Milliseconds + "/" + vlcControl1.GetCurrentMedia().Duration.TotalMilliseconds + vlcControl1.Audio.Channel;
             
             }
         }
