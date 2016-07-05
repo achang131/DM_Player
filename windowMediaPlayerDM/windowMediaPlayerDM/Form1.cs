@@ -123,7 +123,7 @@ namespace windowMediaPlayerDM
 
         int vlcTIme;
 
-
+        bool autoMlist;
 
 
         public Form1()
@@ -511,7 +511,9 @@ namespace windowMediaPlayerDM
             current_volume = vlcPlayer.Audio.Volume;
 
             mousedown = false;
-        
+
+
+            autoMlist = true;
         
         }
         void switchPlayer(int c) {
@@ -1502,6 +1504,32 @@ namespace windowMediaPlayerDM
             
         }
 
+        void autoLoadMlist(String[] mediadirs) {
+
+            Media_LinkedList.Clear();
+
+        int end = mediadirs[0].LastIndexOf("\\");
+        string temp_dir = mediadirs[0].Substring(0, end);
+
+        DirectoryInfo fdir = new DirectoryInfo(temp_dir);
+
+        end = mediadirs[1].LastIndexOf(".");
+
+        string extension = mediadirs[1].Substring(end, mediadirs[1].Length-end);
+
+        FileInfo[] file = fdir.GetFiles("*"+extension);
+
+        for (int i = 0; i < file.Count(); i++) {
+
+            string[] ml = {file[i].FullName,file[i].Name};
+            
+            Media_LinkedList.AddLast(ml);
+        }
+        
+        
+        }
+
+
         void setMedia_Single(LinkedList<String[]> medias)
         {
 
@@ -1518,6 +1546,12 @@ namespace windowMediaPlayerDM
 
                     fm3.Owner = this;
 
+                }
+
+                if (autoMlist == true) {
+
+                    autoLoadMlist(medias.ElementAt(0));
+                
                 }
 
             }
@@ -2167,9 +2201,23 @@ namespace windowMediaPlayerDM
             if (result != "")
             {
                 FileInfo newMedia = new FileInfo(result);
-
+                String current = vlcPlayer.GetCurrentMedia().Mrl;
                 vlcPlayer.SetMedia(newMedia);
                 vlcPlayer.Play();
+
+                //unload the loaded dm files, to avoid using the wrong dm on different media files?
+
+                if (!current.Equals(vlcPlayer.GetCurrentMedia().Mrl))
+                {
+                    comment2.Clear();
+                    DM_LinkedList.Clear();
+                    if (fm2 != null) {
+                        fm2.setDMListBox.Items.Clear();
+                    
+                    }
+
+                }
+                
 
             }
             /*
