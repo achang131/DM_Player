@@ -216,14 +216,19 @@
             this.vlcPlayer.Text = "vlcControl1";
             this.vlcPlayer.VlcLibDirectory = ((System.IO.DirectoryInfo)(resources.GetObject("vlcPlayer.VlcLibDirectory")));
             this.vlcPlayer.VlcMediaplayerOptions = null;
+            this.vlcPlayer.Click += new System.EventHandler(this.vlcPlayer_Click);
             // 
             // VLC_track
             // 
+            this.VLC_track.Cursor = System.Windows.Forms.Cursors.Default;
             this.VLC_track.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.VLC_track.LargeChange = 3000;
             this.VLC_track.Location = new System.Drawing.Point(0, 514);
             this.VLC_track.Name = "VLC_track";
             this.VLC_track.Size = new System.Drawing.Size(996, 45);
+            this.VLC_track.SmallChange = 1000;
             this.VLC_track.TabIndex = 4;
+            this.VLC_track.TickStyle = System.Windows.Forms.TickStyle.Both;
             // 
             // vlcStop_button
             // 

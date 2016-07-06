@@ -210,7 +210,7 @@ namespace windowMediaPlayerDM
             vlcPlayer.Paused += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerPausedEventArgs>(vlcPlayer_Paused);
             vlcPlayer.MediaChanged += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerMediaChangedEventArgs>(vlcPlayer_MediaChanged);
             vlcPlayer.TimeChanged += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerTimeChangedEventArgs>(vlcPlayer_TimeChanged);
-            vlcPlayer.EndReached += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerEndReachedEventArgs>(vlcPlayer_EndReached);
+          //  vlcPlayer.EndReached += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerEndReachedEventArgs>(vlcPlayer_EndReached);
 
             
 
@@ -266,22 +266,36 @@ namespace windowMediaPlayerDM
         void VLC_track_ValueChanged(object sender, EventArgs e)
         {
 
+            changetime();
+
+        }
+
+        void changetime() {
 
 
-            if (mousemoving && mousedown == true && VLC_track.Value != time_counter)
+            if ( mousedown == true && VLC_track.Value != time_counter)
             {
+             //   timerStop();
+                vlcPlayer.Time = VLC_track.Value * 10;
+                
+                if (VLC_track.Value * 10 >= vlcPlayer.Length) {
+
+                    manual_checkend((int)vlcPlayer.Length,VLC_track.Value);
+                }
 
 
-                vlcPlayer.Time=VLC_track.Value*10;
-                
-                
             }
+
+        
         }
 
         void VLC_track_MouseUp(object sender, MouseEventArgs e)
         {
 
+            changetime();
+
             mousedown = false;
+
 
         }
 
@@ -306,29 +320,33 @@ namespace windowMediaPlayerDM
         void manual_checkend(int end, int current) {
 
             //set video loops here
-            if (mousedown == false)
-            {
+
                 if (current >= end)
                 {
 
                     vlc_display.Text = "end reached";
                     if (videoloop == false)
                     {
-                        vlcPlayer.Time = 0;
-                        time_counter = 0;
-                        timerStop();
                         if (vlcPlayer.IsPlaying)
                         {
                             vlcPlayer.Stop();
                         }
+
+                        vlcPlayer.Time = 0;
+                        time_counter = 0;
+                       
+
                     }
                     else
                     {
                         if (Media_LinkedList.Count > 1)
                         {
                             int currentinx = -2;
-                            string currentv = vlcPlayer.GetCurrentMedia().Title;
-                            for (int i = 0; i < Media_LinkedList.Count(); i++)
+                            try
+                            {
+                                string currentv = vlcPlayer.GetCurrentMedia().Title;
+
+                                for (int i = 0; i < Media_LinkedList.Count(); i++)
                             {
 
                                 if (Media_LinkedList.ElementAt(i)[1].Equals(currentv))
@@ -362,6 +380,8 @@ namespace windowMediaPlayerDM
                             timerStart();
 
                             this.Text = "DM Player " + nv.Name;
+                            }
+                            catch (ArgumentException) { };
 
                         }
                         else
@@ -374,7 +394,7 @@ namespace windowMediaPlayerDM
                         }
 
 
-                    }
+                    
                 }
             }
         }
@@ -3108,6 +3128,11 @@ namespace windowMediaPlayerDM
 
 
             vlc_display.Text = "loop playlist: "+ videoloop.ToString();
+        }
+
+        private void vlcPlayer_Click(object sender, EventArgs e)
+        {
+            Media_Player_ClickAction();
         }
 
 
