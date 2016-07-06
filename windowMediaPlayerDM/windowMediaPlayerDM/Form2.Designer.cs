@@ -92,6 +92,7 @@
             this.DM_List_Box.FormattingEnabled = true;
             this.DM_List_Box.Location = new System.Drawing.Point(0, 34);
             this.DM_List_Box.Name = "DM_List_Box";
+            this.DM_List_Box.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             this.DM_List_Box.Size = new System.Drawing.Size(255, 368);
             this.DM_List_Box.TabIndex = 1;
             // 

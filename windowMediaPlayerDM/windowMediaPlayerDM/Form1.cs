@@ -126,6 +126,7 @@ namespace windowMediaPlayerDM
 
         bool autoMlist;
 
+        int vVolume;
 
         public Form1()
         {
@@ -215,9 +216,9 @@ namespace windowMediaPlayerDM
             VLC_track.MouseDown += new MouseEventHandler(VLC_track_MouseDown);
             VLC_track.MouseUp += new MouseEventHandler(VLC_track_MouseUp);
             VLC_track.ValueChanged += new EventHandler(VLC_track_ValueChanged);
-
-
-
+            VLC_track.MouseMove += new MouseEventHandler(VLC_track_MouseMove);
+            
+            
 
 
 
@@ -233,6 +234,18 @@ namespace windowMediaPlayerDM
             
 
 
+        }
+        bool mousemoving;
+        void VLC_track_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (mousedown)
+            {
+                mousemoving = true;
+            }
+            else {
+
+                mousemoving = false;
+            }
         }
 
         void vlcPlayer_Paused(object sender, Vlc.DotNet.Core.VlcMediaPlayerPausedEventArgs e)
@@ -250,11 +263,15 @@ namespace windowMediaPlayerDM
 
         void VLC_track_ValueChanged(object sender, EventArgs e)
         {
-            if (mousedown == true && VLC_track.Value != time_counter)
+
+            vlc_display.Text = VLC_track.Value.ToString();
+
+            if (mousemoving && mousedown == true && VLC_track.Value != time_counter)
             {
-               
+
+
                 vlcPlayer.Time=VLC_track.Value*10;
-               
+                
                 
             }
         }
@@ -395,6 +412,7 @@ namespace windowMediaPlayerDM
             
 
             timerStart();
+            vlcPlayer.Audio.Volume = vVolume;
             
         }
 
@@ -513,8 +531,13 @@ namespace windowMediaPlayerDM
 
             mousedown = false;
 
+            vVolume = 50;
+
+
+            //decide if it's going to load all the same media/xml file under the same directory into the playlist
 
             autoMlist = true;
+
         
         }
         void switchPlayer(int c) {
@@ -563,12 +586,15 @@ namespace windowMediaPlayerDM
 
         void changingSpeedontime() {
 
- 
+            if (fm3 != null)
+            {
                 int lnumber = fm3.Controls.OfType<Label>().Count();
-                if(lnumber>70){
+                if (lnumber > 70)
+                {
                     move_distance = (int)(_distance * 2.7);
                 }
-                else if(lnumber >60){
+                else if (lnumber > 60)
+                {
                     move_distance = (int)(_distance * 2.3);
                 }
                 else if (lnumber > 50)
@@ -593,6 +619,7 @@ namespace windowMediaPlayerDM
                     move_distance = _distance;
                 }
 
+            }
 
         }
         void replacetimer3_DoWork(object sender, DoWorkEventArgs e)
@@ -667,8 +694,9 @@ namespace windowMediaPlayerDM
                         Media_Player.settings.volume++;
                     }
                     else {
-
-                        vlcPlayer.Audio.Volume++;
+                        vVolume++;
+                        vlcPlayer.Audio.Volume = vVolume;
+                        //vlcPlayer.Audio.Volume++;
                         printvlc("Volume: "+vlcPlayer.Audio.Volume);
                     }
 
@@ -682,8 +710,9 @@ namespace windowMediaPlayerDM
                     }
                     else
                     {
-
-                        vlcPlayer.Audio.Volume--;
+                        vVolume--;
+                        vlcPlayer.Audio.Volume = vVolume;
+                        //vlcPlayer.Audio.Volume--;
                         printvlc("Volume: " + vlcPlayer.Audio.Volume);
                     }
 
@@ -2246,13 +2275,77 @@ namespace windowMediaPlayerDM
             fm2.setMListBox.DoubleClick += new EventHandler(setMListBox_DoubleClick);
             fm2.setDMListBox.DoubleClick += new EventHandler(setDMListBox_DoubleClick);
             fm2.setFullDMBox.DoubleClick += new EventHandler(setFullDMBox_DoubleClick);
-
             fm2.setMListBox.KeyUp += new KeyEventHandler(setMListBox_KeyUp);
-
+            fm2.setDMListBox.KeyUp += new KeyEventHandler(setDMListBox_KeyUp);
 
             fm2.Show();
 
         
+        }
+
+        void setDMListBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            //throw new NotImplementedException();
+            //bascally do exact the same thing as mlist key up
+
+            ListBox mbox = (ListBox)sender;
+
+            switch (e.KeyValue) { 
+            
+
+            
+                case 46:
+                        
+
+
+                                         
+                    for (int i = 0; i < DM_LinkedList.Count(); i++)
+                        {
+                            foreach (object l in mbox.SelectedItems)
+                            {
+                                if (DM_LinkedList.ElementAt(i)[1].Equals(l.ToString()))
+                                {
+
+                                    DM_LinkedList.Remove(DM_LinkedList.ElementAt(i));
+                                }
+                            }
+
+                        }
+                        if (mbox.SelectedItems.Count > 1) {
+
+                            List<object> removel = new List<object>();
+                            foreach (object i in mbox.SelectedItems) {
+
+                                removel.Add(i);
+                            
+                            }
+                            for (int i = 0; i < removel.Count; i++) {
+
+                                mbox.Items.Remove(removel.ElementAt(i));
+                            }
+
+                        }
+                        else
+                        {
+                            mbox.Items.Remove(mbox.SelectedItem);
+                        }
+
+                 // after comment is removed  from the listbox and the list
+                    comment2.Clear();                    
+                    comment.Clear();
+                    _duplicates = 0;
+
+                    for (int i = 0; i < DM_LinkedList.Count(); i++) {
+                        readXML(DM_LinkedList.ElementAt(i)[0]);
+                    
+                    
+                    }
+
+
+                        break;
+            
+            
+            }
         }
 
         void List_menu_setup() {
