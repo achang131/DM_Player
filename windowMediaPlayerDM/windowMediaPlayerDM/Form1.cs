@@ -33,6 +33,7 @@ namespace windowMediaPlayerDM
         int playedcomment;
         LinkedList<String[]> Media_LinkedList = new LinkedList<String[]>();
         LinkedList<String[]> DM_LinkedList = new LinkedList<String[]>();
+        LinkedList<String[]> FullDM_LinkedList = new LinkedList<string[]>();
 
         int _duplicates;
 
@@ -1524,11 +1525,73 @@ namespace windowMediaPlayerDM
             string[] ml = {file[i].FullName,file[i].Name};
             
             Media_LinkedList.AddLast(ml);
+
+            if (fm2 != null) {
+
+                fm2.setMListBox.Items.Add(ml[1]);
+            
+            }
         }
         
         
         }
 
+        //loaded after setmedia(single or multi all applied) && loaded after set dm
+        //for this list instead of clearing everything maybe just checking duplicates will be fine ?
+       
+        void autoLoadDMlist(String[] dmdirs) {
+
+            int end = dmdirs[0].LastIndexOf("\\");
+            string temp_dir = dmdirs[0].Substring(0, end);
+
+            DirectoryInfo ddir = new DirectoryInfo(temp_dir);
+
+            //no need to check for extensions here since all are reading .xml. . . for now
+
+            string extension = ".xml";
+
+            FileInfo[] file = ddir.GetFiles("*" + extension);
+
+            //now all the files under the dir with .xml are now in files array
+
+            for (int i = 0; i < file.Count(); i++) {
+
+                string[] results = { file[i].FullName, file[i].Name };
+                bool exists=false;
+
+                for (int l = 0; l < FullDM_LinkedList.Count(); l++) {
+                  //  if (FullDM_LinkedList.Count > 0)
+                 //   {
+                        if (FullDM_LinkedList.ElementAt(l)[0].Equals(results[0]))
+                        {
+                            exists = true;
+
+                        }
+                //    }
+                
+                }
+
+
+                    if (!exists)
+                    {
+                        FullDM_LinkedList.AddLast(results);
+
+                        //if the list menu windows is left opened when video/comment is loaded through dropdown menu maynot be need ? 
+                        if (fm2 != null)
+                        {
+                            fm2.setFullDMBox.Items.Add(results[1]);
+                        }
+
+                    }
+            
+            
+            }
+
+        
+        
+        
+        
+        }
 
         void setMedia_Single(LinkedList<String[]> medias)
         {
@@ -1618,7 +1681,7 @@ namespace windowMediaPlayerDM
 
 
             }
-
+            
            
             _first_load = false;
         
@@ -1635,7 +1698,11 @@ namespace windowMediaPlayerDM
 
             LinkedList<String[]> medias = setFile(media);
 
-            PlayMedia(medias);
+            if (medias != null)
+            {
+                PlayMedia(medias);
+                autoLoadDMlist(medias.ElementAt(0));
+            }
 
             
         
@@ -1739,6 +1806,7 @@ namespace windowMediaPlayerDM
             {
                 comment.Clear();
                 comment2.Clear();
+                _duplicates = 0;
 
                 //clears all the dm that is current loaded
                 DM_LinkedList.Clear();
@@ -1812,18 +1880,14 @@ namespace windowMediaPlayerDM
               }
               if (fm3 == null)
               {
-                  fm3 = new Comment_window();
-                  fm3.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
-                  fm3.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
-                  fm3.MouseClick +=new MouseEventHandler(dm_MouseClick);
-                  fm3.MouseWheel += new MouseEventHandler(Form1_MouseWheel);
-                  fm3.Owner = this;
+                  commentWindowSetup();
               }
               else {
                   fm3.Owner = this;
               
               }
-             
+
+              autoLoadDMlist(danmokus.ElementAt(0));
 
           }
           else {
@@ -1834,6 +1898,17 @@ namespace windowMediaPlayerDM
           }
         }
 
+        void commentWindowSetup() {
+
+            fm3 = new Comment_window();
+            fm3.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
+            fm3.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
+            fm3.MouseClick += new MouseEventHandler(dm_MouseClick);
+            fm3.MouseWheel += new MouseEventHandler(Form1_MouseWheel);
+            fm3.Owner = this;
+        
+        
+        }
         //modified from string[] to LinkedList so multiple files can be selected at once.
 
         private LinkedList<string[]> setFile(OpenFileDialog ofd){
@@ -2155,11 +2230,16 @@ namespace windowMediaPlayerDM
                     fm2.setMediaList = Media_LinkedList;
                     //fm2.setMediaList(Media_LinkedList);
                 }
-
+                if (FullDM_LinkedList != null) 
+                {
+                    fm2.setFullDMList = FullDM_LinkedList;
+                }
                 fm2.setMListBox.DoubleClick += new EventHandler(setMListBox_DoubleClick);
-
-
-
+                fm2.setDMListBox.DoubleClick += new EventHandler(setDMListBox_DoubleClick);
+                fm2.setFullDMBox.DoubleClick += new EventHandler(setFullDMBox_DoubleClick);
+               
+                fm2.setMListBox.KeyUp += new KeyEventHandler(setMListBox_KeyUp);
+                
 
                     fm2.Show();
 
@@ -2172,31 +2252,182 @@ namespace windowMediaPlayerDM
         
         
         }
+
+        void setMListBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            //throw new NotImplementedException();
+            // set del key action here if del is pressed with an item selected then remove the selected item from the Media Linkedlist and media list box
+
+            //also probably add a function to play the media selected if enter key is pressed instead of double clicking it ?
+
+            ListBox mbox = (ListBox)sender;
+
+
+
+            switch (e.KeyValue) { 
+            
+            
+                case 13:
+                    //when enter key is let go
+                    runSelectedVido(sender,e);
+                    break;
+
+
+                case 46:
+                    //when del key is let go
+        
+                        for (int i = 0; i < Media_LinkedList.Count(); i++)
+                        {
+                            foreach (object l in mbox.SelectedItems)
+                            {
+                                if (Media_LinkedList.ElementAt(i)[1].Equals(l.ToString()))
+                                {
+
+                                    Media_LinkedList.Remove(Media_LinkedList.ElementAt(i));
+                                }
+                            }
+
+                        }
+                        if (mbox.SelectedItems.Count > 1) {
+
+                            List<object> removel = new List<object>();
+                            foreach (object i in mbox.SelectedItems) {
+
+                                removel.Add(i);
+                            
+                            }
+                            for (int i = 0; i < removel.Count; i++) {
+
+                                mbox.Items.Remove(removel.ElementAt(i));
+                            }
+
+                        }
+                        else
+                        {
+                            mbox.Items.Remove(mbox.SelectedItem);
+                        }
+
+                 
+
+                    break;
+            
+            
+            
+            
+            
+            }
+        }
+
+
+
+        void setFullDMBox_DoubleClick(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
+            
+            //basiclly the same build as Mlistbox double click, but do it with dm
+            //goes into the current media directory and fetch all .xml files avaliable add to the full dmlistbox and list
+            //check if the item clicked is already in the DMlistbox if not then 
+            //add item to the left DMlistbox and load load comments with readXML
+            //if it's already in there then do nothing !!!
+
+            ListBox cbox = (ListBox)sender;
+            bool has = false;
+            for (int i = 0; i < DM_LinkedList.Count(); i++) {
+
+                
+                if (DM_LinkedList.ElementAt(i)[1].Equals(cbox.SelectedItem.ToString())) {
+
+                    has = true;
+                
+                }
+            
+            
+            }
+            if (!has) {
+
+                for (int i = 0; i < FullDM_LinkedList.Count(); i++) {
+
+                    if (cbox.SelectedItem.ToString().Equals(FullDM_LinkedList.ElementAt(i)[1])) {
+
+                        DM_LinkedList.AddLast(FullDM_LinkedList.ElementAt(i));
+                        fm2.setDMListBox.Items.Add(cbox.SelectedItem.ToString());
+                        readXML(FullDM_LinkedList.ElementAt(i)[0]);
+                    
+                    }
+                
+                }
+            
+            }
+            if (fm3 == null) {
+
+                commentWindowSetup();
+            }
+
+        }
+
+        void setDMListBox_DoubleClick(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
+            
+            //Unload the DMs 
+            // remove the selected dm from the listbox, the list and then do a reload all dms
+
+            ListBox dmbox = (ListBox)sender;
+
+
+            comment2.Clear();
+            comment.Clear();
+            _duplicates = 0;
+
+            //loop through to find the selected item if found then remove if not then load to comment2 using read xml
+            for (int i = 0; i < DM_LinkedList.Count(); i++) {
+
+                if (DM_LinkedList.ElementAt(i)[1].Equals(dmbox.SelectedItem.ToString()))
+                {
+
+                    DM_LinkedList.Remove(DM_LinkedList.ElementAt(i));
+                }
+                else {
+
+                    readXML(DM_LinkedList.ElementAt(i)[0]);
+                }
+            
+            }
+                dmbox.Items.Remove(dmbox.SelectedItem);
+                
+
+
+        }
         //only use when trying menual double click
         String mdclick;
-        void setMListBox_DoubleClick(object sender, EventArgs e)
+
+        void runSelectedVido(object sender, EventArgs e)
         {
+
             //throw new NotImplementedException();
 
             //implement set media by click method here
-            String result="";
+            String result = "";
 
-            ListBox mtemp =(ListBox)sender;
+            ListBox mtemp = (ListBox)sender;
 
-            if (vlcPlayer.IsPlaying) {
+            if (vlcPlayer.IsPlaying)
+            {
 
                 vlcPlayer.Stop();
             }
-            
-            for(int i=0;i<Media_LinkedList.Count();i++){
-            
-            if(Media_LinkedList.ElementAt(i)[1].Equals(mtemp.SelectedItem.ToString())){
-            
-            result=Media_LinkedList.ElementAt(i)[0];
-            
-            }
-            
-            
+
+            for (int i = 0; i < Media_LinkedList.Count(); i++)
+            {
+
+                if (Media_LinkedList.ElementAt(i)[1].Equals(mtemp.SelectedItem.ToString()))
+                {
+
+                    result = Media_LinkedList.ElementAt(i)[0];
+
+                }
+
+
             }
             if (result != "")
             {
@@ -2210,15 +2441,24 @@ namespace windowMediaPlayerDM
                 if (!current.Equals(vlcPlayer.GetCurrentMedia().Mrl))
                 {
                     comment2.Clear();
+                    comment.Clear();
                     DM_LinkedList.Clear();
-                    if (fm2 != null) {
+                    _duplicates = 0;
+
+                    if (fm2 != null)
+                    {
                         fm2.setDMListBox.Items.Clear();
-                    
+
                     }
 
                 }
-                
 
+                if (fm3 == null) {
+
+                    commentWindowSetup();
+                }
+
+                this.Text = "DM Player " + newMedia.Name;
             }
             /*
 
@@ -2235,7 +2475,11 @@ namespace windowMediaPlayerDM
             */
 
 
+        }
+        void setMListBox_DoubleClick(object sender, EventArgs e)
+        {
 
+            runSelectedVido(sender,e);
 
         }
         void fm2_Disposed(object sender, EventArgs e)

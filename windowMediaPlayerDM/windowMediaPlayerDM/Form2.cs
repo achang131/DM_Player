@@ -13,7 +13,7 @@ namespace windowMediaPlayerDM
     {
         public LinkedList<String[]> DM_L = new LinkedList<string[]>();
         public LinkedList<String[]> Media_L = new LinkedList<string[]>();
-
+        public LinkedList<String[]> FullDM_L = new LinkedList<string[]>();
 
         public Form2()
         {
@@ -49,6 +49,11 @@ namespace windowMediaPlayerDM
         
         }
          */
+        public ListBox setFullDMBox {
+            set { this.Full_DM_box = value; }
+            get { return this.Full_DM_box; }
+        
+        }
 
         public ListBox setMListBox {
             set { this.Media_List_Box = value; }
@@ -81,6 +86,22 @@ namespace windowMediaPlayerDM
         
         }
 
+        public LinkedList<String[]> setFullDMList {
+            set
+            {
+                Full_DM_box.Items.Clear();
+                FullDM_L = value;
+                for (int i = 0; i < value.Count(); i++)
+                {
+
+                    Full_DM_box.Items.Add(value.ElementAt(i)[1]);
+
+                }
+
+            }
+            get { return FullDM_L; }
+        
+        }
 
 
         public LinkedList<String[]> setMediaList
