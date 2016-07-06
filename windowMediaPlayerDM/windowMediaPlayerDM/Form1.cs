@@ -74,6 +74,8 @@ namespace windowMediaPlayerDM
 
         TaskFactory th1 = new TaskFactory();
 
+        bool videoloop;
+
         Form2 fm2;
 
   //      public DispatcherTimer newtimer = new DispatcherTimer();
@@ -303,19 +305,78 @@ namespace windowMediaPlayerDM
 
         void manual_checkend(int end, int current) {
 
-            if (current >= end)
+            //set video loops here
+            if (mousedown == false)
             {
-
-                vlc_display.Text = "end reached";
-                vlcPlayer.Time = 0;
-                time_counter = 0;
-                timerStop();
-                if (vlcPlayer.IsPlaying)
+                if (current >= end)
                 {
-                    vlcPlayer.Stop();
+
+                    vlc_display.Text = "end reached";
+                    if (videoloop == false)
+                    {
+                        vlcPlayer.Time = 0;
+                        time_counter = 0;
+                        timerStop();
+                        if (vlcPlayer.IsPlaying)
+                        {
+                            vlcPlayer.Stop();
+                        }
+                    }
+                    else
+                    {
+                        if (Media_LinkedList.Count > 1)
+                        {
+                            int currentinx = -2;
+                            string currentv = vlcPlayer.GetCurrentMedia().Title;
+                            for (int i = 0; i < Media_LinkedList.Count(); i++)
+                            {
+
+                                if (Media_LinkedList.ElementAt(i)[1].Equals(currentv))
+                                {
+
+                                    currentinx = i;
+
+                                }
+
+                            }
+                            if (currentinx == Media_LinkedList.Count - 1)
+                            {
+
+                                currentinx = 0;
+                            }
+                            else
+                            {
+                                currentinx++;
+                            }
+                            FileInfo nv = new FileInfo(Media_LinkedList.ElementAt(currentinx)[0]);
+                            if (vlcPlayer.IsPlaying)
+                            {
+                                vlcPlayer.Stop();
+                            }
+                            comment.Clear();
+                            comment2.Clear();
+                            time_counter = 0;
+                            playedcomment = 0;
+                            vlcPlayer.SetMedia(nv);
+                            vlcPlayer.Play();
+                            timerStart();
+
+                            this.Text = "DM Player " + nv.Name;
+
+                        }
+                        else
+                        {
+                            time_counter = 0;
+                            vlcPlayer.Time = 0;
+                            playedcomment = 0;
+
+
+                        }
+
+
+                    }
                 }
             }
-        
         }
     
         void vlcPlayer_TimeChanged(object sender, Vlc.DotNet.Core.VlcMediaPlayerTimeChangedEventArgs e)
@@ -537,6 +598,8 @@ namespace windowMediaPlayerDM
             //decide if it's going to load all the same media/xml file under the same directory into the playlist
 
             autoMlist = true;
+
+            videoloop = true;
 
         
         }
@@ -2100,7 +2163,7 @@ namespace windowMediaPlayerDM
 
                 try
                 {
-                    manual_checkend((int)vlcPlayer.GetCurrentMedia().Duration.TotalMilliseconds, (int)vlcPlayer.Time);
+                    manual_checkend((int)vlcPlayer.Length/10, time_counter);
                 }
                 catch (NullReferenceException) { }
                 }
