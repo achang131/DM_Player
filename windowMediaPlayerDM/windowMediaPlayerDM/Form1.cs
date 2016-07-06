@@ -563,11 +563,15 @@ namespace windowMediaPlayerDM
 
         void changingSpeedontime() {
 
-            try
-            {
+ 
                 int lnumber = fm3.Controls.OfType<Label>().Count();
-
-                if (lnumber > 50)
+                if(lnumber>70){
+                    move_distance = (int)(_distance * 2.7);
+                }
+                else if(lnumber >60){
+                    move_distance = (int)(_distance * 2.3);
+                }
+                else if (lnumber > 50)
                 {
                     move_distance = _distance * 2;
 
@@ -589,8 +593,7 @@ namespace windowMediaPlayerDM
                     move_distance = _distance;
                 }
 
-            }
-            catch (Exception) { }
+
         }
         void replacetimer3_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -1700,6 +1703,13 @@ namespace windowMediaPlayerDM
 
             if (medias != null)
             {
+                if (vlcPlayer.IsPlaying) {
+                    vlcPlayer.Stop();
+                    comment2.Clear();
+                    comment.Clear();
+                    _duplicates = 0;
+                
+                }
                 PlayMedia(medias);
                 autoLoadDMlist(medias.ElementAt(0));
             }
@@ -2207,43 +2217,54 @@ namespace windowMediaPlayerDM
             List_menu_setup();
         }
 
+        void DMMlistsetup() {
+            fm2 = new Form2();
+
+            if (fm3 != null)
+            {
+                fm2.Owner = fm3;
+
+
+            }
+            fm2.Disposed += new EventHandler(fm2_Disposed);
+
+
+            if (DM_LinkedList != null)
+            {
+                fm2.setDMList = DM_LinkedList;
+                //   fm2.setDMList(DM_LinkedList);
+            }
+            if (Media_LinkedList != null)
+            {
+                fm2.setMediaList = Media_LinkedList;
+                //fm2.setMediaList(Media_LinkedList);
+            }
+            if (FullDM_LinkedList != null)
+            {
+                fm2.setFullDMList = FullDM_LinkedList;
+            }
+            fm2.setMListBox.DoubleClick += new EventHandler(setMListBox_DoubleClick);
+            fm2.setDMListBox.DoubleClick += new EventHandler(setDMListBox_DoubleClick);
+            fm2.setFullDMBox.DoubleClick += new EventHandler(setFullDMBox_DoubleClick);
+
+            fm2.setMListBox.KeyUp += new KeyEventHandler(setMListBox_KeyUp);
+
+
+            fm2.Show();
+
+        
+        }
+
         void List_menu_setup() {
 
             if (fm2 == null)
             {
-                fm2 = new Form2();
+                DMMlistsetup();
 
-                if (fm3 != null)
-                {
-                    fm2.Owner = fm3;
-                }
-                fm2.Disposed += new EventHandler(fm2_Disposed);
+            }
+            else {
 
-
-                if (DM_LinkedList != null)
-                {
-                    fm2.setDMList = DM_LinkedList;
-                    //   fm2.setDMList(DM_LinkedList);
-                }
-                if (Media_LinkedList != null)
-                {
-                    fm2.setMediaList = Media_LinkedList;
-                    //fm2.setMediaList(Media_LinkedList);
-                }
-                if (FullDM_LinkedList != null) 
-                {
-                    fm2.setFullDMList = FullDM_LinkedList;
-                }
-                fm2.setMListBox.DoubleClick += new EventHandler(setMListBox_DoubleClick);
-                fm2.setDMListBox.DoubleClick += new EventHandler(setDMListBox_DoubleClick);
-                fm2.setFullDMBox.DoubleClick += new EventHandler(setFullDMBox_DoubleClick);
-               
-                fm2.setMListBox.KeyUp += new KeyEventHandler(setMListBox_KeyUp);
-                
-
-                    fm2.Show();
-
-
+                fm2.Dispose();
             }
         
         
@@ -2361,14 +2382,18 @@ namespace windowMediaPlayerDM
             if (fm3 == null) {
 
                 commentWindowSetup();
+                fm2.Owner = fm3;
+                fm2.Dispose();
+                DMMlistsetup();
+
             }
 
         }
 
-        void setDMListBox_DoubleClick(object sender, EventArgs e)
-        {
+        void removeDMitem(object sender, EventArgs e) {
+
             //throw new NotImplementedException();
-            
+
             //Unload the DMs 
             // remove the selected dm from the listbox, the list and then do a reload all dms
 
@@ -2380,22 +2405,33 @@ namespace windowMediaPlayerDM
             _duplicates = 0;
 
             //loop through to find the selected item if found then remove if not then load to comment2 using read xml
-            for (int i = 0; i < DM_LinkedList.Count(); i++) {
-
-                if (DM_LinkedList.ElementAt(i)[1].Equals(dmbox.SelectedItem.ToString()))
+            try
+            {
+                for (int i = 0; i < DM_LinkedList.Count(); i++)
                 {
 
-                    DM_LinkedList.Remove(DM_LinkedList.ElementAt(i));
-                }
-                else {
+                    if (DM_LinkedList.ElementAt(i)[1].Equals(dmbox.SelectedItem.ToString()))
+                    {
 
-                    readXML(DM_LinkedList.ElementAt(i)[0]);
+                        DM_LinkedList.Remove(DM_LinkedList.ElementAt(i));
+                    }
+                    else
+                    {
+
+                        readXML(DM_LinkedList.ElementAt(i)[0]);
+                    }
+
                 }
-            
-            }
                 dmbox.Items.Remove(dmbox.SelectedItem);
-                
 
+            }
+            catch (NullReferenceException) { };
+        
+        }
+
+        void setDMListBox_DoubleClick(object sender, EventArgs e)
+        {
+            removeDMitem(sender, e);
 
         }
         //only use when trying menual double click
@@ -2456,6 +2492,9 @@ namespace windowMediaPlayerDM
                 if (fm3 == null) {
 
                     commentWindowSetup();
+                    fm2.Owner = fm3;
+                    fm2.Dispose();
+                    DMMlistsetup();
                 }
 
                 this.Text = "DM Player " + newMedia.Name;
@@ -2518,8 +2557,13 @@ namespace windowMediaPlayerDM
 
         private void Settings_menu_Click(object sender, EventArgs e)
         {
-
-            setting_setup();
+            if (fm4 == null)
+            {
+                setting_setup();
+            }
+            else {
+                fm4.Dispose();
+            }
 
         }
 
