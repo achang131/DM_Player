@@ -2160,11 +2160,11 @@ namespace windowMediaPlayerDM
 
             if (fm3 != null)
             {
-                print2(vlcPlayer.Length+"  L: " + fm3.Controls.OfType<Label>().Count().ToString() + " " + playedcomment + "/" + (comment.Count() - _duplicates));
+                print2(vlcPlayer.Length+"  L: " + fm3.Controls.OfType<Label>().Count().ToString() + " " + playedcomment + "/" + (comment.Count() + _duplicates));
             }
             else {
 
-                print2(playedcomment + "/" + (comment.Count() - _duplicates));
+                print2(playedcomment + "/" + (comment.Count() + _duplicates));
             
             }
             /*
@@ -2323,7 +2323,57 @@ namespace windowMediaPlayerDM
             }
             
         }
+      void  removebyDel_DM(LinkedList<String[]> dm,ListBox mbox,bool readxml){
 
+
+
+          for (int i = 0; i < dm.Count(); i++)
+                        {
+                            foreach (object l in mbox.SelectedItems)
+                            {
+                                if (dm.ElementAt(i)[1].Equals(l.ToString()))
+                                {
+
+                                    dm.Remove(dm.ElementAt(i));
+                                }
+                            }
+
+                        }
+                        if (mbox.SelectedItems.Count > 1) {
+
+                            List<object> removel = new List<object>();
+                            foreach (object i in mbox.SelectedItems) {
+
+                                removel.Add(i);
+                            
+                            }
+                            for (int i = 0; i < removel.Count; i++) {
+
+                                mbox.Items.Remove(removel.ElementAt(i));
+                            }
+
+                        }
+                        else
+                        {
+                            mbox.Items.Remove(mbox.SelectedItem);
+                        }
+
+                 // after comment is removed  from the listbox and the list
+    
+                    if (readxml)
+                    {
+                        comment2.Clear();
+                        comment.Clear();
+                        _duplicates = 0;
+
+                        for (int i = 0; i < dm.Count(); i++)
+                        {
+                            readXML(dm.ElementAt(i)[0]);
+
+
+                        }
+                    }
+}
         private void Media_DM_menu_Click(object sender, EventArgs e)
         {
             List_menu_setup();
@@ -2360,10 +2410,24 @@ namespace windowMediaPlayerDM
             fm2.setFullDMBox.DoubleClick += new EventHandler(setFullDMBox_DoubleClick);
             fm2.setMListBox.KeyUp += new KeyEventHandler(setMListBox_KeyUp);
             fm2.setDMListBox.KeyUp += new KeyEventHandler(setDMListBox_KeyUp);
-
+            fm2.setFullDMBox.KeyUp += new KeyEventHandler(setFullDMBox_KeyUp);
             fm2.Show();
 
         
+        }
+
+        void setFullDMBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            //throw new NotImplementedException();
+            ListBox mbox = (ListBox)sender;
+            switch (e.KeyValue) { 
+            
+                case 46:
+                    removebyDel_DM(FullDM_LinkedList, mbox,false);
+                    break;
+            
+            
+            }
         }
 
         void setDMListBox_KeyUp(object sender, KeyEventArgs e)
@@ -2378,52 +2442,10 @@ namespace windowMediaPlayerDM
 
             
                 case 46:
-                        
 
 
-                                         
-                    for (int i = 0; i < DM_LinkedList.Count(); i++)
-                        {
-                            foreach (object l in mbox.SelectedItems)
-                            {
-                                if (DM_LinkedList.ElementAt(i)[1].Equals(l.ToString()))
-                                {
 
-                                    DM_LinkedList.Remove(DM_LinkedList.ElementAt(i));
-                                }
-                            }
-
-                        }
-                        if (mbox.SelectedItems.Count > 1) {
-
-                            List<object> removel = new List<object>();
-                            foreach (object i in mbox.SelectedItems) {
-
-                                removel.Add(i);
-                            
-                            }
-                            for (int i = 0; i < removel.Count; i++) {
-
-                                mbox.Items.Remove(removel.ElementAt(i));
-                            }
-
-                        }
-                        else
-                        {
-                            mbox.Items.Remove(mbox.SelectedItem);
-                        }
-
-                 // after comment is removed  from the listbox and the list
-                    comment2.Clear();                    
-                    comment.Clear();
-                    _duplicates = 0;
-
-                    for (int i = 0; i < DM_LinkedList.Count(); i++) {
-                        readXML(DM_LinkedList.ElementAt(i)[0]);
-                    
-                    
-                    }
-
+                    removebyDel_DM(DM_LinkedList,mbox,true);
 
                         break;
             
