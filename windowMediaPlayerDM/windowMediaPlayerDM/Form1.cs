@@ -266,7 +266,7 @@ namespace windowMediaPlayerDM
         void VLC_track_ValueChanged(object sender, EventArgs e)
         {
 
-            vlc_display.Text = VLC_track.Value.ToString();
+
 
             if (mousemoving && mousedown == true && VLC_track.Value != time_counter)
             {
@@ -3091,6 +3091,23 @@ namespace windowMediaPlayerDM
                 //vlcPlayer.Audio.Volume = current_volume;
 
             }
+        }
+
+        private void loop_button_Click(object sender, EventArgs e)
+        {
+            videoloop = !videoloop;
+
+            if (videoloop) 
+            {
+                loop_button.BackgroundImage = Properties.Resources.repeat;
+            } 
+            else
+            {
+                loop_button.BackgroundImage = Properties.Resources.stop;
+            }
+
+
+            vlc_display.Text = "loop playlist: "+ videoloop.ToString();
         }
 
 
