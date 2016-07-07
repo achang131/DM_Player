@@ -11,9 +11,9 @@ namespace windowMediaPlayerDM
 {
     public partial class Form2 : Form
     {
-        public LinkedList<String[]> DM_L = new LinkedList<string[]>();
-        public LinkedList<String[]> Media_L = new LinkedList<string[]>();
-        public LinkedList<String[]> FullDM_L = new LinkedList<string[]>();
+        public List<String[]> DM_L = new List<string[]>();
+        public List<String[]> Media_L = new List<string[]>();
+        public List<String[]> FullDM_L = new List<string[]>();
 
         public Form2()
         {
@@ -39,7 +39,7 @@ namespace windowMediaPlayerDM
             DM_List_Box.Size = new Size(DM_List.ClientRectangle.Right, DM_List.ClientRectangle.Bottom);
         }
         /*
-        public void setDMList(LinkedList<String[]> s) {
+        public void setDMList(List<String[]> s) {
             DM_L = s;
             foreach (string[] c in DM_L)
             {
@@ -67,7 +67,7 @@ namespace windowMediaPlayerDM
 
         }
 
-        public LinkedList<String[]> setDMList {
+        public List<String[]> setDMList {
 
             set
             {
@@ -86,7 +86,7 @@ namespace windowMediaPlayerDM
         
         }
 
-        public LinkedList<String[]> setFullDMList {
+        public List<String[]> setFullDMList {
             set
             {
                 Full_DM_box.Items.Clear();
@@ -104,7 +104,7 @@ namespace windowMediaPlayerDM
         }
 
 
-        public LinkedList<String[]> setMediaList
+        public List<String[]> setMediaList
         {
 
             set
@@ -125,13 +125,13 @@ namespace windowMediaPlayerDM
 
         }
 
-        public LinkedList<String[]> getDMList() {
+        public List<String[]> getDMList() {
 
             return DM_L;
         
         }
         /*
-        public void setMediaList(LinkedList<String[]> s)
+        public void setMediaList(List<String[]> s)
         {
             Media_L = s;
             foreach (string[] c in Media_L) {
@@ -141,7 +141,7 @@ namespace windowMediaPlayerDM
 
         }
          */
-        public LinkedList<String[]> getMediaList()
+        public List<String[]> getMediaList()
         {
 
             return Media_L;

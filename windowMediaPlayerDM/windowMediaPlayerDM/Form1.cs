@@ -24,16 +24,16 @@ namespace windowMediaPlayerDM
         int time_counter;
         int speed_control;
         Color userColor;
-      //  LinkedList<Label> comment_storage = new LinkedList<Label>();
+      //  List<Label> comment_storage = new List<Label>();
         XmlTextReader dm_comment;
-        LinkedList<String[]> comment = new LinkedList<String[]>();
-      //  LinkedList<Label> remove_LinkedList = new LinkedList<Label>();
+        List<String[]> comment = new List<String[]>();
+      //  List<Label> remove_List = new List<Label>();
         int time_offset;
         int move_distance;
         int playedcomment;
-        LinkedList<String[]> Media_LinkedList = new LinkedList<String[]>();
-        LinkedList<String[]> DM_LinkedList = new LinkedList<String[]>();
-        LinkedList<String[]> FullDM_LinkedList = new LinkedList<String[]>();
+        List<String[]> Media_List = new List<String[]>();
+        List<String[]> DM_List = new List<String[]>();
+        List<String[]> FullDM_List = new List<String[]>();
 
         int _duplicates;
 
@@ -115,7 +115,7 @@ namespace windowMediaPlayerDM
         int lcount;
 
         int _distance;
-        // Next try add setting (new window)  and Play/DM LinkedList(new window possible tabs ?)
+        // Next try add setting (new window)  and Play/DM List(new window possible tabs ?)
 
         int choose_player; //1 for Windows media player 2, for vlc player
 
@@ -346,7 +346,7 @@ namespace windowMediaPlayerDM
                     end && end !=0)
                 {
 
-                    vlc_display.Text = vlc_display.Text+ "end reached";
+                   // vlc_display.Text = vlc_display.Text+ "end reached";
                     if (videoloop == false)
                     {
                         if (vlcPlayer.IsPlaying)
@@ -361,7 +361,7 @@ namespace windowMediaPlayerDM
                     }
                     else
                     {
-                        if (Media_LinkedList.Count > 1)
+                        if (Media_List.Count > 1)
                         {
                             int currentinx = -2;
                             try
@@ -370,10 +370,10 @@ namespace windowMediaPlayerDM
                                 FileInfo nfile = new FileInfo(nuri.LocalPath);
                                 String currentv = nfile.Name;
 
-                                for (int i = 0; i < Media_LinkedList.Count(); i++)
+                                for (int i = 0; i < Media_List.Count(); i++)
                             {
 
-                                if (Media_LinkedList.ElementAt(i)[1].Equals(currentv))
+                                if (Media_List.ElementAt(i)[1].Equals(currentv))
                                 {
 
                                     currentinx = i;
@@ -381,7 +381,7 @@ namespace windowMediaPlayerDM
                                 }
 
                             }
-                            if (currentinx == Media_LinkedList.Count - 1)
+                            if (currentinx == Media_List.Count - 1)
                             {
 
                                 currentinx = 0;
@@ -390,14 +390,14 @@ namespace windowMediaPlayerDM
                             {
                                 currentinx++;
                             }
-                            FileInfo nv = new FileInfo(Media_LinkedList.ElementAt(currentinx)[0]);
+                            FileInfo nv = new FileInfo(Media_List.ElementAt(currentinx)[0]);
                             if (vlcPlayer.IsPlaying)
                             {
                                 vlcPlayer.Stop();
                             }
                             comment.Clear();
                             comment2.Clear();
-                            DM_LinkedList.Clear();
+                            DM_List.Clear();
                             time_counter = 0;
                             playedcomment = 0;
                             vlcPlayer.SetMedia(nv);
@@ -905,7 +905,7 @@ namespace windowMediaPlayerDM
 
 
 
-        //load xml into a LinkedList and foreach addcomment ?
+        //load xml into a List and foreach addcomment ?
         void addComment(int time,String comment) { 
 
 
@@ -1471,8 +1471,8 @@ namespace windowMediaPlayerDM
 
 
               //  comment_storage.Remove(l);
-             //   remove_LinkedList.Add(l);
-                //remove_LinkedList.AddLast(l);
+             //   remove_List.Add(l);
+                //remove_List.AddLast(l);
                 l.Dispose();
               
             
@@ -1506,7 +1506,7 @@ namespace windowMediaPlayerDM
 
                 //  comment_storage.Remove(l);
                 
-                //remove_LinkedList.AddLast(l);
+                //remove_List.AddLast(l);
                 l.Dispose();
 
 
@@ -1548,7 +1548,7 @@ namespace windowMediaPlayerDM
 
 
                     //  comment_storage.Remove(l);
-                   // remove_LinkedList.AddLast(l);
+                   // remove_List.AddLast(l);
                     l.Dispose();
 
 
@@ -1580,7 +1580,7 @@ namespace windowMediaPlayerDM
         
         
         }
-        void resetComment(LinkedList<Label> l) {
+        void resetComment(List<Label> l) {
 
             foreach (Label comment in l) {
                 resetLabelPos(comment);
@@ -1605,7 +1605,7 @@ namespace windowMediaPlayerDM
             test_label.Text = Media_Player.playState.ToString();
         
         }
-        void setMedia_Multi(LinkedList<String[]> medias) {
+        void setMedia_Multi(List<String[]> medias) {
             switch(choose_player){
                 case 1: 
                     
@@ -1613,7 +1613,7 @@ namespace windowMediaPlayerDM
                     for (int i = 0; i < medias.Count(); i++)
             {
                 Media_Playlist.appendItem(Media_Player.newMedia(medias.ElementAt(i)[0]));
-                Media_LinkedList.AddLast(medias.ElementAt(i));
+                Media_List.Add(medias.ElementAt(i));
 
             }
             media_dir = medias.ElementAt(0)[0];
@@ -1629,7 +1629,7 @@ namespace windowMediaPlayerDM
                     for (int i = 0; i < medias.Count(); i++)
             {
                 
-                Media_LinkedList.AddLast(medias.ElementAt(i));
+                Media_List.Add(medias.ElementAt(i));
 
             }
             media_dir = medias.ElementAt(0)[0];
@@ -1650,7 +1650,7 @@ namespace windowMediaPlayerDM
 
         void autoLoadMlist(String[] mediadirs) {
 
-            Media_LinkedList.Clear();
+            Media_List.Clear();
 
         int end = mediadirs[0].LastIndexOf("\\");
         String temp_dir = mediadirs[0].Substring(0, end);
@@ -1667,7 +1667,7 @@ namespace windowMediaPlayerDM
 
             String[] ml = {file[i].FullName,file[i].Name};
             
-            Media_LinkedList.AddLast(ml);
+            Media_List.Add(ml);
 
             if (fm2 != null) {
 
@@ -1702,10 +1702,10 @@ namespace windowMediaPlayerDM
                 String[] results = { file[i].FullName, file[i].Name };
                 bool exists=false;
 
-                for (int l = 0; l < FullDM_LinkedList.Count(); l++) {
-                  //  if (FullDM_LinkedList.Count > 0)
+                for (int l = 0; l < FullDM_List.Count(); l++) {
+                  //  if (FullDM_List.Count > 0)
                  //   {
-                        if (FullDM_LinkedList.ElementAt(l)[0].Equals(results[0]))
+                        if (FullDM_List.ElementAt(l)[0].Equals(results[0]))
                         {
                             exists = true;
 
@@ -1717,7 +1717,7 @@ namespace windowMediaPlayerDM
 
                     if (!exists)
                     {
-                        FullDM_LinkedList.AddLast(results);
+                        FullDM_List.Add(results);
 
                         //if the list menu windows is left opened when video/comment is loaded through dropdown menu maynot be need ? 
                         if (fm2 != null)
@@ -1736,14 +1736,14 @@ namespace windowMediaPlayerDM
         
         }
 
-        void setMedia_Single(LinkedList<String[]> medias)
+        void setMedia_Single(List<String[]> medias)
         {
 
             if (medias != null)
             {
                 media_dir = medias.ElementAt(0)[0];
                 Media_status.Text = "Media Set";
-                Media_LinkedList.AddLast(medias.ElementAt(0));
+                Media_List.Add(medias.ElementAt(0));
 
 
 
@@ -1795,7 +1795,7 @@ namespace windowMediaPlayerDM
         }
 
 
-        void PlayMedia(LinkedList<String[]> medias) {
+        void PlayMedia(List<String[]> medias) {
 
             bool multi_media;
             if (medias != null && medias.Count > 1)
@@ -1839,7 +1839,7 @@ namespace windowMediaPlayerDM
             }
 
 
-            LinkedList<String[]> medias = setFile(media);
+            List<String[]> medias = setFile(media);
 
             if (medias != null)
             {
@@ -1898,7 +1898,7 @@ namespace windowMediaPlayerDM
 
                     case XmlNodeType.Text:
                         temp_comment[1] = dm_comment.Value;
-                        comment.AddLast(temp_comment);
+                        comment.Add(temp_comment);
                         int vpost = Int32.Parse(temp_comment[0]);
 
                         //this will ends with the final vpos in the xml files
@@ -1959,7 +1959,7 @@ namespace windowMediaPlayerDM
                 _duplicates = 0;
 
                 //clears all the dm that is current loaded
-                DM_LinkedList.Clear();
+                DM_List.Clear();
 
             }
             if (fm3 != null) {
@@ -1974,7 +1974,7 @@ namespace windowMediaPlayerDM
             }
 
 
-           LinkedList< String[]> danmokus = setFile(danmoku);
+           List< String[]> danmokus = setFile(danmoku);
 
            if (danmokus != null)
            {
@@ -1992,9 +1992,9 @@ namespace windowMediaPlayerDM
               {
                   danmoku_dir = danmokus.ElementAt(0)[0];
                   Danmoku_status.Text = "DM Set";
-                  if (!DM_LinkedList.Contains(danmokus.ElementAt(0)))
+                  if (!DM_List.Contains(danmokus.ElementAt(0)))
                   {
-                      DM_LinkedList.AddLast(danmokus.ElementAt(0));
+                      DM_List.Add(danmokus.ElementAt(0));
 
                   }
                   //reader.name is the name of the element/attribute
@@ -2012,10 +2012,10 @@ namespace windowMediaPlayerDM
 
 
                       //add only if it's not in the list to prevent dulplicate from being loaded
-                      if (!DM_LinkedList.Contains(danmokus.ElementAt(i)))
+                      if (!DM_List.Contains(danmokus.ElementAt(i)))
                       {
                           danmoku_dir = danmokus.ElementAt(i)[0];
-                          DM_LinkedList.AddLast(danmokus.ElementAt(i));
+                          DM_List.Add(danmokus.ElementAt(i));
                           readXML(danmoku_dir);
 
                       }
@@ -2059,9 +2059,9 @@ namespace windowMediaPlayerDM
         
         
         }
-        //modified from String[] to LinkedList so multiple files can be selected at once.
+        //modified from String[] to List so multiple files can be selected at once.
 
-        private LinkedList<String[]> setFile(OpenFileDialog ofd){
+        private List<String[]> setFile(OpenFileDialog ofd){
             ofd.Multiselect = true;
         
             if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
@@ -2069,11 +2069,11 @@ namespace windowMediaPlayerDM
                 int end = ofd.FileNames.ElementAt(0).LastIndexOf("\\");
                 String dir = ofd.FileNames.ElementAt(0).Substring(0, end);
                 ofd.InitialDirectory = dir;
-                LinkedList<String[]> temp = new LinkedList<String[]>();
+                List<String[]> temp = new List<String[]>();
                 for (int i = 0; i < ofd.FileNames.Count(); i++)
                 {
                     String[] result = { ofd.FileNames.ElementAt(i), ofd.SafeFileNames.ElementAt(i) };
-                    temp.AddLast(result);
+                    temp.Add(result);
 
 
                 }
@@ -2272,13 +2272,13 @@ namespace windowMediaPlayerDM
                 
                 
                 /*
-                foreach (Label l in remove_LinkedList)
+                foreach (Label l in remove_List)
                 {
                     Controls.Remove(l);
                   //  comment_storage.Remove(l);
                 }
 
-                remove_LinkedList.Clear();
+                remove_List.Clear();
                   */
             }
         
@@ -2374,7 +2374,7 @@ namespace windowMediaPlayerDM
             }
             
         }
-      void  removebyDel_DM(LinkedList<String[]> dm,ListBox mbox,bool readxml){
+      void  removebyDel_DM(List<String[]> dm,ListBox mbox,bool readxml){
 
 
 
@@ -2442,19 +2442,19 @@ namespace windowMediaPlayerDM
             fm2.Disposed += new EventHandler(fm2_Disposed);
 
 
-            if (DM_LinkedList != null)
+            if (DM_List != null)
             {
-                fm2.setDMList = DM_LinkedList;
-                //   fm2.setDMList(DM_LinkedList);
+                fm2.setDMList = DM_List;
+                //   fm2.setDMList(DM_List);
             }
-            if (Media_LinkedList != null)
+            if (Media_List != null)
             {
-                fm2.setMediaList = Media_LinkedList;
-                //fm2.setMediaList(Media_LinkedList);
+                fm2.setMediaList = Media_List;
+                //fm2.setMediaList(Media_List);
             }
-            if (FullDM_LinkedList != null)
+            if (FullDM_List != null)
             {
-                fm2.setFullDMList = FullDM_LinkedList;
+                fm2.setFullDMList = FullDM_List;
             }
             fm2.setMListBox.DoubleClick += new EventHandler(setMListBox_DoubleClick);
             fm2.setDMListBox.DoubleClick += new EventHandler(setDMListBox_DoubleClick);
@@ -2481,7 +2481,7 @@ namespace windowMediaPlayerDM
             switch (e.KeyValue) { 
             
                 case 46:
-                    removebyDel_DM(FullDM_LinkedList, mbox,false);
+                    removebyDel_DM(FullDM_List, mbox,false);
                     break;
             
             
@@ -2503,7 +2503,7 @@ namespace windowMediaPlayerDM
 
 
 
-                    removebyDel_DM(DM_LinkedList,mbox,true);
+                    removebyDel_DM(DM_List,mbox,true);
 
                         break;
             
@@ -2533,7 +2533,7 @@ namespace windowMediaPlayerDM
         void setMListBox_KeyUp(object sender, KeyEventArgs e)
         {
             //throw new NotImplementedException();
-            // set del key action here if del is pressed with an item selected then remove the selected item from the Media Linkedlist and media list box
+            // set del key action here if del is pressed with an item selected then remove the selected item from the Media List and media list box
 
             //also probably add a function to play the media selected if enter key is pressed instead of double clicking it ?
 
@@ -2553,14 +2553,14 @@ namespace windowMediaPlayerDM
                 case 46:
                     //when del key is let go
         
-                        for (int i = 0; i < Media_LinkedList.Count(); i++)
+                        for (int i = 0; i < Media_List.Count(); i++)
                         {
                             foreach (object l in mbox.SelectedItems)
                             {
-                                if (Media_LinkedList.ElementAt(i)[1].Equals(l.ToString()))
+                                if (Media_List.ElementAt(i)[1].Equals(l.ToString()))
                                 {
 
-                                    Media_LinkedList.Remove(Media_LinkedList.ElementAt(i));
+                                    Media_List.Remove(Media_List.ElementAt(i));
                                 }
                             }
 
@@ -2609,10 +2609,10 @@ namespace windowMediaPlayerDM
 
             ListBox cbox = (ListBox)sender;
             bool has = false;
-            for (int i = 0; i < DM_LinkedList.Count(); i++) {
+            for (int i = 0; i < DM_List.Count(); i++) {
 
                 
-                if (DM_LinkedList.ElementAt(i)[1].Equals(cbox.SelectedItem.ToString())) {
+                if (DM_List.ElementAt(i)[1].Equals(cbox.SelectedItem.ToString())) {
 
                     has = true;
                 
@@ -2622,13 +2622,13 @@ namespace windowMediaPlayerDM
             }
             if (!has) {
 
-                for (int i = 0; i < FullDM_LinkedList.Count(); i++) {
+                for (int i = 0; i < FullDM_List.Count(); i++) {
 
-                    if (cbox.SelectedItem.ToString().Equals(FullDM_LinkedList.ElementAt(i)[1])) {
+                    if (cbox.SelectedItem.ToString().Equals(FullDM_List.ElementAt(i)[1])) {
 
-                        DM_LinkedList.AddLast(FullDM_LinkedList.ElementAt(i));
+                        DM_List.Add(FullDM_List.ElementAt(i));
                         fm2.setDMListBox.Items.Add(cbox.SelectedItem.ToString());
-                        readXML(FullDM_LinkedList.ElementAt(i)[0]);
+                        readXML(FullDM_List.ElementAt(i)[0]);
                     
                     }
                 
@@ -2663,18 +2663,18 @@ namespace windowMediaPlayerDM
             //loop through to find the selected item if found then remove if not then load to comment2 using read xml
             try
             {
-                for (int i = 0; i < DM_LinkedList.Count(); i++)
+                for (int i = 0; i < DM_List.Count(); i++)
                 {
 
-                    if (DM_LinkedList.ElementAt(i)[1].Equals(dmbox.SelectedItem.ToString()))
+                    if (DM_List.ElementAt(i)[1].Equals(dmbox.SelectedItem.ToString()))
                     {
 
-                        DM_LinkedList.Remove(DM_LinkedList.ElementAt(i));
+                        DM_List.Remove(DM_List.ElementAt(i));
                     }
                     else
                     {
 
-                        readXML(DM_LinkedList.ElementAt(i)[0]);
+                        readXML(DM_List.ElementAt(i)[0]);
                     }
 
                 }
@@ -2709,13 +2709,13 @@ namespace windowMediaPlayerDM
                 vlcPlayer.Stop();
             }
 
-            for (int i = 0; i < Media_LinkedList.Count(); i++)
+            for (int i = 0; i < Media_List.Count(); i++)
             {
 
-                if (Media_LinkedList.ElementAt(i)[1].Equals(mtemp.SelectedItem.ToString()))
+                if (Media_List.ElementAt(i)[1].Equals(mtemp.SelectedItem.ToString()))
                 {
 
-                    result = Media_LinkedList.ElementAt(i)[0];
+                    result = Media_List.ElementAt(i)[0];
 
                 }
 
@@ -2734,7 +2734,7 @@ namespace windowMediaPlayerDM
                 {
                     comment2.Clear();
                     comment.Clear();
-                    DM_LinkedList.Clear();
+                    DM_List.Clear();
                     _duplicates = 0;
 
                     if (fm2 != null)
@@ -3087,7 +3087,7 @@ namespace windowMediaPlayerDM
         void onLoadUp()
         {
 
-            if (comment2.Count > 0 && Media_LinkedList.Count > 0)
+            if (comment2.Count > 0 && Media_List.Count > 0)
             {
 
 
@@ -3219,15 +3219,15 @@ namespace windowMediaPlayerDM
 
         private void next_track_Click(object sender, EventArgs e)
         {
-            if (Media_LinkedList.Count > 1) {
+            if (Media_List.Count > 1) {
                 Uri nuri = new Uri(vlcPlayer.GetCurrentMedia().Mrl);
                 FileInfo nfile = new FileInfo(nuri.LocalPath);
                 String current = nfile.Name;
                 int currentindex = -2;
 
-                for (int i = 0; i < Media_LinkedList.Count; i++) {
+                for (int i = 0; i < Media_List.Count; i++) {
 
-                    if (Media_LinkedList.ElementAt(i)[1].Equals(current)) {
+                    if (Media_List.ElementAt(i)[1].Equals(current)) {
                         currentindex = i;
                     
                     }
@@ -3235,7 +3235,7 @@ namespace windowMediaPlayerDM
                 
                 }
 
-                if (currentindex + 1 < Media_LinkedList.Count)
+                if (currentindex + 1 < Media_List.Count)
                 {
 
                     currentindex++;
@@ -3246,14 +3246,14 @@ namespace windowMediaPlayerDM
                 
                 }
 
-                FileInfo nfile2 = new FileInfo(Media_LinkedList.ElementAt(currentindex)[0]);
+                FileInfo nfile2 = new FileInfo(Media_List.ElementAt(currentindex)[0]);
                 if (vlcPlayer.IsPlaying) {
                     vlcPlayer.Stop();
                 }
                 vlcPlayer.SetMedia(nfile2);
                 comment2.Clear();
                 comment.Clear();
-                DM_LinkedList.Clear();
+                DM_List.Clear();
                 playedcomment = 0;
                 _duplicates = 0;
                 time_counter = 0;
@@ -3293,8 +3293,8 @@ namespace windowMediaPlayerDM
             if (fm2 != null)
             {
                 int currentinx  =-2;
-                for (int i = 0; i < Media_LinkedList.Count; i++) {
-                    if (Media_LinkedList.ElementAt(i)[1].Equals(filename)) { 
+                for (int i = 0; i < Media_List.Count; i++) {
+                    if (Media_List.ElementAt(i)[1].Equals(filename)) { 
                     
                     currentinx = i;
                     }
@@ -3325,17 +3325,17 @@ namespace windowMediaPlayerDM
         }
         private void last_track_Click(object sender, EventArgs e)
         {
-            if (Media_LinkedList.Count > 1)
+            if (Media_List.Count > 1)
             {
                 Uri nuri = new Uri(vlcPlayer.GetCurrentMedia().Mrl);
                 FileInfo nfile = new FileInfo(nuri.LocalPath);
                 String current = nfile.Name;
                 int currentindex = -2;
 
-                for (int i = 0; i < Media_LinkedList.Count; i++)
+                for (int i = 0; i < Media_List.Count; i++)
                 {
 
-                    if (Media_LinkedList.ElementAt(i)[1].Equals(current))
+                    if (Media_List.ElementAt(i)[1].Equals(current))
                     {
                         currentindex = i;
 
@@ -3352,11 +3352,11 @@ namespace windowMediaPlayerDM
                 }
                 else
                 {
-                    currentindex = Media_LinkedList.Count-1;
+                    currentindex = Media_List.Count-1;
 
                 }
 
-                FileInfo nfile2 = new FileInfo(Media_LinkedList.ElementAt(currentindex)[0]);
+                FileInfo nfile2 = new FileInfo(Media_List.ElementAt(currentindex)[0]);
                 if (vlcPlayer.IsPlaying)
                 {
                     vlcPlayer.Stop();
@@ -3364,7 +3364,7 @@ namespace windowMediaPlayerDM
                 vlcPlayer.SetMedia(nfile2);
                 comment2.Clear();
                 comment.Clear();
-                DM_LinkedList.Clear();
+                DM_List.Clear();
                 playedcomment = 0;
                 _duplicates = 0;
                 time_counter = 0;
