@@ -56,6 +56,8 @@
             this.vlcPlay_button = new System.Windows.Forms.Button();
             this.vlcSound_button = new System.Windows.Forms.Button();
             this.loop_button = new System.Windows.Forms.Button();
+            this.last_track = new System.Windows.Forms.Button();
+            this.next_track = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Media_Player)).BeginInit();
@@ -273,12 +275,41 @@
             // 
             this.loop_button.BackgroundImage = global::windowMediaPlayerDM.Properties.Resources.repeat;
             this.loop_button.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.loop_button.FlatAppearance.BorderSize = 0;
+            this.loop_button.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Black;
+            this.loop_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.loop_button.Location = new System.Drawing.Point(885, 540);
             this.loop_button.Name = "loop_button";
             this.loop_button.Size = new System.Drawing.Size(30, 19);
             this.loop_button.TabIndex = 6;
             this.loop_button.UseVisualStyleBackColor = true;
             this.loop_button.Click += new System.EventHandler(this.loop_button_Click);
+            // 
+            // last_track
+            // 
+            this.last_track.BackgroundImage = global::windowMediaPlayerDM.Properties.Resources.rewand;
+            this.last_track.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.last_track.FlatAppearance.BorderSize = 0;
+            this.last_track.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.last_track.Location = new System.Drawing.Point(145, 540);
+            this.last_track.Name = "last_track";
+            this.last_track.Size = new System.Drawing.Size(30, 19);
+            this.last_track.TabIndex = 7;
+            this.last_track.UseVisualStyleBackColor = true;
+            this.last_track.Click += new System.EventHandler(this.last_track_Click);
+            // 
+            // next_track
+            // 
+            this.next_track.BackgroundImage = global::windowMediaPlayerDM.Properties.Resources.next;
+            this.next_track.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.next_track.FlatAppearance.BorderSize = 0;
+            this.next_track.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.next_track.Location = new System.Drawing.Point(194, 540);
+            this.next_track.Name = "next_track";
+            this.next_track.Size = new System.Drawing.Size(30, 19);
+            this.next_track.TabIndex = 7;
+            this.next_track.UseVisualStyleBackColor = true;
+            this.next_track.Click += new System.EventHandler(this.next_track_Click);
             // 
             // Form1
             // 
@@ -287,6 +318,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(996, 582);
+            this.Controls.Add(this.next_track);
+            this.Controls.Add(this.last_track);
             this.Controls.Add(this.loop_button);
             this.Controls.Add(this.vlcSound_button);
             this.Controls.Add(this.vlcStop_button);
@@ -339,6 +372,8 @@
         private System.Windows.Forms.Button vlcSound_button;
         private System.Windows.Forms.ToolStripStatusLabel vlc_display;
         private System.Windows.Forms.Button loop_button;
+        private System.Windows.Forms.Button last_track;
+        private System.Windows.Forms.Button next_track;
     }
 }
 

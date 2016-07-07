@@ -210,9 +210,8 @@ namespace windowMediaPlayerDM
             vlcPlayer.Paused += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerPausedEventArgs>(vlcPlayer_Paused);
             vlcPlayer.MediaChanged += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerMediaChangedEventArgs>(vlcPlayer_MediaChanged);
             vlcPlayer.TimeChanged += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerTimeChangedEventArgs>(vlcPlayer_TimeChanged);
-          //  vlcPlayer.EndReached += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerEndReachedEventArgs>(vlcPlayer_EndReached);
-
-            
+            vlcPlayer.Opening += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerOpeningEventArgs>(vlcPlayer_Opening);
+                        
 
 
             VLC_track.MouseDown += new MouseEventHandler(VLC_track_MouseDown);
@@ -236,6 +235,25 @@ namespace windowMediaPlayerDM
             
 
 
+        }
+
+        void vlcPlayer_Opening(object sender, Vlc.DotNet.Core.VlcMediaPlayerOpeningEventArgs e)
+        {
+           // throw new NotImplementedException();
+
+            onLoadUp();
+            if (_first_load == false)
+            {
+                vlc_videoSetup();
+            }
+            test_label.Text = vlcPlayer.State.ToString();
+
+
+
+            timerStart();
+            vlcPlayer.Audio.Volume = vVolume;
+
+            selectPlaying_box(vlcPlayer.GetCurrentMedia().Title);
         }
         bool mousemoving;
         void VLC_track_MouseMove(object sender, MouseEventArgs e)
@@ -321,10 +339,11 @@ namespace windowMediaPlayerDM
 
             //set video loops here
 
-                if (current >= end)
+                if (current >=
+                    end && end !=0)
                 {
 
-                    vlc_display.Text = "end reached";
+                    vlc_display.Text = vlc_display.Text+ "end reached";
                     if (videoloop == false)
                     {
                         if (vlcPlayer.IsPlaying)
@@ -936,7 +955,10 @@ namespace windowMediaPlayerDM
             
             vlcSound_button.Location = new Point(ClientRectangle.Right-81, ClientRectangle.Bottom - 42);
 
-            
+            loop_button.Location = new Point(ClientRectangle.Right - 111, ClientRectangle.Bottom - 42);
+
+            last_track.Location = new Point(145, ClientRectangle.Bottom - 42);
+            next_track.Location = new Point(194, ClientRectangle.Bottom - 42);
         }
 
         // form1 ends
@@ -2155,12 +2177,12 @@ namespace windowMediaPlayerDM
             }
             */
             vlcTIme = (int)(vlcPlayer.Time / 10);
-            print(((int)(vlcPlayer.Time) / 10 + 10) + "/" + comment_time + "/" + time_counter);
+            print(showTime(((int)(vlcPlayer.Time)) ) + "/" + comment_time + "/" + time_counter);
 
 
             if (fm3 != null)
             {
-                print2(vlcPlayer.Length+"  L: " + fm3.Controls.OfType<Label>().Count().ToString() + " " + playedcomment + "/" + (comment.Count() + _duplicates));
+                print2(showTime((int)vlcPlayer.Length)+"  L: " + fm3.Controls.OfType<Label>().Count().ToString() + " " + playedcomment + "/" + (comment.Count() + _duplicates));
             }
             else {
 
@@ -2188,6 +2210,29 @@ namespace windowMediaPlayerDM
                 catch (NullReferenceException) { }
                 }
         
+        }
+
+        string showTime(int time) {
+
+            string result="";
+
+            int totalsec = time / 1000;
+            int sec = totalsec % 60;
+            int min,hour;
+
+            if (totalsec / 60 < 60)
+            {
+                min = totalsec / 60;
+                hour = 0;
+            }
+            else {
+
+                min = (totalsec / 60) % 60;
+                hour = (totalsec / 60) / 60;
+            }
+
+            result = string.Format("{0:00}:{1:00}:{2:00}", hour, min, sec);
+            return result;
         }
         void moveComment() {
 
@@ -2411,6 +2456,11 @@ namespace windowMediaPlayerDM
             fm2.setMListBox.KeyUp += new KeyEventHandler(setMListBox_KeyUp);
             fm2.setDMListBox.KeyUp += new KeyEventHandler(setDMListBox_KeyUp);
             fm2.setFullDMBox.KeyUp += new KeyEventHandler(setFullDMBox_KeyUp);
+
+            if (vlcPlayer.GetCurrentMedia() != null) {
+                selectPlaying_box(vlcPlayer.GetCurrentMedia().Title);
+            }
+
             fm2.Show();
 
         
@@ -3155,6 +3205,141 @@ namespace windowMediaPlayerDM
         private void vlcPlayer_Click(object sender, EventArgs e)
         {
             Media_Player_ClickAction();
+        }
+
+        private void next_track_Click(object sender, EventArgs e)
+        {
+            if (Media_LinkedList.Count > 1) {
+                string current = vlcPlayer.GetCurrentMedia().Title;
+                int currentindex = -2;
+
+                for (int i = 0; i < Media_LinkedList.Count; i++) {
+
+                    if (Media_LinkedList.ElementAt(i)[1].Equals(current)) {
+                        currentindex = i;
+                    
+                    }
+                
+                
+                }
+
+                if (currentindex + 1 < Media_LinkedList.Count)
+                {
+
+                    currentindex++;
+
+                }
+                else {
+                    currentindex = 0;
+                
+                }
+
+                FileInfo nfile = new FileInfo(Media_LinkedList.ElementAt(currentindex)[0]);
+                if (vlcPlayer.IsPlaying) {
+                    vlcPlayer.Stop();
+                }
+                vlcPlayer.SetMedia(nfile);
+                comment2.Clear();
+                comment.Clear();
+                playedcomment = 0;
+                _duplicates = 0;
+                time_counter = 0;
+                setVLCname(nfile);
+                timerStop();
+                vlcPlayer.Play();
+   
+
+            }
+
+        }
+        void setVLCname(FileInfo file) {
+
+            this.Text = "DM Player " + file.Name;
+        
+        }
+        void selectPlaying_box(String filename) {
+            //search for names in listbox equals to filename and selects it
+            if (fm2 != null)
+            {
+                int currentinx  =-2;
+                for (int i = 0; i < Media_LinkedList.Count; i++) {
+                    if (Media_LinkedList.ElementAt(i)[1].Equals(filename)) { 
+                    
+                    currentinx = i;
+                    }
+                
+                }
+                if(currentinx>0){
+                    
+                    setfm2MBoxindex(currentinx);
+                }
+
+
+            }
+        
+        }
+        void setfm2MBoxindex(int index) {
+
+            if (InvokeRequired)
+            {
+                setInt i = new setInt(setfm2MBoxindex);
+                this.Invoke(i, new object[] { index });
+            }
+            else {
+                fm2.setMListBox.ClearSelected();
+                fm2.setMListBox.SelectedIndex = index;
+            
+            }
+        
+        }
+        private void last_track_Click(object sender, EventArgs e)
+        {
+            if (Media_LinkedList.Count > 1)
+            {
+                string current = vlcPlayer.GetCurrentMedia().Title;
+                int currentindex = -2;
+
+                for (int i = 0; i < Media_LinkedList.Count; i++)
+                {
+
+                    if (Media_LinkedList.ElementAt(i)[1].Equals(current))
+                    {
+                        currentindex = i;
+
+                    }
+
+
+                }
+
+                if (currentindex - 1 > -1)
+                {
+
+                    currentindex--;
+
+                }
+                else
+                {
+                    currentindex = Media_LinkedList.Count-1;
+
+                }
+
+                FileInfo nfile = new FileInfo(Media_LinkedList.ElementAt(currentindex)[0]);
+                if (vlcPlayer.IsPlaying)
+                {
+                    vlcPlayer.Stop();
+                }
+                vlcPlayer.SetMedia(nfile);
+                comment2.Clear();
+                comment.Clear();
+                playedcomment = 0;
+                _duplicates = 0;
+                time_counter = 0;
+                setVLCname(nfile);
+                timerStop();
+                vlcPlayer.Play();
+              
+
+            }
         }
 
 
