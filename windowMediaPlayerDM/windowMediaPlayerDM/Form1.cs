@@ -397,6 +397,7 @@ namespace windowMediaPlayerDM
                             }
                             comment.Clear();
                             comment2.Clear();
+                            DM_LinkedList.Clear();
                             time_counter = 0;
                             playedcomment = 0;
                             vlcPlayer.SetMedia(nv);
@@ -3252,6 +3253,7 @@ namespace windowMediaPlayerDM
                 vlcPlayer.SetMedia(nfile2);
                 comment2.Clear();
                 comment.Clear();
+                DM_LinkedList.Clear();
                 playedcomment = 0;
                 _duplicates = 0;
                 time_counter = 0;
@@ -3362,6 +3364,7 @@ namespace windowMediaPlayerDM
                 vlcPlayer.SetMedia(nfile2);
                 comment2.Clear();
                 comment.Clear();
+                DM_LinkedList.Clear();
                 playedcomment = 0;
                 _duplicates = 0;
                 time_counter = 0;
