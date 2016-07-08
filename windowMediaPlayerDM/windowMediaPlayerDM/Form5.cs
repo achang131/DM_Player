@@ -92,8 +92,7 @@ namespace windowMediaPlayerDM
             Uri link = new Uri("");
 
              gb = new getWebVideo(link,local_path);
-            //http://s3.amazonaws.com/ksr/assets/012/985/562/4b9df98bfba5c3714537627d3d8ec91a_original.mp3?
-            //http%3A%2F%2Fs3.amazonaws.com%2Fksr%2Fassets%2F012%2F985%2F562%2F4b9df98bfba5c3714537627d3d8ec91a_original.mp3%3F
+  
 
 
             fullurls = gb.getDownlist;
@@ -122,12 +121,13 @@ namespace windowMediaPlayerDM
             // old code
             //gb.playDownlist = fullurls.ElementAt(Url_List.SelectedIndex);
             downloadstatus2.Text = "";
-            WebClient nwb = new WebClient();
-            nwb.DownloadProgressChanged += new DownloadProgressChangedEventHandler(nwb_DownloadProgressChanged);
-            nwb.DownloadFileCompleted += new AsyncCompletedEventHandler(nwb_DownloadFileCompleted);
-            gb.downlaodFile(fullurls.ElementAt(Url_List.SelectedIndex), nwb);
-            
-            
+            using (WebClient nwb = new WebClient())
+            {
+                nwb.DownloadProgressChanged += new DownloadProgressChangedEventHandler(nwb_DownloadProgressChanged);
+                nwb.DownloadFileCompleted += new AsyncCompletedEventHandler(nwb_DownloadFileCompleted);
+                gb.downlaodFile(fullurls.ElementAt(Url_List.SelectedIndex), nwb);
+
+            }
 
             vlcControl1.SetMedia(gb.playDownlist);
         }
