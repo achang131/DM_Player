@@ -42,6 +42,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.download_status = new System.Windows.Forms.ToolStripStatusLabel();
             this.downloadstatus2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.comment_test = new System.Windows.Forms.RichTextBox();
             ((System.ComponentModel.ISupportInitialize)(this.vlcControl1)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -144,7 +145,7 @@
             this.downloadstatus2});
             this.statusStrip1.Location = new System.Drawing.Point(0, 510);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(953, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(1487, 22);
             this.statusStrip1.TabIndex = 6;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -158,11 +159,20 @@
             this.downloadstatus2.Name = "downloadstatus2";
             this.downloadstatus2.Size = new System.Drawing.Size(0, 17);
             // 
+            // comment_test
+            // 
+            this.comment_test.Location = new System.Drawing.Point(960, 13);
+            this.comment_test.Name = "comment_test";
+            this.comment_test.Size = new System.Drawing.Size(515, 494);
+            this.comment_test.TabIndex = 7;
+            this.comment_test.Text = "";
+            // 
             // VLC_test
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(953, 532);
+            this.ClientSize = new System.Drawing.Size(1487, 532);
+            this.Controls.Add(this.comment_test);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.downloadbar);
             this.Controls.Add(this.Url_List);
@@ -199,5 +209,6 @@
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel download_status;
         private System.Windows.Forms.ToolStripStatusLabel downloadstatus2;
+        private System.Windows.Forms.RichTextBox comment_test;
     }
 }

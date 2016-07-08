@@ -2189,7 +2189,7 @@ namespace windowMediaPlayerDM
 
             if (fm3 != null)
             {
-                print2(showTime((int)vlcPlayer.Length)+"  L: " + fm3.Controls.OfType<Label>().Count().ToString() + " " + playedcomment + "/" + (comment.Count() + _duplicates));
+                print2(showTime((int)vlcPlayer.Length)+"  L: " + fm3.Controls.OfType<Label>().Count().ToString() + " " + (playedcomment+_duplicates) + "/" + (comment.Count()));
             }
             else {
 

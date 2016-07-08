@@ -34,3 +34,6 @@ C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM
 C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\windowMediaPlayerDM.csproj.GenerateResource.Cache
 C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\windowMediaPlayerDM.exe
 C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\windowMediaPlayerDM.pdb
+C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\windowMediaPlayerDM.add_link_form.resources

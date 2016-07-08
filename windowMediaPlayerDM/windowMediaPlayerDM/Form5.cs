@@ -9,6 +9,8 @@ using System.Windows.Forms;
 using System.IO;
 using System.Net.Http;
 using System.Net;
+using Newtonsoft.Json;
+using System.Runtime.InteropServices;
 
 namespace windowMediaPlayerDM
 {
@@ -84,18 +86,24 @@ namespace windowMediaPlayerDM
         List<Uri> fullurls;
         private void web_button_Click(object sender, EventArgs e)
         {
-
+             downloadstatus2.Text = "Fetching Url" + "http://himado.in/336121";
             String local_path= dir_box.Text;
+            
             
          
             //enter url here
-            Uri link = new Uri("");
+            Uri link = new Uri("http://himado.in/336121");
 
+
+            //
+        //    jsontest();
+        
              gb = new getWebVideo(link,local_path);
   
-
+            
 
             fullurls = gb.getDownlist;
+            downloadstatus2.Text = "Url fetch comeplete!";
 
             for(int i=0;i<fullurls.Count;i++){
 
@@ -127,6 +135,7 @@ namespace windowMediaPlayerDM
                 nwb.DownloadFileCompleted += new AsyncCompletedEventHandler(nwb_DownloadFileCompleted);
                 gb.downlaodFile(fullurls.ElementAt(Url_List.SelectedIndex), nwb);
 
+                nwb.Dispose();
             }
 
             vlcControl1.SetMedia(gb.playDownlist);
@@ -148,10 +157,30 @@ namespace windowMediaPlayerDM
             }
                 download_status.Text = "";
             downloadbar.Value = 0;
+            
 
         }
 
+        void jsontest() {
 
+    
+
+            using (WebClient wb = new WebClient()) {
+
+                var json = wb.DownloadString(new Uri("http://himado.in/&isOtherSource=&post_id=386378&sourceid=&commentlink="));
+
+                
+
+                comment_test.Text=   json.ToString();
+                
+
+
+
+                wb.Dispose();
+            }
+        
+        
+        }
 
         void nwb_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
@@ -165,6 +194,11 @@ namespace windowMediaPlayerDM
             download_status.Text = bytereceive + "/" + totalbyte;
 
             //throw new NotImplementedException();
+
+            
         }
+        
+
+
     }
 }

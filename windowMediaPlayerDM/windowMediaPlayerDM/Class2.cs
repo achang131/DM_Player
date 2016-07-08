@@ -7,6 +7,10 @@ using System.Net;
 using System.IO;
 using System.Windows.Forms;
 
+
+//how to implement
+//use dictionary to hold the url as key and list of the movie urls as value
+//
 namespace windowMediaPlayerDM
 {
     class getWebVideo
@@ -22,6 +26,8 @@ namespace windowMediaPlayerDM
 
         String effetiveLink;
 
+        List<string> titles = new List<string>();
+        String title;
         public getWebVideo(Uri url) {
 
             websiteLink = url;
@@ -29,7 +35,8 @@ namespace windowMediaPlayerDM
             //System.Net.WebClient webclient = new System.Net.WebClient();
 
             loadInfo(websiteLink);
-            
+          title=  getTitle();
+          titles.Add(title);
             getAllUrls();
         
         }
@@ -42,10 +49,27 @@ namespace windowMediaPlayerDM
             //System.Net.WebClient webclient = new System.Net.WebClient();
 
             loadInfo(websiteLink);
-
+           title= getTitle();
+           titles.Add(title);
             getAllUrls();
         }
 
+        public void changeOnlineUrl(Uri url){
+
+            websiteLink = url;
+
+            loadInfo(websiteLink);
+           title= getTitle();
+           titles.Add(title);
+            getAllUrls();
+
+        
+        }
+
+        public void changePath(string dir) {
+
+             filestorage_dir = dir;
+         }
         void loadInfo(Uri url) {
           
             
@@ -81,6 +105,18 @@ namespace windowMediaPlayerDM
 
             }
 
+        }
+        String getTitle() {
+
+            string result="";
+            string conetent = fullcontent;
+            string t = "<title>";
+            int start = fullcontent.IndexOf(t);
+            int end = fullcontent.LastIndexOf("</title>");
+
+            result = fullcontent.Substring(start+t.Length,end-(start+t.Length));
+
+            return result;
         }
 
          String getbaseUrl(String fcontent) {
@@ -341,7 +377,7 @@ namespace windowMediaPlayerDM
 
 
                  //throw a file not found exception if dlfilepath is null ?
-                // wb.Dispose();
+                 wb.Dispose();
              }
          
          
@@ -432,6 +468,18 @@ namespace windowMediaPlayerDM
              return result;
          }
 
+         public string dlnameUpdate {
+
+             get
+             {
+                 
+                 int end = dlfilepath.LastIndexOf("\\");
+                 dlfilepath = dlfilepath.Substring(0, end);
+                 dlfilepath = dlfilepath + "\\" + title;
+                    return dlfilepath; }
+             set { dlfilepath = value; } 
+         
+         }
 
 
         //get the file place online
@@ -442,6 +490,25 @@ namespace windowMediaPlayerDM
              loadInfo(websiteLink);
              }
 
+         }
+
+        /*        List<Uri> Allfiles= new List<Uri>();
+
+        String effetiveLink;
+
+        List<string> titles = new List<string>();
+         */
+
+         public List<Uri> getAllfiles {
+             get { return Allfiles; }
+             set { Allfiles = value; }
+         
+         
+         }
+         public List<string> getTitles {
+             get { return titles; }
+             set { titles = value; }
+         
          }
     }
 }
