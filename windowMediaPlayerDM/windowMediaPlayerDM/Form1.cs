@@ -3705,7 +3705,7 @@ namespace windowMediaPlayerDM
                 MultiDownloadLinks.Add((Uri)box.SelectedItem, fm7.getTitle.SelectedItem.ToString());
 
                 vlcPlayer.SetMedia(gb.playDownlist);
-                autoLoadByName(gb.playDownlist);
+                //autoLoadByName(gb.playDownlist);
 
                 FileInfo file2 = new FileInfo(gb.playDownlist.OriginalString);
 
@@ -3765,53 +3765,59 @@ namespace windowMediaPlayerDM
         void autoLoadByName(FileInfo file)
         {
 
+          //  FileInfo file = new FileInfo(media.LocalPath);
 
+          //  throw new Exception("just to see") { };
             //search the parent dir of the file to see if there's other files has the same name
-            FileInfo[] files = null;
+            FileInfo[] files = file.Directory.GetFiles("*.xml");
 
-            ;
+            //get all xml files in the directory
+
+           // throw new Exception("just to see");
             if (!file.Name.Contains("."))
             {
                 //if the file has extension
-                files = file.Directory.GetFiles(file.Name);
-            }
-            else
-            {
-
-                int end = file.Name.LastIndexOf(".");
-                int start = 0;
-                if (end > start)
+                for (int i = 0; i < files.Length; i++)
                 {
 
-                    String truename = file.Name.Substring(start, end - start);
-
-                    files = file.Directory.GetFiles(truename);
-
-
-                }
-
-
-            }
-
-            if (files != null)
-            {
-                for (int i = 0; i < files.Count(); i++)
-                {
-
-                    if (files[i].Name.Contains(".xml"))
+                    if (files[i].Name.Contains(file.Name))
                     {
-
                         string[] tempstring = { files[i].FullName, files[i].Name };
 
                         DM_List.Add(tempstring);
                         readXML(files[i].FullName);
                         Danmoku_status.Text = "DM Set";
 
+                    }
+
+
+                }
+
+            }
+            else
+            {
+
+                for (int i = 0; i < files.Length; i++)
+                {
+                    int end = file.Name.LastIndexOf(".");
+                    string newName = file.Name.Substring(0, end);
+                    if (files[i].Name.Contains(newName))
+                    {
+                        string[] tempstring = { files[i].FullName, files[i].Name };
+
+                        DM_List.Add(tempstring);
+                        readXML(files[i].FullName);
+                        Danmoku_status.Text = "DM Set";
 
                     }
 
+
                 }
+
+
             }
+
+
             if (fm3 == null)
             {
                 commentWindowSetup();
@@ -3821,57 +3827,60 @@ namespace windowMediaPlayerDM
                 fm3.Owner = this;
 
             }
-
-
+        
         }
 
         void autoLoadByName(Uri media) {
-            FileInfo file = new FileInfo(media.OriginalString);
+            FileInfo file = new FileInfo(media.LocalPath);
 
+            throw new Exception("just to see"){};
             //search the parent dir of the file to see if there's other files has the same name
-            FileInfo[] files = null;
+            FileInfo[] files = file.Directory.GetFiles("*.xml");
+
+            //get all xml files in the directory
                 
-                ;
+            
             if (!file.Name.Contains("."))
             {
                 //if the file has extension
-                files = file.Directory.GetFiles(file.Name);
-            }
-            else {
+                for (int i = 0; i < files.Length; i++) {
 
-                int end = file.Name.LastIndexOf(".");
-                int start = 0;
-                if (end > start) {
+                    if (files[i].Name.Contains(file.Name)) {
+                        string[] tempstring = { files[i].FullName, files[i].Name };
 
-                    String truename = file.Name.Substring(start, end - start);
-
-                    files = file.Directory.GetFiles(truename);
+                        DM_List.Add(tempstring);
+                        readXML(files[i].FullName);
+                        Danmoku_status.Text = "DM Set";
+                    
+                    }
                 
                 
                 }
 
-            
             }
+            else {
 
-            if (files != null)
-            {
-                for (int i = 0; i < files.Count(); i++)
+                for (int i = 0; i < files.Length; i++)
                 {
-
-                    if (files[i].Name.Contains(".xml"))
+                    int end = file.Name.LastIndexOf(".");
+                    string newName = file.Name.Substring(0,end);
+                    if (files[i].Name.Contains(newName))
                     {
-
                         string[] tempstring = { files[i].FullName, files[i].Name };
 
                         DM_List.Add(tempstring);
                         readXML(files[i].FullName);
                         Danmoku_status.Text = "DM Set";
 
-
                     }
 
+
                 }
+
+            
             }
+
+
             if (fm3 == null)
             {
                 commentWindowSetup();
