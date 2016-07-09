@@ -1676,7 +1676,7 @@ namespace windowMediaPlayerDM
           //if the file doesn't contain the . extension (meaning it's most likely dled by this player)
         // or if the current file dir is the same as the dl file dir
             //loads all files dispite file extension type
-        if (!mediadirs[1].Contains(".")||mediadirs[1].Contains(".mp"))
+        if (!mediadirs[1].Contains(".")||mediadirs[1].Contains(".mp")||fdir.FullName==current_dir_url)
         {
             FileInfo[] file = fdir.GetFiles();
             for (int i = 0; i < file.Count(); i++)
@@ -3596,7 +3596,7 @@ namespace windowMediaPlayerDM
 
             if (file.Exists)
             {DialogResult dg = MessageBox.Show("Already file existed in the directory are you sure you want to dl the file?","Alert",MessageBoxButtons.YesNo);
-            if (dg == DialogResult.OK)
+            if (dg == DialogResult.Yes)
             {
                 downloadFile(sender);
             }
@@ -3648,23 +3648,68 @@ namespace windowMediaPlayerDM
 
 
         }
+
+        public AsyncCompletedEventHandler DownloadFileCompleted(Uri filename)
+        {
+            Action<object, AsyncCompletedEventArgs> action = (sender, e) =>
+            {
+                var _filename = filename;
+
+                if (e.Error != null)
+                {
+                    throw e.Error;
+                }
+               // if (e.Cancelled) { 
+                
+                
+                
+               // }
+            //    if (!gb.downlaodFile.Any())
+           //     {
+            //        complited = true;
+            //    }
+            //    downloadFile(sender);
+
+
+                try
+                {
+                    wb_DownloadFileCompleted(filename);
+                }
+                catch (Exception) { fm7.getDownloadstatus2.Text = "server error"; }
+
+            };
+            return new AsyncCompletedEventHandler(action);
+
+
+
+
+
+        }
+
+
         // write a method contains load mlist and set vlcplayer media , replace all the current vlcplayer.setmedia
 
+        Dictionary<Uri, String> MultiDownloadLinks = new Dictionary<Uri, string>();
 
         void downloadFile(object sender) {
             ListBox box = (ListBox)sender;
             using (WebClient wb = new WebClient())
             {
-                wb.DownloadFileCompleted += new AsyncCompletedEventHandler(wb_DownloadFileCompleted);
+                Uri filename = (Uri)box.SelectedItem;
+               // wb.DownloadFileCompleted += new AsyncCompletedEventHandler(wb_DownloadFileCompleted);
+                wb.DownloadFileCompleted += DownloadFileCompleted(filename);
                 wb.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wb_DownloadProgressChanged);
                 gb.downlaodFile((Uri)box.SelectedItem, wb);
-                
+
+                //add the used link as a key for getting the title of the current file
+                MultiDownloadLinks.Add((Uri)box.SelectedItem, fm7.getTitle.SelectedItem.ToString());
+
                 vlcPlayer.SetMedia(gb.playDownlist);
                 autoLoadByName(gb.playDownlist);
 
-                FileInfo file2 = new FileInfo(gb.playDownlist.LocalPath);
+                FileInfo file2 = new FileInfo(gb.playDownlist.OriginalString);
 
-                FileInfo[] findDM = file2.Directory.GetFiles(gb.getCurrentTitle);
+                FileInfo[] findDM = file2.Directory.GetFiles(fm7.getTitle.SelectedItem.ToString());
 
                 for (int i = 0; i < findDM.Count(); i++)
                 {
@@ -3676,18 +3721,19 @@ namespace windowMediaPlayerDM
 
                         Danmoku_status.Text = "DM set";
 
-                        if (fm3 == null)
-                        {
-                            commentWindowSetup();
-                        }
-                        else
-                        {
-                            fm3.Owner = this;
-
+                       
                         }
 
 
                     }
+                if (fm3 == null)
+                {
+                    commentWindowSetup();
+                }
+                else
+                {
+                    fm3.Owner = this;
+
 
                 }
 
@@ -3861,15 +3907,30 @@ namespace windowMediaPlayerDM
 
         }
 
-        void wb_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
+        void wb_DownloadFileCompleted(Uri ufilename)
         {
             //throw new NotImplementedException();
             //remove urls from url list
             //change dled file name
             //update name in gb dlfile 
-            
 
-            FileInfo file = new FileInfo(gb.playDownlist.LocalPath);
+            String dllink = ufilename.LocalPath;
+
+
+
+
+
+
+
+            string title = MultiDownloadLinks[ufilename];
+
+            int start = dllink.LastIndexOf("/") + 1;
+            int end = dllink.Length;
+
+            String filename = dllink.Substring(start, end - start);
+
+
+            FileInfo file = new FileInfo(current_dir_url + "\\" + filename);
             string[] tempstring = { file.FullName, file.Name };
             Media_List.Remove(tempstring);
             if (file.Length > 0)
@@ -3883,21 +3944,142 @@ namespace windowMediaPlayerDM
                 }
                 downlaod_status.Text = "download completed, Renaming file now";
 
-              gb.getCurrentTitle=  gb.getCurrentTitle.Replace("\\", " ");
-              gb.getCurrentTitle=  gb.getCurrentTitle.Replace("/", " ");
+                title = title.Replace("\\", " ");
+                title = title.Replace("/", " ");
 
 
                 //パス 'A:\video\hima test video\Fate/kaleid liner プリズマ☆イリヤ ドライ！ 第01話 吸収さん高画質「銀色に沈む街」 - ひまわり動画' の一部が見つかりませんでした。
-                FileInfo temp = new FileInfo(file.Directory + "\\" + gb.getCurrentTitle);
+                FileInfo temp = new FileInfo(file.Directory + "\\" + title);
+
+
+                if (!temp.Exists || file.Length > temp.Length)
+                {
+                    file.CopyTo(file.Directory + "\\" + title, true);
+                }
+                else
+                {
+
+                    file.CopyTo(file.Directory + "\\" + title + "(1)", false);
+                }
+
+                gb.dlnameUpdate = temp.FullName;
+                tempstring = new String[] { file.FullName, file.Name };
+                Media_List.Add(tempstring);
+                if (vlcPlayer.IsPlaying)
+                {
+                    long temptime = vlcPlayer.Time;
+                    vlcPlayer.Stop();
+                    vlcPlayer.SetMedia(temp);
+                    autoLoadByName(temp);
+                    vlcPlayer.Time = temptime;
+
+                }
+                else
+                {
+
+                    FileInfo[] findDM = file.Directory.GetFiles(temp.Name);
+
+                    for (int i = 0; i < findDM.Count(); i++)
+                    {
+                        if (findDM[i].Name.Contains(".xml"))
+                        {
+                            string[] tdm = { findDM[i].FullName, findDM[i].Name };
+                            DM_List.Add(tdm);
+                            readXML(tdm[0]);
+
+                            Danmoku_status.Text = "DM set";
+
+                            if (fm3 == null)
+                            {
+                                commentWindowSetup();
+                            }
+                            else
+                            {
+                                fm3.Owner = this;
+
+                            }
+
+
+                        }
+
+                    }
+
+                    vlcPlayer.SetMedia(temp);
+                    autoLoadByName(temp);
+                    //           vlcPlayer.Play();
+
+                }
+                file.Delete();
+
+            }
+            else
+            {
+
+                file.Delete();
+
+            }
+            if (fm7 != null)
+            {
+                fm7.getDownloadstatus1.Text = "";
+            }
+            downlaod_status.Text = "";
+
+        }
+
+        void wb_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
+        {
+            //throw new NotImplementedException();
+            //remove urls from url list
+            //change dled file name
+            //update name in gb dlfile 
+
+            string dllink = "";
+
+            
+            WebClient wb = (WebClient)sender;
+            
+                
+            
+                dllink=wb.BaseAddress;
+
+            
+
+            string title = MultiDownloadLinks[new Uri(dllink)];
+            
+            int start = dllink.LastIndexOf("\\")+1;
+            int end = dllink.Length;
+
+            String filename = dllink.Substring(start, end - start);
+
+            FileInfo file = new FileInfo(current_dir_url+"\\"+filename);
+            string[] tempstring = { file.FullName, file.Name };
+            Media_List.Remove(tempstring);
+            if (file.Length > 0)
+            {
+                if (fm7 != null)
+                {
+
+                    fm7.getProgressbar.Value = 0;
+                    fm7.getDownloadstatus1.Text = "downlaod completed, renaming file now";
+
+                }
+                downlaod_status.Text = "download completed, Renaming file now";
+
+                title = title.Replace("\\", " ");
+                title = title.Replace("/", " ");
+
+
+                //パス 'A:\video\hima test video\Fate/kaleid liner プリズマ☆イリヤ ドライ！ 第01話 吸収さん高画質「銀色に沈む街」 - ひまわり動画' の一部が見つかりませんでした。
+                FileInfo temp = new FileInfo(file.Directory + "\\" + title);
                
                 
                 if (!temp.Exists || file.Length > temp.Length)
                 {
-                    file.CopyTo(file.Directory + "\\" + gb.getCurrentTitle, true);
+                    file.CopyTo(file.Directory + "\\" + title, true);
                 }
                 else {
 
-                    file.CopyTo(file.Directory + "\\" + gb.getCurrentTitle + "(1)", false);
+                    file.CopyTo(file.Directory + "\\" + title + "(1)", false);
                 }
 
                 gb.dlnameUpdate = temp.FullName;
@@ -3943,7 +4125,7 @@ namespace windowMediaPlayerDM
 
                     vlcPlayer.SetMedia(temp);
                     autoLoadByName(temp);
-                    vlcPlayer.Play();
+         //           vlcPlayer.Play();
                 
                 }
                 file.Delete();
@@ -3973,9 +4155,15 @@ namespace windowMediaPlayerDM
                 fm7.getFileUrl.Items.Clear();
                 gb = new getWebVideo(address, current_dir_url);
                 Links.Add(address);
-
+                // :/\?<>*|
                 gb.getCurrentTitle = gb.getCurrentTitle.Replace("\\", " ");
                 gb.getCurrentTitle = gb.getCurrentTitle.Replace("/", " ");
+                gb.getCurrentTitle = gb.getCurrentTitle.Replace(":"," ");
+                gb.getCurrentTitle = gb.getCurrentTitle.Replace("?", " ");
+                gb.getCurrentTitle = gb.getCurrentTitle.Replace("<", " ");
+                gb.getCurrentTitle = gb.getCurrentTitle.Replace(">", " ");
+                gb.getCurrentTitle = gb.getCurrentTitle.Replace("*", " ");
+                gb.getCurrentTitle = gb.getCurrentTitle.Replace("|", " ");
 
                 urlTitles.Add(gb.getCurrentTitle);
                 urls = gb.getAllfiles;
