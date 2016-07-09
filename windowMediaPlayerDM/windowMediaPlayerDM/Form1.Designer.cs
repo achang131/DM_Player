@@ -52,12 +52,15 @@
             this.Media_Player = new AxWMPLib.AxWindowsMediaPlayer();
             this.vlcPlayer = new Vlc.DotNet.Forms.VlcControl();
             this.VLC_track = new System.Windows.Forms.TrackBar();
+            this.setFromURL_menu = new System.Windows.Forms.ToolStripMenuItem();
+            this.next_track = new System.Windows.Forms.Button();
+            this.last_track = new System.Windows.Forms.Button();
+            this.loop_button = new System.Windows.Forms.Button();
+            this.vlcSound_button = new System.Windows.Forms.Button();
             this.vlcStop_button = new System.Windows.Forms.Button();
             this.vlcPlay_button = new System.Windows.Forms.Button();
-            this.vlcSound_button = new System.Windows.Forms.Button();
-            this.loop_button = new System.Windows.Forms.Button();
-            this.last_track = new System.Windows.Forms.Button();
-            this.next_track = new System.Windows.Forms.Button();
+            this.downlaod_status = new System.Windows.Forms.ToolStripStatusLabel();
+            this.download_status2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Media_Player)).BeginInit();
@@ -75,7 +78,8 @@
             this.openMeidaToolStripMenuItem,
             this.Media_DM_menu,
             this.Settings_menu,
-            this.testToolStripMenuItem});
+            this.testToolStripMenuItem,
+            this.setFromURL_menu});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(996, 26);
@@ -96,7 +100,7 @@
             // setDMToolStripMenuItem
             // 
             this.setDMToolStripMenuItem.Name = "setDMToolStripMenuItem";
-            this.setDMToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.setDMToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.setDMToolStripMenuItem.Text = "Set Meida";
             this.setDMToolStripMenuItem.Click += new System.EventHandler(this.setDMToolStripMenuItem_Click);
             // 
@@ -105,21 +109,21 @@
             this.setDMToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.setDMsToolStripMenuItem});
             this.setDMToolStripMenuItem1.Name = "setDMToolStripMenuItem1";
-            this.setDMToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.setDMToolStripMenuItem1.Size = new System.Drawing.Size(134, 22);
             this.setDMToolStripMenuItem1.Text = "Set DM";
             this.setDMToolStripMenuItem1.Click += new System.EventHandler(this.setDMToolStripMenuItem1_Click);
             // 
             // setDMsToolStripMenuItem
             // 
             this.setDMsToolStripMenuItem.Name = "setDMsToolStripMenuItem";
-            this.setDMsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.setDMsToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
             this.setDMsToolStripMenuItem.Text = "Set DMs";
             this.setDMsToolStripMenuItem.Click += new System.EventHandler(this.setDMsToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -153,7 +157,9 @@
             this.debugtab,
             this.debugtab2,
             this.Video_comment,
-            this.vlc_display});
+            this.vlc_display,
+            this.downlaod_status,
+            this.download_status2});
             this.statusStrip1.Location = new System.Drawing.Point(0, 559);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(996, 23);
@@ -232,6 +238,66 @@
             this.VLC_track.TabIndex = 4;
             this.VLC_track.TickStyle = System.Windows.Forms.TickStyle.Both;
             // 
+            // setFromURL_menu
+            // 
+            this.setFromURL_menu.Name = "setFromURL_menu";
+            this.setFromURL_menu.Size = new System.Drawing.Size(100, 22);
+            this.setFromURL_menu.Text = "Set from URL";
+            this.setFromURL_menu.Click += new System.EventHandler(this.setFromURL_menu_Click);
+            // 
+            // next_track
+            // 
+            this.next_track.BackgroundImage = global::windowMediaPlayerDM.Properties.Resources.next;
+            this.next_track.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.next_track.FlatAppearance.BorderSize = 0;
+            this.next_track.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.next_track.Location = new System.Drawing.Point(194, 540);
+            this.next_track.Name = "next_track";
+            this.next_track.Size = new System.Drawing.Size(30, 19);
+            this.next_track.TabIndex = 7;
+            this.next_track.UseVisualStyleBackColor = true;
+            this.next_track.Click += new System.EventHandler(this.next_track_Click);
+            // 
+            // last_track
+            // 
+            this.last_track.BackgroundImage = global::windowMediaPlayerDM.Properties.Resources.rewand;
+            this.last_track.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.last_track.FlatAppearance.BorderSize = 0;
+            this.last_track.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.last_track.Location = new System.Drawing.Point(145, 540);
+            this.last_track.Name = "last_track";
+            this.last_track.Size = new System.Drawing.Size(30, 19);
+            this.last_track.TabIndex = 7;
+            this.last_track.UseVisualStyleBackColor = true;
+            this.last_track.Click += new System.EventHandler(this.last_track_Click);
+            // 
+            // loop_button
+            // 
+            this.loop_button.BackgroundImage = global::windowMediaPlayerDM.Properties.Resources.repeat;
+            this.loop_button.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.loop_button.FlatAppearance.BorderSize = 0;
+            this.loop_button.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Black;
+            this.loop_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.loop_button.Location = new System.Drawing.Point(885, 540);
+            this.loop_button.Name = "loop_button";
+            this.loop_button.Size = new System.Drawing.Size(30, 19);
+            this.loop_button.TabIndex = 6;
+            this.loop_button.UseVisualStyleBackColor = true;
+            this.loop_button.Click += new System.EventHandler(this.loop_button_Click);
+            // 
+            // vlcSound_button
+            // 
+            this.vlcSound_button.BackgroundImage = global::windowMediaPlayerDM.Properties.Resources.sound;
+            this.vlcSound_button.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.vlcSound_button.FlatAppearance.BorderSize = 0;
+            this.vlcSound_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.vlcSound_button.Location = new System.Drawing.Point(931, 540);
+            this.vlcSound_button.Name = "vlcSound_button";
+            this.vlcSound_button.Size = new System.Drawing.Size(30, 19);
+            this.vlcSound_button.TabIndex = 5;
+            this.vlcSound_button.UseVisualStyleBackColor = true;
+            this.vlcSound_button.Click += new System.EventHandler(this.vlcSound_button_Click);
+            // 
             // vlcStop_button
             // 
             this.vlcStop_button.BackgroundImage = global::windowMediaPlayerDM.Properties.Resources.stop;
@@ -258,58 +324,15 @@
             this.vlcPlay_button.UseVisualStyleBackColor = true;
             this.vlcPlay_button.Click += new System.EventHandler(this.vlcPlay_button_Click);
             // 
-            // vlcSound_button
+            // downlaod_status
             // 
-            this.vlcSound_button.BackgroundImage = global::windowMediaPlayerDM.Properties.Resources.sound;
-            this.vlcSound_button.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.vlcSound_button.FlatAppearance.BorderSize = 0;
-            this.vlcSound_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.vlcSound_button.Location = new System.Drawing.Point(931, 540);
-            this.vlcSound_button.Name = "vlcSound_button";
-            this.vlcSound_button.Size = new System.Drawing.Size(30, 19);
-            this.vlcSound_button.TabIndex = 5;
-            this.vlcSound_button.UseVisualStyleBackColor = true;
-            this.vlcSound_button.Click += new System.EventHandler(this.vlcSound_button_Click);
+            this.downlaod_status.Name = "downlaod_status";
+            this.downlaod_status.Size = new System.Drawing.Size(0, 18);
             // 
-            // loop_button
+            // download_status2
             // 
-            this.loop_button.BackgroundImage = global::windowMediaPlayerDM.Properties.Resources.repeat;
-            this.loop_button.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.loop_button.FlatAppearance.BorderSize = 0;
-            this.loop_button.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Black;
-            this.loop_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.loop_button.Location = new System.Drawing.Point(885, 540);
-            this.loop_button.Name = "loop_button";
-            this.loop_button.Size = new System.Drawing.Size(30, 19);
-            this.loop_button.TabIndex = 6;
-            this.loop_button.UseVisualStyleBackColor = true;
-            this.loop_button.Click += new System.EventHandler(this.loop_button_Click);
-            // 
-            // last_track
-            // 
-            this.last_track.BackgroundImage = global::windowMediaPlayerDM.Properties.Resources.rewand;
-            this.last_track.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.last_track.FlatAppearance.BorderSize = 0;
-            this.last_track.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.last_track.Location = new System.Drawing.Point(145, 540);
-            this.last_track.Name = "last_track";
-            this.last_track.Size = new System.Drawing.Size(30, 19);
-            this.last_track.TabIndex = 7;
-            this.last_track.UseVisualStyleBackColor = true;
-            this.last_track.Click += new System.EventHandler(this.last_track_Click);
-            // 
-            // next_track
-            // 
-            this.next_track.BackgroundImage = global::windowMediaPlayerDM.Properties.Resources.next;
-            this.next_track.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.next_track.FlatAppearance.BorderSize = 0;
-            this.next_track.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.next_track.Location = new System.Drawing.Point(194, 540);
-            this.next_track.Name = "next_track";
-            this.next_track.Size = new System.Drawing.Size(30, 19);
-            this.next_track.TabIndex = 7;
-            this.next_track.UseVisualStyleBackColor = true;
-            this.next_track.Click += new System.EventHandler(this.next_track_Click);
+            this.download_status2.Name = "download_status2";
+            this.download_status2.Size = new System.Drawing.Size(0, 18);
             // 
             // Form1
             // 
@@ -374,6 +397,9 @@
         private System.Windows.Forms.Button loop_button;
         private System.Windows.Forms.Button last_track;
         private System.Windows.Forms.Button next_track;
+        private System.Windows.Forms.ToolStripMenuItem setFromURL_menu;
+        private System.Windows.Forms.ToolStripStatusLabel downlaod_status;
+        private System.Windows.Forms.ToolStripStatusLabel download_status2;
     }
 }
 

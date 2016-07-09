@@ -11,6 +11,11 @@ using System.Windows.Forms;
 //how to implement
 //use dictionary to hold the url as key and list of the movie urls as value
 //
+
+
+
+// on download complete rename file, remove dled link from list, add file to the media listbox as local file
+
 namespace windowMediaPlayerDM
 {
     class getWebVideo
@@ -185,36 +190,45 @@ namespace windowMediaPlayerDM
             Urltotalcount= Urltotalcount.Replace("lid", "");
             Urltotalcount = Urltotalcount.Replace(":", "");
              int totalcount = Int32.Parse(Urltotalcount);
-
+             
 
            //  throw new Exception("test view"){};
 
-             for (int i = 0; i < totalcount; i++)
-             {
-                 start = tempresult.IndexOf("http");
-                 end = tempresult.IndexOf("}");
-
-                 //http%3A%2F%2Ffleetupload.com%2Fmp3embed-gv3o70fbhxv2.mp3%3F"
-                 string urlt = tempresult.Substring(start, end - 1 - start);
-
-                 urlt = urlt.Replace("%2F", "/");
-                 urlt = urlt.Replace("%3A", ":");
-                 urlt = urlt.Replace("%3F", "?");
-
-                 Uri temp = new Uri(urlt);
-
-                 Allfiles.Add(temp);
-
-
-               //  throw new Exception("test view") { };
-
-                 if (i != totalcount - 1)
+                 for (int i = 0; i < totalcount; i++)
                  {
-                     tempresult = tempresult.Substring(end + 1, tempresult.Length - (end + 1));
-                 }
+                     
+                     start = tempresult.IndexOf("http");
+                     end = tempresult.IndexOf("}");
 
-             }
-         
+                     //http%3A%2F%2Ffleetupload.com%2Fmp3embed-gv3o70fbhxv2.mp3%3F"
+                     if (end > start)
+                     {
+                         string urlt = tempresult.Substring(start, end - 1 - start);
+
+                         urlt = urlt.Replace("%2F", "/");
+                         urlt = urlt.Replace("%3A", ":");
+                         urlt = urlt.Replace("%3F", "?");
+
+                         Uri temp = new Uri(urlt);
+
+                         Allfiles.Add(temp);
+
+
+                         //  throw new Exception("test view") { };
+
+                         if (i != totalcount - 1)
+                         {
+                             tempresult = tempresult.Substring(end + 1, tempresult.Length - (end + 1));
+                         }
+                     }
+                     else {
+                         if (i != totalcount - 1)
+                         {
+                             tempresult = tempresult.Substring(end + 1, tempresult.Length - (end + 1));
+                         }
+                     }
+                 }
+      
          }
 
 
@@ -232,6 +246,8 @@ namespace windowMediaPlayerDM
              int fstart = fileU.LastIndexOf("/") + 1;
 
              String filename = fileU.Substring(fstart, fileU.Length - fstart);
+
+
 
              FolderBrowserDialog fb = new FolderBrowserDialog();
 
@@ -503,6 +519,11 @@ namespace windowMediaPlayerDM
              get { return Allfiles; }
              set { Allfiles = value; }
          
+         
+         }
+         public string getCurrentTitle {
+             set { title = value; }
+             get { return title; }
          
          }
          public List<string> getTitles {

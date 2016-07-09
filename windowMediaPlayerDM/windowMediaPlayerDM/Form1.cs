@@ -11,6 +11,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using System.IO;
+using System.Net.Http;
+using System.Net;
 
 
 namespace windowMediaPlayerDM
@@ -766,12 +768,17 @@ namespace windowMediaPlayerDM
         }
         void replacetimer3_stop()
         {
+            //only stops if they are running to avoid freeze ?
 
-            try
+            if (replacetimer3.IsBusy)
             {
-                replacetimer3.CancelAsync();
+                try
+                {
+                    replacetimer3.CancelAsync();
+                }
+                catch (Exception) { }
+
             }
-            catch (Exception) { }
         }
         void replacetimer2_start() {
             if(!replacetimer2.IsBusy)
@@ -779,11 +786,14 @@ namespace windowMediaPlayerDM
         
         }
         void replacetimer2_stop() {
-
-            try
+            if (replacetimer2.IsBusy)
             {
-                replacetimer2.CancelAsync();
-            }catch(Exception){}
+                try
+                {
+                    replacetimer2.CancelAsync();
+                }
+                catch (Exception) { }
+            }
         }
 
         void printvlc(String s) {
@@ -875,11 +885,14 @@ namespace windowMediaPlayerDM
         
         }
         void replacetimer1_stop() {
-            try
+            if (replacetimer1.IsBusy)
             {
-                replacetimer1.CancelAsync();
+                try
+                {
+                    replacetimer1.CancelAsync();
+                }
+                catch (InvalidOperationException) { };
             }
-            catch (InvalidOperationException) { };
         
         }
         private void replacetimer1_DoWork(object sender, DoWorkEventArgs e) {
@@ -1007,7 +1020,7 @@ namespace windowMediaPlayerDM
 
               
             }
-            catch (NullReferenceException) { }
+            catch (NullReferenceException) { Console.WriteLine("in autoTimeSetup"); }
         }
 
         void cautoSet() {
@@ -1658,25 +1671,54 @@ namespace windowMediaPlayerDM
 
         DirectoryInfo fdir = new DirectoryInfo(temp_dir);
 
-        end = mediadirs[1].LastIndexOf(".");
+          //if the file doesn't contain the . extension (meaning it's most likely dled by this player)
+        // or if the current file dir is the same as the dl file dir
+            //loads all files dispite file extension type
+        if (!mediadirs[1].Contains(".")||fdir.FullName==current_dir_url)
+        {
+            FileInfo[] file = fdir.GetFiles();
+            for (int i = 0; i < file.Count(); i++)
+            {
 
-        String extension = mediadirs[1].Substring(end, mediadirs[1].Length-end);
+                String[] ml = { file[i].FullName, file[i].Name };
 
-        FileInfo[] file = fdir.GetFiles("*"+extension);
+                Media_List.Add(ml);
 
-        for (int i = 0; i < file.Count(); i++) {
+                if (fm2 != null)
+                {
 
-            String[] ml = {file[i].FullName,file[i].Name};
-            
-            Media_List.Add(ml);
+                    fm2.setMListBox.Items.Add(ml[1]);
 
-            if (fm2 != null) {
+                }
 
-                fm2.setMListBox.Items.Add(ml[1]);
-            
             }
+
         }
-        
+        else
+        {
+
+            end = mediadirs[1].LastIndexOf(".");
+
+            String extension = mediadirs[1].Substring(end, mediadirs[1].Length - end);
+
+            FileInfo[] file = fdir.GetFiles("*" + extension);
+
+            for (int i = 0; i < file.Count(); i++)
+            {
+
+                String[] ml = { file[i].FullName, file[i].Name };
+
+                Media_List.Add(ml);
+
+                if (fm2 != null)
+                {
+
+                    fm2.setMListBox.Items.Add(ml[1]);
+
+                }
+
+            }
+        }        
         
         }
 
@@ -2214,7 +2256,7 @@ namespace windowMediaPlayerDM
                 {
                     manual_checkend((int)vlcPlayer.Length/10, time_counter);
                 }
-                catch (NullReferenceException) { }
+                catch (NullReferenceException) { Console.WriteLine("in make comment"); }
                 }
         
         }
@@ -2464,7 +2506,8 @@ namespace windowMediaPlayerDM
             fm2.setDMListBox.KeyUp += new KeyEventHandler(setDMListBox_KeyUp);
             fm2.setFullDMBox.KeyUp += new KeyEventHandler(setFullDMBox_KeyUp);
 
-            if (vlcPlayer.GetCurrentMedia() != null) {
+
+             if (vlcPlayer.GetCurrentMedia() != null) {
                 Uri nuri = new Uri(vlcPlayer.GetCurrentMedia().Mrl);
                 FileInfo nfile = new FileInfo(nuri.LocalPath);
                 selectPlaying_box(nfile.Name);
@@ -2682,7 +2725,7 @@ namespace windowMediaPlayerDM
                 dmbox.Items.Remove(dmbox.SelectedItem);
 
             }
-            catch (NullReferenceException) { };
+            catch (NullReferenceException) { Console.WriteLine("in removeDMitem"); };
         
         }
 
@@ -2865,7 +2908,7 @@ namespace windowMediaPlayerDM
                         audioinfo = vlcPlayer.Audio.Tracks.Current.Name;
                        
                     }
-                    catch (NullReferenceException) { }
+                    catch (NullReferenceException) { Console.Write("in void settingup"); }
                 
                 
                 }
@@ -3375,6 +3418,382 @@ namespace windowMediaPlayerDM
               
 
             }
+        }
+        // the orginal source page is call links
+        // the media file urls are called url
+
+        List<Uri> urls;
+        List<Uri> Links;
+        List<string> urlTitles;
+        String current_dir_url;
+        Uri linkaddress;
+        add_link_form fm6;
+        Dictionary<Uri, List<Uri>> UrlDictionary;
+        Url_menu fm7;
+        getWebVideo gb;
+        private void setFromURL_menu_Click(object sender, EventArgs e)
+        {
+            if (current_dir_url == null || linkaddress == null)
+            {
+                fm6 = new add_link_form();
+                fm6.setCacnel.Click += new EventHandler(setCacnel_Click);
+                fm6.setConfirm.Click += new EventHandler(setConfirm_Click);
+                fm6.Disposed += new EventHandler(fm6_Disposed);
+                fm6.Show();
+            }
+            else {
+
+                URL_menuLoadup();
+            
+            }
+
+
+        }
+
+        void URL_menuLoadup() {
+            Links = new List<Uri>();
+            urls = new List<Uri>();
+            urlTitles = new List<string>();
+            UrlDictionary = new Dictionary<Uri, List<Uri>>();
+
+            fm7 = new Url_menu();
+            fm7.setLinkbox.Text = linkaddress.AbsoluteUri;
+            
+            //load the list with the urls if exists
+            if (Links.Count > 0)
+            {
+                for (int i = 0; i < urls.Count; i++)
+                {
+                    fm7.getTitle.Items.Add(urlTitles.ElementAt(i));
+                    fm7.getLinks.Items.Add(Links.ElementAt(i));
+                    //the url list only displays when an items is selected in title or links
+                }
+            }
+            else { 
+            //if links is empty that means it's first time run
+
+
+
+                load_Url_from(linkaddress);
+            
+            
+            }
+            fm7.getTitle.Click += new EventHandler(getTitle_Click);
+            fm7.getLinks.Click += new EventHandler(getLinks_Click);
+            fm7.getloadURLbutton.Click += new EventHandler(getloadURLbutton_Click);
+            fm7.getFileUrl.DoubleClick += new EventHandler(getFileUrl_DoubleClick);
+            fm7.Show();
+        
+        
+        }
+
+        void getFileUrl_DoubleClick(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
+            //download files here
+
+            ListBox box = (ListBox)sender;
+            FileInfo file = new FileInfo(current_dir_url+"\\" + fm7.getTitle.SelectedItem.ToString());
+
+            if (file.Exists)
+            {DialogResult dg = MessageBox.Show("Already file existed in the directory are you sure you want to dl the file?","Alert",MessageBoxButtons.YesNo);
+            if (dg == DialogResult.OK)
+            {
+                downloadFile(sender);
+            }
+            else {
+                if (!vlcPlayer.IsPlaying)
+                {
+                    if (vlcPlayer.GetCurrentMedia().Title != file.Name)
+                    {
+                        string[] temp = { file.FullName, file.Name };
+                        Media_List.Add(temp);
+                        vlcPlayer.SetMedia(file);
+                    }
+                }
+            }
+            }else{
+            
+            downloadFile(sender);
+            }
+
+
+        }
+        void downloadFile(object sender) {
+            ListBox box = (ListBox)sender;
+            using (WebClient wb = new WebClient())
+            {
+                wb.DownloadFileCompleted += new AsyncCompletedEventHandler(wb_DownloadFileCompleted);
+                wb.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wb_DownloadProgressChanged);
+                gb.downlaodFile((Uri)box.SelectedItem, wb);
+                vlcPlayer.SetMedia(gb.playDownlist);
+                //set the media in vlc player
+                urls.Remove((Uri)box.SelectedItem);
+                FileInfo file = new FileInfo(gb.playDownlist.OriginalString);
+                String[] temp = {file.FullName,file.Name };
+                Media_List.Add(temp);
+                autoLoadMlist(temp);
+
+                UrlDictionary[(Uri)fm7.getLinks.SelectedItem].Remove((Uri)box.SelectedItem);
+                box.Items.Remove((Uri)box.SelectedItem);
+
+
+
+
+
+
+                wb.Dispose();
+
+            }
+        
+        }
+        void wb_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+        {
+            //throw new NotImplementedException();
+            //show dl progress
+            String currentbyte = e.BytesReceived.ToString();
+            String totalbyte = e.TotalBytesToReceive.ToString();
+            int progress = e.ProgressPercentage;
+            if (fm7 != null) {
+
+                fm7.getProgressbar.Maximum = 100;
+                fm7.getProgressbar.Minimum = 0;
+                fm7.getProgressbar.Value = progress;
+                fm7.getDownloadstatus1.Text = currentbyte + "/" + totalbyte;
+            
+            }
+            downlaod_status.Text ="downloading"+gb.getCurrentTitle+" "+ currentbyte + "/" + totalbyte +"  "+progress +"% completed";
+
+            
+
+
+
+        }
+
+        void wb_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
+        {
+            //throw new NotImplementedException();
+            //remove urls from url list
+            //change dled file name
+            //update name in gb dlfile 
+
+            FileInfo file = new FileInfo(gb.playDownlist.LocalPath);
+            string[] tempstring = { file.FullName, file.Name };
+            Media_List.Remove(tempstring);
+            if (file.Length > 0)
+            {
+                if (fm7 != null)
+                {
+
+                    fm7.getProgressbar.Value = 0;
+                    fm7.getDownloadstatus1.Text = "downlaod completed, renaming file now";
+
+                }
+                downlaod_status.Text = "download completed, Renaming file now";
+
+              gb.getCurrentTitle=  gb.getCurrentTitle.Replace("\\", " ");
+              gb.getCurrentTitle=  gb.getCurrentTitle.Replace("/", " ");
+
+
+                //パス 'A:\video\hima test video\Fate/kaleid liner プリズマ☆イリヤ ドライ！ 第01話 吸収さん高画質「銀色に沈む街」 - ひまわり動画' の一部が見つかりませんでした。
+                FileInfo temp = new FileInfo(file.Directory + "\\" + gb.getCurrentTitle);
+               
+                
+                if (!temp.Exists || file.Length > temp.Length)
+                {
+                    file.CopyTo(file.Directory + "\\" + gb.getCurrentTitle, true);
+                }
+                else {
+
+                    file.CopyTo(file.Directory + "\\" + gb.getCurrentTitle + "(1)", false);
+                }
+
+                gb.dlnameUpdate = temp.FullName;
+                tempstring= new String[]{file.FullName,file.Name};
+                Media_List.Add(tempstring);
+                if (vlcPlayer.IsPlaying)
+                {
+                    long temptime = vlcPlayer.Time;
+                    vlcPlayer.Stop();
+                    vlcPlayer.SetMedia(temp);
+                    vlcPlayer.Time = temptime;
+
+                }
+                else {
+
+
+                    vlcPlayer.SetMedia(temp);
+                    vlcPlayer.Play();
+                
+                }
+                file.Delete();
+
+            }
+            else {
+
+                file.Delete();
+            
+            }
+            if (fm7 != null) {
+                fm7.getDownloadstatus1.Text = "";
+            }
+            downlaod_status.Text = "";
+
+        }
+        void load_Url_from(Uri address) {
+
+
+            fm7.getFileUrl.Items.Clear();
+            gb = new getWebVideo(address, current_dir_url);
+            Links.Add(address);
+
+            gb.getCurrentTitle = gb.getCurrentTitle.Replace("\\", " ");
+            gb.getCurrentTitle = gb.getCurrentTitle.Replace("/", " ");
+            
+            urlTitles.Add(gb.getCurrentTitle);
+            urls = gb.getAllfiles;
+            UrlDictionary.Add(address, gb.getAllfiles);
+
+            //load all the info onto the box
+            fm7.getLinks.Items.Add(address);
+            fm7.getTitle.Items.Add(gb.getCurrentTitle);
+            //load url itembox with all the links
+            for (int i = 0; i < urls.Count; i++)
+            {
+                fm7.getFileUrl.Items.Add(urls.ElementAt(i));
+
+
+            }
+            fm7.getLinks.SelectedIndex = 0;
+            fm7.getTitle.SelectedIndex = 0;
+        
+        }
+        void getloadURLbutton_Click(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
+            //when the set url button is clicked
+
+        }
+
+        void getLinks_Click(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
+            //basiclly the same as get title with a few lines chagned
+
+
+            //clear the uri box
+            fm7.getFileUrl.Items.Clear();
+            ListBox temp = (ListBox)sender;
+
+            int selected = temp.SelectedIndex;
+            fm7.getTitle.SelectedIndex = selected;
+
+            //if the link has been read before add if not in else area read the links and load it on dictionary
+
+            if (UrlDictionary.ContainsKey(Links.ElementAt(selected)))
+            {
+                for (int i = 0; i < UrlDictionary[Links.ElementAt(selected)].Count(); i++)
+                {
+
+                    fm7.getFileUrl.Items.Add(UrlDictionary[Links.ElementAt(selected)].ElementAt(i));
+
+                }
+
+            }
+            else
+            {
+                // not doing anything here for now since it might conflict with later code
+                // since everything in the links are supposed to be loaded and add into dictionary
+                // so here is just to prevent the unexcepted error
+
+
+            }
+
+
+
+        }
+
+        void getTitle_Click(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
+            // when the name of the title is clicked
+
+            //clear the uri box
+            fm7.getFileUrl.Items.Clear();
+
+            ListBox temp = (ListBox)sender;
+
+            int selected = temp.SelectedIndex;
+            fm7.getLinks.SelectedIndex = selected;
+
+            //if the link has been read before add if not in else area read the links and load it on dictionary
+
+            if (UrlDictionary.ContainsKey(Links.ElementAt(selected)))
+            {
+                for (int i = 0; i < UrlDictionary[Links.ElementAt(selected)].Count(); i++)
+                {
+
+                    fm7.getFileUrl.Items.Add(UrlDictionary[Links.ElementAt(selected)].ElementAt(i));
+
+                }
+
+            }
+            else { 
+            // not doing anything here for now since it might conflict with later code
+           // since everything in the links are supposed to be loaded and add into dictionary
+          // so here is just to prevent the unexcepted error
+            
+            
+            }
+
+
+
+
+        }
+
+        void fm6_Disposed(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
+            //when fm6 gets disposed;
+
+            if (current_dir_url == null || linkaddress == null)
+            {
+
+                //do nothing if one fo the two is not set
+
+
+                // may modiefied  current_dir_url if you want to leave the directory out for online streaming instead of dled to local then play but for now it's all dled local
+            }
+            else { 
+            
+            //opens out the url menu that displays the list of links to dl or maybe past urls ?
+            //loads content of the url and then save the url as key the list of links in content as values
+              
+                
+                URL_menuLoadup();
+            
+            
+            }
+
+        }
+
+        void setConfirm_Click(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
+            //if confirm button is clicked 
+            linkaddress = fm6.getLink;
+            current_dir_url = fm6.getDri;
+
+            fm6.Dispose();
+        }
+
+        void setCacnel_Click(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
+            //when cancel buttun is click on the add link form
+
+            fm6.Dispose();
+
         }
 
 
