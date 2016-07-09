@@ -70,7 +70,7 @@ namespace windowMediaPlayerDM
 
         
         }
-
+        public Encoding code;
         public void changePath(string dir) {
 
              filestorage_dir = dir;
@@ -97,7 +97,8 @@ namespace windowMediaPlayerDM
                 //if unicoded
 
                     readers = new StreamReader(recives, Encoding.GetEncoding(wresponse.CharacterSet));
-                
+
+                    code = Encoding.GetEncoding(wresponse.CharacterSet);
                 }
                 //could use read line to get an array of results?
                 fullcontent = readers.ReadToEnd();
@@ -129,31 +130,33 @@ namespace windowMediaPlayerDM
             String result = "";
             String firsttarget = "var movie_url = ";
             String firsttemp = "var display_movie_url = ";
-            int length = firsttarget.Length;
-            int start = fcontent.IndexOf(firsttarget);
-            int end = fcontent.IndexOf(firsttemp);
-            
-
-            String tempresult = fcontent.Substring(start, end - start);
-
-            start = tempresult.IndexOf("'")+1;
-            end = tempresult.LastIndexOf(";")-1;
-
-            result = tempresult.Substring(start, end - start);
-
-            //http://s3.amazonaws.com/ksr/assets/012/985/562/4b9df98bfba5c3714537627d3d8ec91a_original.mp3?
-            //http%3A%2F%2Fs3.amazonaws.com%2Fksr%2Fassets%2F012%2F985%2F562%2F4b9df98bfba5c3714537627d3d8ec91a_original.mp3%3F
-
-            //basic put the gabbish data back to it's orignal form so the uri can read it
-            result = result.Replace("%2F","/");
-            result = result.Replace("%3A", ":");
-            result = result.Replace("%3F","?");
-
-            Allfiles.Add(new Uri(result));
+            if (fullcontent.Contains(firsttarget))
+            {
+                int length = firsttarget.Length;
+                int start = fcontent.IndexOf(firsttarget);
+                int end = fcontent.IndexOf(firsttemp);
 
 
-            //check if result here is online if not then go find other links in full content
+                String tempresult = fcontent.Substring(start, end - start);
 
+                start = tempresult.IndexOf("'") + 1;
+                end = tempresult.LastIndexOf(";") - 1;
+
+                result = tempresult.Substring(start, end - start);
+
+                //http://s3.amazonaws.com/ksr/assets/012/985/562/4b9df98bfba5c3714537627d3d8ec91a_original.mp3?
+                //http%3A%2F%2Fs3.amazonaws.com%2Fksr%2Fassets%2F012%2F985%2F562%2F4b9df98bfba5c3714537627d3d8ec91a_original.mp3%3F
+
+                //basic put the gabbish data back to it's orignal form so the uri can read it
+                result = result.Replace("%2F", "/");
+                result = result.Replace("%3A", ":");
+                result = result.Replace("%3F", "?");
+
+                Allfiles.Add(new Uri(result));
+
+
+                //check if result here is online if not then go find other links in full content
+            }
             return result;
         
         }
@@ -170,65 +173,68 @@ namespace windowMediaPlayerDM
            String  result = "";
            String  firsttarget = "var ary_spare_sources =";
            String  firsttemp = "var sendFailed =";
-           int start = fullcontent.IndexOf(firsttarget);
-           int end = fullcontent.IndexOf(firsttemp);
-           String tempresult = fullcontent.Substring(start, end - start);
+           if (fullcontent.Contains(firsttarget))
+           {
+               int start = fullcontent.IndexOf(firsttarget);
+               int end = fullcontent.IndexOf(firsttemp);
+               String tempresult = fullcontent.Substring(start, end - start);
 
 
-             start = tempresult.IndexOf("[");
-             end = tempresult.IndexOf("]");
-             tempresult = tempresult.Substring(start + 1, end - start);
+               start = tempresult.IndexOf("[");
+               end = tempresult.IndexOf("]");
+               tempresult = tempresult.Substring(start + 1, end - start);
 
 
 
-             start = tempresult.LastIndexOf("lid\":");
-             end = tempresult.LastIndexOf(",\"src\":");
+               start = tempresult.LastIndexOf("lid\":");
+               end = tempresult.LastIndexOf(",\"src\":");
 
-             String Urltotalcount = tempresult.Substring(start, end - start);
-             end = Urltotalcount.LastIndexOf("\"") - 1;
-            Urltotalcount= Urltotalcount.Replace("\"", "");
-            Urltotalcount= Urltotalcount.Replace("lid", "");
-            Urltotalcount = Urltotalcount.Replace(":", "");
-             int totalcount = Int32.Parse(Urltotalcount);
-             
-
-           //  throw new Exception("test view"){};
-
-                 for (int i = 0; i < totalcount; i++)
-                 {
-                     
-                     start = tempresult.IndexOf("http");
-                     end = tempresult.IndexOf("}");
-
-                     //http%3A%2F%2Ffleetupload.com%2Fmp3embed-gv3o70fbhxv2.mp3%3F"
-                     if (end > start)
-                     {
-                         string urlt = tempresult.Substring(start, end - 1 - start);
-
-                         urlt = urlt.Replace("%2F", "/");
-                         urlt = urlt.Replace("%3A", ":");
-                         urlt = urlt.Replace("%3F", "?");
-
-                         Uri temp = new Uri(urlt);
-
-                         Allfiles.Add(temp);
+               String Urltotalcount = tempresult.Substring(start, end - start);
+               end = Urltotalcount.LastIndexOf("\"") - 1;
+               Urltotalcount = Urltotalcount.Replace("\"", "");
+               Urltotalcount = Urltotalcount.Replace("lid", "");
+               Urltotalcount = Urltotalcount.Replace(":", "");
+               int totalcount = Int32.Parse(Urltotalcount);
 
 
-                         //  throw new Exception("test view") { };
+               //  throw new Exception("test view"){};
 
-                         if (i != totalcount - 1)
-                         {
-                             tempresult = tempresult.Substring(end + 1, tempresult.Length - (end + 1));
-                         }
-                     }
-                     else {
-                         if (i != totalcount - 1)
-                         {
-                             tempresult = tempresult.Substring(end + 1, tempresult.Length - (end + 1));
-                         }
-                     }
-                 }
-      
+               for (int i = 0; i < totalcount; i++)
+               {
+
+                   start = tempresult.IndexOf("http");
+                   end = tempresult.IndexOf("}");
+
+                   //http%3A%2F%2Ffleetupload.com%2Fmp3embed-gv3o70fbhxv2.mp3%3F"
+                   if (end > start)
+                   {
+                       string urlt = tempresult.Substring(start, end - 1 - start);
+
+                       urlt = urlt.Replace("%2F", "/");
+                       urlt = urlt.Replace("%3A", ":");
+                       urlt = urlt.Replace("%3F", "?");
+
+                       Uri temp = new Uri(urlt);
+
+                       Allfiles.Add(temp);
+
+
+                       //  throw new Exception("test view") { };
+
+                       if (i != totalcount - 1)
+                       {
+                           tempresult = tempresult.Substring(end + 1, tempresult.Length - (end + 1));
+                       }
+                   }
+                   else
+                   {
+                       if (i != totalcount - 1)
+                       {
+                           tempresult = tempresult.Substring(end + 1, tempresult.Length - (end + 1));
+                       }
+                   }
+               }
+           }
          }
 
 

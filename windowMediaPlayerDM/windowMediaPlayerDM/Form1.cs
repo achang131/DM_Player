@@ -1674,7 +1674,7 @@ namespace windowMediaPlayerDM
           //if the file doesn't contain the . extension (meaning it's most likely dled by this player)
         // or if the current file dir is the same as the dl file dir
             //loads all files dispite file extension type
-        if (!mediadirs[1].Contains(".")||fdir.FullName==current_dir_url)
+        if (!mediadirs[1].Contains(".")||mediadirs[1].Contains(".mp"))
         {
             FileInfo[] file = fdir.GetFiles();
             for (int i = 0; i < file.Count(); i++)
@@ -1682,7 +1682,10 @@ namespace windowMediaPlayerDM
 
                 String[] ml = { file[i].FullName, file[i].Name };
 
+                //only load if it's not xml file do this to avoid reading xml in wrong place
+                if(!file[i].Name.Contains(".xml")){
                 Media_List.Add(ml);
+                }
 
                 if (fm2 != null)
                 {
@@ -3422,24 +3425,33 @@ namespace windowMediaPlayerDM
         // the orginal source page is call links
         // the media file urls are called url
 
-        List<Uri> urls;
-        List<Uri> Links;
-        List<string> urlTitles;
+        List<Uri> urls = new List<Uri>();
+        List<Uri> Links = new List<Uri>();
+        List<string> urlTitles=new List<string>();
         String current_dir_url;
         Uri linkaddress;
         add_link_form fm6;
-        Dictionary<Uri, List<Uri>> UrlDictionary;
+        Dictionary<Uri, List<Uri>> UrlDictionary= new Dictionary<Uri,List<Uri>>();
         Url_menu fm7;
         getWebVideo gb;
         private void setFromURL_menu_Click(object sender, EventArgs e)
         {
             if (current_dir_url == null || linkaddress == null)
             {
-                fm6 = new add_link_form();
-                fm6.setCacnel.Click += new EventHandler(setCacnel_Click);
-                fm6.setConfirm.Click += new EventHandler(setConfirm_Click);
-                fm6.Disposed += new EventHandler(fm6_Disposed);
-                fm6.Show();
+                if (fm6 == null)
+                {
+                    fm6 = new add_link_form();
+                    fm6.setCacnel.Click += new EventHandler(setCacnel_Click);
+                    fm6.setConfirm.Click += new EventHandler(setConfirm_Click);
+                    fm6.Disposed += new EventHandler(fm6_Disposed);
+                    fm6.Show();
+
+                }
+                else {
+
+                    fm6.Dispose();
+                
+                }
             }
             else {
 
@@ -3450,39 +3462,49 @@ namespace windowMediaPlayerDM
 
         }
 
+
+        //   ・xml
         void URL_menuLoadup() {
-            Links = new List<Uri>();
-            urls = new List<Uri>();
-            urlTitles = new List<string>();
-            UrlDictionary = new Dictionary<Uri, List<Uri>>();
 
-            fm7 = new Url_menu();
-            fm7.setLinkbox.Text = linkaddress.AbsoluteUri;
-            
-            //load the list with the urls if exists
-            if (Links.Count > 0)
+            if (fm7 == null)
             {
-                for (int i = 0; i < urls.Count; i++)
+
+
+                fm7 = new Url_menu();
+                fm7.setLinkbox.Text = linkaddress.AbsoluteUri;
+
+                //load the list with the urls if exists
+                if (Links.Count > 0)
                 {
-                    fm7.getTitle.Items.Add(urlTitles.ElementAt(i));
-                    fm7.getLinks.Items.Add(Links.ElementAt(i));
-                    //the url list only displays when an items is selected in title or links
+                    for (int i = 0; i < Links.Count; i++)
+                    {
+                        fm7.getTitle.Items.Add(urlTitles.ElementAt(i));
+                        fm7.getLinks.Items.Add(Links.ElementAt(i));
+                        //the url list only displays when an items is selected in title or links
+                    }
                 }
+                else
+                {
+                    //if links is empty that means it's first time run
+
+
+
+                    load_Url_from(linkaddress);
+
+
+                }
+                fm7.getTitle.Click += new EventHandler(getTitle_Click);
+                fm7.getLinks.Click += new EventHandler(getLinks_Click);
+                fm7.getloadURLbutton.Click += new EventHandler(getloadURLbutton_Click);
+                fm7.getFileUrl.DoubleClick += new EventHandler(getFileUrl_DoubleClick);
+                fm7.Show();
             }
-            else { 
-            //if links is empty that means it's first time run
+            else {
 
-
-
-                load_Url_from(linkaddress);
-            
+                fm7.Dispose();
+                fm7 = null;
             
             }
-            fm7.getTitle.Click += new EventHandler(getTitle_Click);
-            fm7.getLinks.Click += new EventHandler(getLinks_Click);
-            fm7.getloadURLbutton.Click += new EventHandler(getloadURLbutton_Click);
-            fm7.getFileUrl.DoubleClick += new EventHandler(getFileUrl_DoubleClick);
-            fm7.Show();
         
         
         }
@@ -3491,6 +3513,25 @@ namespace windowMediaPlayerDM
         {
             //throw new NotImplementedException();
             //download files here
+
+            //・xml
+
+            DirectoryInfo dif = new DirectoryInfo(current_dir_url);
+            FileInfo[] files = dif.GetFiles("*・xml");
+            
+            //only do this if there's only 1 file that suits the condition 
+            if (files.Count() == 1) {
+
+                FileInfo xml = files.ElementAt(0);
+                
+                byte[] tempbytes = Encoding.Default.GetBytes(gb.getCurrentTitle);
+                string transtemp = Encoding.GetEncoding("shift-jis").GetString(tempbytes);
+                
+                xml.CopyTo(dif.FullName+"\\"+transtemp+".xml",true);
+
+                xml.Delete();
+            }
+            
 
             ListBox box = (ListBox)sender;
             FileInfo file = new FileInfo(current_dir_url+"\\" + fm7.getTitle.SelectedItem.ToString());
@@ -3504,11 +3545,15 @@ namespace windowMediaPlayerDM
             else {
                 if (!vlcPlayer.IsPlaying)
                 {
-                    if (vlcPlayer.GetCurrentMedia().Title != file.Name)
+                    if (vlcPlayer.GetCurrentMedia()==null || vlcPlayer.GetCurrentMedia().Title != file.Name)
                     {
                         string[] temp = { file.FullName, file.Name };
                         Media_List.Add(temp);
+                        autoLoadMlist(temp);
+                        autoLoadDMlist(temp);
+
                         vlcPlayer.SetMedia(file);
+                        Media_status.Text = "Media Set";
                     }
                 }
             }
@@ -3533,6 +3578,7 @@ namespace windowMediaPlayerDM
                 String[] temp = {file.FullName,file.Name };
                 Media_List.Add(temp);
                 autoLoadMlist(temp);
+                autoLoadDMlist(temp);
 
                 UrlDictionary[(Uri)fm7.getLinks.SelectedItem].Remove((Uri)box.SelectedItem);
                 box.Items.Remove((Uri)box.SelectedItem);
@@ -3640,38 +3686,123 @@ namespace windowMediaPlayerDM
             downlaod_status.Text = "";
 
         }
+
         void load_Url_from(Uri address) {
 
-
-            fm7.getFileUrl.Items.Clear();
-            gb = new getWebVideo(address, current_dir_url);
-            Links.Add(address);
-
-            gb.getCurrentTitle = gb.getCurrentTitle.Replace("\\", " ");
-            gb.getCurrentTitle = gb.getCurrentTitle.Replace("/", " ");
-            
-            urlTitles.Add(gb.getCurrentTitle);
-            urls = gb.getAllfiles;
-            UrlDictionary.Add(address, gb.getAllfiles);
-
-            //load all the info onto the box
-            fm7.getLinks.Items.Add(address);
-            fm7.getTitle.Items.Add(gb.getCurrentTitle);
-            //load url itembox with all the links
-            for (int i = 0; i < urls.Count; i++)
+            if (!Links.Contains(address))
             {
-                fm7.getFileUrl.Items.Add(urls.ElementAt(i));
 
 
+                    
+                
+
+                fm7.getFileUrl.Items.Clear();
+                gb = new getWebVideo(address, current_dir_url);
+                Links.Add(address);
+
+                gb.getCurrentTitle = gb.getCurrentTitle.Replace("\\", " ");
+                gb.getCurrentTitle = gb.getCurrentTitle.Replace("/", " ");
+
+                urlTitles.Add(gb.getCurrentTitle);
+                urls = gb.getAllfiles;
+                UrlDictionary.Add(address, gb.getAllfiles);
+
+                //load all the info onto the box
+                fm7.getLinks.Items.Add(address);
+                fm7.getTitle.Items.Add(gb.getCurrentTitle);
+                //load url itembox with all the links
+
+                WebBrowser wb = new WebBrowser();
+
+                //wb.Url = address;
+
+
+
+                wb.Navigate(address);
+
+                wb.ScriptErrorsSuppressed = true;
+
+
+
+                wb.DocumentCompleted += new WebBrowserDocumentCompletedEventHandler(wb_DocumentCompleted);
+                    
+
+                for (int i = 0; i < urls.Count; i++)
+                {
+                    fm7.getFileUrl.Items.Add(urls.ElementAt(i));
+
+                     
+                }
+                
+                fm7.getLinks.SelectedIndex = fm7.getLinks.Items.Count-1;
+                fm7.getTitle.SelectedIndex = fm7.getTitle.Items.Count-1;
             }
-            fm7.getLinks.SelectedIndex = 0;
-            fm7.getTitle.SelectedIndex = 0;
         
+        }
+
+        void wb_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
+        {
+
+            fm7.getDownloadstatus2.Text = "document loaded";
+            
+            
+
+
+            WebBrowser wb = (WebBrowser)sender;
+            
+ 
+
+            for (int i = 0; i < wb.Document.GetElementsByTagName("input").Count; i++)
+            {
+
+
+
+                if (wb.Document.GetElementsByTagName("input")[i].GetAttribute("value").Equals("ダウンロード"))
+                {
+                    wb.Document.GetElementsByTagName("input")[i].InvokeMember("click");
+
+                }
+            }
+
+            wb.Dispose();
+        }
+
+        void wb_Navigated(object sender, WebBrowserNavigatedEventArgs e)
+        {
+            WebBrowser wb = (WebBrowser)sender;
+            for (int i = 0; i < wb.Document.GetElementsByTagName("input").Count; i++)
+            {
+                
+             
+
+                if (wb.Document.GetElementsByTagName("input")[i].GetAttribute("type").Equals("submit"))
+                {
+                    wb.Document.GetElementsByTagName("input")[i].InvokeMember("click");
+
+                    
+                }
+            }
+            
         }
         void getloadURLbutton_Click(object sender, EventArgs e)
         {
+
+           // <input type="submit" value="ダウンロード">
             //throw new NotImplementedException();
             //when the set url button is clicked
+            Uri cb;
+            try
+            {
+                 cb = new Uri(fm7.setLinkbox.Text);
+            }
+            catch (Exception) {
+                 cb = null;
+            }
+            if (cb != null)
+            {
+                load_Url_from(cb);
+            }
+
 
         }
 
@@ -3774,6 +3905,7 @@ namespace windowMediaPlayerDM
             
             
             }
+            fm6 = null;
 
         }
 
