@@ -404,6 +404,7 @@ namespace windowMediaPlayerDM
                             time_counter = 0;
                             playedcomment = 0;
                             vlcPlayer.SetMedia(nv);
+                            autoLoadByName(nv);
                             vlcPlayer.Play();
                             timerStart();
 
@@ -1651,6 +1652,7 @@ namespace windowMediaPlayerDM
 
             FileInfo temp = new FileInfo(medias.ElementAt(0)[0]);
             vlcPlayer.SetMedia(temp);
+            autoLoadByName(temp);
             //onLoadUp();
             // need to manulally create a method to play the list of files in media_linklist after the first loaded video done playing
             
@@ -1825,6 +1827,7 @@ namespace windowMediaPlayerDM
                 FileInfo temp = new FileInfo(media_dir);
 
                 vlcPlayer.SetMedia(temp);
+                autoLoadByName(temp);
             }
            // onLoadUp();
             break;
@@ -1995,9 +1998,16 @@ namespace windowMediaPlayerDM
             _first_load = false;
   //          onLoadUp();
         }
-        private void setDMToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            
+
+        void setDM_Multi() { 
+        
+        
+        
+        
+}
+
+        void setDM_Menu() {
+
             if (multi_dm_mode == false)
             {
                 comment.Clear();
@@ -2008,90 +2018,104 @@ namespace windowMediaPlayerDM
                 DM_List.Clear();
 
             }
-            if (fm3 != null) {
+            if (fm3 != null)
+            {
                 try
                 {
-                     this.Owner = fm3;
+                    this.Owner = fm3;
                     //fm3.Owner = this;
                 }
                 catch (Exception) { }
 
-                
+
             }
 
 
-           List< String[]> danmokus = setFile(danmoku);
+            List<String[]> danmokus = setFile(danmoku);
 
-           if (danmokus != null)
-           {
-           if (danmokus.Count > 1) {
+            if (danmokus != null)
+            {
+                if (danmokus.Count > 1)
+                {
 
-               multi_dm_mode = true;
-               setDMsToolStripMenuItem.Text = "Set DMs" + " Multi On ";
-           }
-          
-          
-          
-
-    
-              if (danmokus.Count == 1)
-              {
-                  danmoku_dir = danmokus.ElementAt(0)[0];
-                  Danmoku_status.Text = "DM Set";
-                  if (!DM_List.Contains(danmokus.ElementAt(0)))
-                  {
-                      DM_List.Add(danmokus.ElementAt(0));
-
-                  }
-                  //reader.name is the name of the element/attribute
-                  //reader.value is the value of the attribute/text
-
-                  readXML(danmoku_dir);
-
-                  danmoku_dir = null;
-                  Danmoku_status.Text = "DM Ready";
-
-              }
-              else {
-
-                  for (int i = 0; i < danmokus.Count(); i++) {
+                    multi_dm_mode = true;
+                    setDMsToolStripMenuItem.Text = "Set DMs" + " Multi On ";
+                }
 
 
-                      //add only if it's not in the list to prevent dulplicate from being loaded
-                      if (!DM_List.Contains(danmokus.ElementAt(i)))
-                      {
-                          danmoku_dir = danmokus.ElementAt(i)[0];
-                          DM_List.Add(danmokus.ElementAt(i));
-                          readXML(danmoku_dir);
 
-                      }
-                  
-                  
-                  }
 
-                  danmoku_dir = null;
-                  Danmoku_status.Text = "DM Ready";
-              
-              
-              }
-              if (fm3 == null)
-              {
-                  commentWindowSetup();
-              }
-              else {
-                  fm3.Owner = this;
-              
-              }
 
-              autoLoadDMlist(danmokus.ElementAt(0));
+                if (danmokus.Count == 1)
+                {
+                    danmoku_dir = danmokus.ElementAt(0)[0];
+                    Danmoku_status.Text = "DM Set";
+                    if (!DM_List.Contains(danmokus.ElementAt(0)))
+                    {
+                        DM_List.Add(danmokus.ElementAt(0));
 
-          }
-          else {
-              Danmoku_status.Text = "No DM";
-              if (fm3 != null) {
-                  fm3.Owner = this;
-              }
-          }
+                    }
+                    //reader.name is the name of the element/attribute
+                    //reader.value is the value of the attribute/text
+
+                    readXML(danmoku_dir);
+
+                    danmoku_dir = null;
+                    Danmoku_status.Text = "DM Ready";
+
+                }
+                else
+                {
+
+                    for (int i = 0; i < danmokus.Count(); i++)
+                    {
+
+
+                        //add only if it's not in the list to prevent dulplicate from being loaded
+                        if (!DM_List.Contains(danmokus.ElementAt(i)))
+                        {
+                            danmoku_dir = danmokus.ElementAt(i)[0];
+                            DM_List.Add(danmokus.ElementAt(i));
+                            readXML(danmoku_dir);
+
+                        }
+
+
+                    }
+
+                    danmoku_dir = null;
+                    Danmoku_status.Text = "DM Ready";
+
+
+                }
+                if (fm3 == null)
+                {
+                    commentWindowSetup();
+                }
+                else
+                {
+                    fm3.Owner = this;
+
+                }
+
+                autoLoadDMlist(danmokus.ElementAt(0));
+
+            }
+            else
+            {
+                Danmoku_status.Text = "No DM";
+                if (fm3 != null)
+                {
+                    fm3.Owner = this;
+                }
+            }
+        
+        
+        }
+        private void setDMToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
+            setDM_Menu();
         }
 
         void commentWindowSetup() {
@@ -2773,6 +2797,7 @@ namespace windowMediaPlayerDM
                 FileInfo newMedia = new FileInfo(result);
                 String current = vlcPlayer.GetCurrentMedia().Mrl;
                 vlcPlayer.SetMedia(newMedia);
+                autoLoadByName(newMedia);
                 vlcPlayer.Play();
 
                 //unload the loaded dm files, to avoid using the wrong dm on different media files?
@@ -3298,6 +3323,7 @@ namespace windowMediaPlayerDM
                     vlcPlayer.Stop();
                 }
                 vlcPlayer.SetMedia(nfile2);
+                autoLoadByName(nfile2);
                 comment2.Clear();
                 comment.Clear();
                 DM_List.Clear();
@@ -3409,6 +3435,7 @@ namespace windowMediaPlayerDM
                     vlcPlayer.Stop();
                 }
                 vlcPlayer.SetMedia(nfile2);
+                autoLoadByName(nfile2);
                 comment2.Clear();
                 comment.Clear();
                 DM_List.Clear();
@@ -3494,19 +3521,50 @@ namespace windowMediaPlayerDM
 
                 }
                 fm7.getTitle.Click += new EventHandler(getTitle_Click);
+                fm7.getTitle.DoubleClick += new EventHandler(getTitle_DoubleClick);
                 fm7.getLinks.Click += new EventHandler(getLinks_Click);
                 fm7.getloadURLbutton.Click += new EventHandler(getloadURLbutton_Click);
                 fm7.getFileUrl.DoubleClick += new EventHandler(getFileUrl_DoubleClick);
+                fm7.Disposed += new EventHandler(fm7_Disposed);
                 fm7.Show();
             }
             else {
 
                 fm7.Dispose();
-                fm7 = null;
+
             
             }
         
         
+        }
+
+        void getTitle_DoubleClick(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
+            //rename the shattered xml file to the current file name
+
+            DirectoryInfo dif = new DirectoryInfo(current_dir_url);
+            FileInfo[] files = dif.GetFiles("*・xml");
+
+            //only do this if there's only 1 file that suits the condition 
+            if (files.Count() == 1)
+            {
+
+                FileInfo xml = files.ElementAt(0);
+
+                byte[] tempbytes = Encoding.Default.GetBytes(gb.getCurrentTitle);
+                string transtemp = Encoding.GetEncoding("shift-jis").GetString(tempbytes);
+
+                xml.CopyTo(dif.FullName + "\\" + transtemp + ".xml", true);
+
+                xml.Delete();
+            }
+        }
+
+        void fm7_Disposed(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
+            fm7 = null;
         }
 
         void getFileUrl_DoubleClick(object sender, EventArgs e)
@@ -3553,7 +3611,33 @@ namespace windowMediaPlayerDM
                         autoLoadDMlist(temp);
 
                         vlcPlayer.SetMedia(file);
-                        Media_status.Text = "Media Set";
+                        autoLoadByName(file);
+                        //this should return 1 or 2 files 
+                        FileInfo[] findDM = dif.GetFiles(file.Name);
+                        for (int i = 0; i < findDM.Count(); i++) { 
+                        if(findDM[i].Name.Contains(".xml")){
+                            string[] tdm = {findDM[i].FullName,findDM[i].Name};
+                            DM_List.Add(tdm);
+                            readXML(tdm[0]);
+
+                            Danmoku_status.Text = "DM set";
+
+                            if (fm3 == null)
+                            {
+                                commentWindowSetup();
+                            }
+                            else
+                            {
+                                fm3.Owner = this;
+
+                            }
+                        
+                        
+                        }
+                        
+                        }
+
+                            Media_status.Text = "Media Set";
                     }
                 }
             }
@@ -3564,6 +3648,9 @@ namespace windowMediaPlayerDM
 
 
         }
+        // write a method contains load mlist and set vlcplayer media , replace all the current vlcplayer.setmedia
+
+
         void downloadFile(object sender) {
             ListBox box = (ListBox)sender;
             using (WebClient wb = new WebClient())
@@ -3571,7 +3658,43 @@ namespace windowMediaPlayerDM
                 wb.DownloadFileCompleted += new AsyncCompletedEventHandler(wb_DownloadFileCompleted);
                 wb.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wb_DownloadProgressChanged);
                 gb.downlaodFile((Uri)box.SelectedItem, wb);
+                
                 vlcPlayer.SetMedia(gb.playDownlist);
+                autoLoadByName(gb.playDownlist);
+
+                FileInfo file2 = new FileInfo(gb.playDownlist.LocalPath);
+
+                FileInfo[] findDM = file2.Directory.GetFiles(gb.getCurrentTitle);
+
+                for (int i = 0; i < findDM.Count(); i++)
+                {
+                    if (findDM[i].Name.Contains(".xml"))
+                    {
+                        string[] tdm = { findDM[i].FullName, findDM[i].Name };
+                        DM_List.Add(tdm);
+                        readXML(tdm[0]);
+
+                        Danmoku_status.Text = "DM set";
+
+                        if (fm3 == null)
+                        {
+                            commentWindowSetup();
+                        }
+                        else
+                        {
+                            fm3.Owner = this;
+
+                        }
+
+
+                    }
+
+                }
+
+
+
+
+
                 //set the media in vlc player
                 urls.Remove((Uri)box.SelectedItem);
                 FileInfo file = new FileInfo(gb.playDownlist.OriginalString);
@@ -3591,6 +3714,128 @@ namespace windowMediaPlayerDM
                 wb.Dispose();
 
             }
+        
+        }
+        void autoLoadByName(FileInfo file)
+        {
+
+
+            //search the parent dir of the file to see if there's other files has the same name
+            FileInfo[] files = null;
+
+            ;
+            if (!file.Name.Contains("."))
+            {
+                //if the file has extension
+                files = file.Directory.GetFiles(file.Name);
+            }
+            else
+            {
+
+                int end = file.Name.LastIndexOf(".");
+                int start = 0;
+                if (end > start)
+                {
+
+                    String truename = file.Name.Substring(start, end - start);
+
+                    files = file.Directory.GetFiles(truename);
+
+
+                }
+
+
+            }
+
+            if (files != null)
+            {
+                for (int i = 0; i < files.Count(); i++)
+                {
+
+                    if (files[i].Name.Contains(".xml"))
+                    {
+
+                        string[] tempstring = { files[i].FullName, files[i].Name };
+
+                        DM_List.Add(tempstring);
+                        readXML(files[i].FullName);
+                        Danmoku_status.Text = "DM Set";
+
+
+                    }
+
+                }
+            }
+            if (fm3 == null)
+            {
+                commentWindowSetup();
+            }
+            else
+            {
+                fm3.Owner = this;
+
+            }
+
+
+        }
+
+        void autoLoadByName(Uri media) {
+            FileInfo file = new FileInfo(media.OriginalString);
+
+            //search the parent dir of the file to see if there's other files has the same name
+            FileInfo[] files = null;
+                
+                ;
+            if (!file.Name.Contains("."))
+            {
+                //if the file has extension
+                files = file.Directory.GetFiles(file.Name);
+            }
+            else {
+
+                int end = file.Name.LastIndexOf(".");
+                int start = 0;
+                if (end > start) {
+
+                    String truename = file.Name.Substring(start, end - start);
+
+                    files = file.Directory.GetFiles(truename);
+                
+                
+                }
+
+            
+            }
+
+            if (files != null)
+            {
+                for (int i = 0; i < files.Count(); i++)
+                {
+
+                    if (files[i].Name.Contains(".xml"))
+                    {
+
+                        string[] tempstring = { files[i].FullName, files[i].Name };
+
+                        DM_List.Add(tempstring);
+                        readXML(files[i].FullName);
+                        Danmoku_status.Text = "DM Set";
+
+
+                    }
+
+                }
+            }
+            if (fm3 == null)
+            {
+                commentWindowSetup();
+            }
+            else
+            {
+                fm3.Owner = this;
+
+            }
+        
         
         }
         void wb_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
@@ -3622,6 +3867,7 @@ namespace windowMediaPlayerDM
             //remove urls from url list
             //change dled file name
             //update name in gb dlfile 
+            
 
             FileInfo file = new FileInfo(gb.playDownlist.LocalPath);
             string[] tempstring = { file.FullName, file.Name };
@@ -3662,13 +3908,41 @@ namespace windowMediaPlayerDM
                     long temptime = vlcPlayer.Time;
                     vlcPlayer.Stop();
                     vlcPlayer.SetMedia(temp);
+                    autoLoadByName(temp);
                     vlcPlayer.Time = temptime;
 
                 }
                 else {
 
+                    FileInfo[] findDM = file.Directory.GetFiles(temp.Name);
+
+                    for (int i = 0; i < findDM.Count(); i++)
+                    {
+                        if (findDM[i].Name.Contains(".xml"))
+                        {
+                            string[] tdm = { findDM[i].FullName, findDM[i].Name };
+                            DM_List.Add(tdm);
+                            readXML(tdm[0]);
+
+                            Danmoku_status.Text = "DM set";
+
+                            if (fm3 == null)
+                            {
+                                commentWindowSetup();
+                            }
+                            else
+                            {
+                                fm3.Owner = this;
+
+                            }
+
+
+                        }
+
+                    }
 
                     vlcPlayer.SetMedia(temp);
+                    autoLoadByName(temp);
                     vlcPlayer.Play();
                 
                 }
@@ -3722,7 +3996,7 @@ namespace windowMediaPlayerDM
 
                 wb.ScriptErrorsSuppressed = true;
 
-
+               // wb.Navigated +=new WebBrowserNavigatedEventHandler(wb_Navigated);
 
                 wb.DocumentCompleted += new WebBrowserDocumentCompletedEventHandler(wb_DocumentCompleted);
                     
@@ -3742,6 +4016,7 @@ namespace windowMediaPlayerDM
 
         void wb_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
+            
 
             fm7.getDownloadstatus2.Text = "document loaded";
             
@@ -3760,6 +4035,8 @@ namespace windowMediaPlayerDM
                 if (wb.Document.GetElementsByTagName("input")[i].GetAttribute("value").Equals("ダウンロード"))
                 {
                     wb.Document.GetElementsByTagName("input")[i].InvokeMember("click");
+                    wb.Dispose();
+                    break;
 
                 }
             }
@@ -3769,6 +4046,9 @@ namespace windowMediaPlayerDM
 
         void wb_Navigated(object sender, WebBrowserNavigatedEventArgs e)
         {
+
+            fm7.getDownloadstatus2.Text = "document loaded";
+
             WebBrowser wb = (WebBrowser)sender;
             for (int i = 0; i < wb.Document.GetElementsByTagName("input").Count; i++)
             {
@@ -3782,6 +4062,7 @@ namespace windowMediaPlayerDM
                     
                 }
             }
+            wb.Dispose();
             
         }
         void getloadURLbutton_Click(object sender, EventArgs e)

@@ -151,9 +151,10 @@ namespace windowMediaPlayerDM
                 result = result.Replace("%2F", "/");
                 result = result.Replace("%3A", ":");
                 result = result.Replace("%3F", "?");
-
-                Allfiles.Add(new Uri(result));
-
+                if (result != "")
+                {
+                    Allfiles.Add(new Uri(result));
+                }
 
                 //check if result here is online if not then go find other links in full content
             }
@@ -188,49 +189,51 @@ namespace windowMediaPlayerDM
 
                start = tempresult.LastIndexOf("lid\":");
                end = tempresult.LastIndexOf(",\"src\":");
-
-               String Urltotalcount = tempresult.Substring(start, end - start);
-               end = Urltotalcount.LastIndexOf("\"") - 1;
-               Urltotalcount = Urltotalcount.Replace("\"", "");
-               Urltotalcount = Urltotalcount.Replace("lid", "");
-               Urltotalcount = Urltotalcount.Replace(":", "");
-               int totalcount = Int32.Parse(Urltotalcount);
-
-
-               //  throw new Exception("test view"){};
-
-               for (int i = 0; i < totalcount; i++)
+               if (end > start)
                {
+                   String Urltotalcount = tempresult.Substring(start, end - start);
+                   end = Urltotalcount.LastIndexOf("\"") - 1;
+                   Urltotalcount = Urltotalcount.Replace("\"", "");
+                   Urltotalcount = Urltotalcount.Replace("lid", "");
+                   Urltotalcount = Urltotalcount.Replace(":", "");
+                   int totalcount = Int32.Parse(Urltotalcount);
 
-                   start = tempresult.IndexOf("http");
-                   end = tempresult.IndexOf("}");
 
-                   //http%3A%2F%2Ffleetupload.com%2Fmp3embed-gv3o70fbhxv2.mp3%3F"
-                   if (end > start)
+                   //  throw new Exception("test view"){};
+
+                   for (int i = 0; i < totalcount; i++)
                    {
-                       string urlt = tempresult.Substring(start, end - 1 - start);
 
-                       urlt = urlt.Replace("%2F", "/");
-                       urlt = urlt.Replace("%3A", ":");
-                       urlt = urlt.Replace("%3F", "?");
+                       start = tempresult.IndexOf("http");
+                       end = tempresult.IndexOf("}");
 
-                       Uri temp = new Uri(urlt);
-
-                       Allfiles.Add(temp);
-
-
-                       //  throw new Exception("test view") { };
-
-                       if (i != totalcount - 1)
+                       //http%3A%2F%2Ffleetupload.com%2Fmp3embed-gv3o70fbhxv2.mp3%3F"
+                       if (end > start)
                        {
-                           tempresult = tempresult.Substring(end + 1, tempresult.Length - (end + 1));
+                           string urlt = tempresult.Substring(start, end - 1 - start);
+
+                           urlt = urlt.Replace("%2F", "/");
+                           urlt = urlt.Replace("%3A", ":");
+                           urlt = urlt.Replace("%3F", "?");
+
+                           Uri temp = new Uri(urlt);
+
+                           Allfiles.Add(temp);
+
+
+                           //  throw new Exception("test view") { };
+
+                           if (i != totalcount - 1)
+                           {
+                               tempresult = tempresult.Substring(end + 1, tempresult.Length - (end + 1));
+                           }
                        }
-                   }
-                   else
-                   {
-                       if (i != totalcount - 1)
+                       else
                        {
-                           tempresult = tempresult.Substring(end + 1, tempresult.Length - (end + 1));
+                           if (i != totalcount - 1)
+                           {
+                               tempresult = tempresult.Substring(end + 1, tempresult.Length - (end + 1));
+                           }
                        }
                    }
                }
