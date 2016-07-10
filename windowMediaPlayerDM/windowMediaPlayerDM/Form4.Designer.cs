@@ -48,6 +48,9 @@
             this.label1 = new System.Windows.Forms.Label();
             this.total_audio = new System.Windows.Forms.Label();
             this.audio_info = new System.Windows.Forms.Label();
+            this.Comment_Limit_label = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.commentLimit_box = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // offset_label1
@@ -238,6 +241,30 @@
             this.audio_info.TabIndex = 9;
             this.audio_info.Text = "Current AudioInfo";
             // 
+            // Comment_Limit_label
+            // 
+            this.Comment_Limit_label.AutoSize = true;
+            this.Comment_Limit_label.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.Comment_Limit_label.Location = new System.Drawing.Point(9, 213);
+            this.Comment_Limit_label.Name = "Comment_Limit_label";
+            this.Comment_Limit_label.Size = new System.Drawing.Size(100, 17);
+            this.Comment_Limit_label.TabIndex = 9;
+            this.Comment_Limit_label.Text = "Comment Limit";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(161, 212);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(100, 20);
+            this.textBox1.TabIndex = 6;
+            // 
+            // commentLimit_box
+            // 
+            this.commentLimit_box.Location = new System.Drawing.Point(161, 210);
+            this.commentLimit_box.Name = "commentLimit_box";
+            this.commentLimit_box.Size = new System.Drawing.Size(100, 20);
+            this.commentLimit_box.TabIndex = 6;
+            // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -251,9 +278,12 @@
             this.Controls.Add(this.apply_button);
             this.Controls.Add(this.audio_info);
             this.Controls.Add(this.audio_label);
+            this.Controls.Add(this.Comment_Limit_label);
             this.Controls.Add(this.comment_end_label);
             this.Controls.Add(this.comment_switch_box);
             this.Controls.Add(this.comment_switch_label);
+            this.Controls.Add(this.commentLimit_box);
+            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.comment_end_box);
             this.Controls.Add(this.comment_speed_box);
             this.Controls.Add(this.cdistance);
@@ -293,5 +323,8 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label total_audio;
         private System.Windows.Forms.Label audio_info;
+        private System.Windows.Forms.Label Comment_Limit_label;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox commentLimit_box;
     }
 }

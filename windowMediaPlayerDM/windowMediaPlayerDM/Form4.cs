@@ -146,7 +146,12 @@ namespace windowMediaPlayerDM
 
 
         }
+        public TextBox setCommentLimit {
 
+            get { return this.commentLimit_box; }
+            set { this.commentLimit_box = value; }
+        
+        }
 
 
         /// /////////////////

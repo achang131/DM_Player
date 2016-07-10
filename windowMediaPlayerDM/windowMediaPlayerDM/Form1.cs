@@ -135,6 +135,8 @@ namespace windowMediaPlayerDM
 
         bool startautotime;
 
+        int commentLimit;
+
         public Form1()
         {
             InitializeComponent();
@@ -271,31 +273,8 @@ namespace windowMediaPlayerDM
                     {
 
                         case XmlNodeType.Element:
-                            switch (reader.Name)
-                            {
-                                case "Default_Path":
 
-                                    currentElement = reader.Name;
-
-
-                                    break;
-
-                                case "Comment_Speed":
-                                    currentElement = reader.Name;
-
-                                    break;
-
-
-                                case "volume":
-
-                                    currentElement = reader.Name;
-
-
-                                    break;
-
-
-
-                            }
+                            currentElement = reader.Name;
 
                             break;
 
@@ -323,9 +302,11 @@ namespace windowMediaPlayerDM
 
                                     break;
 
-                            
-                            
-                            
+                                case "CommentLimit":
+
+                                    commentLimit = Int32.Parse(reader.Value);
+
+                                    break;
                             
                             }
 
@@ -377,6 +358,7 @@ namespace windowMediaPlayerDM
                 writer.WriteElementString("Default_Path", current_dir_url);
                 writer.WriteElementString("Comment_Speed", move_distance.ToString());
                 writer.WriteElementString("volume", vlcPlayer.Audio.Volume.ToString());
+                writer.WriteElementString("CommentLimit", commentLimit.ToString());
                 writer.WriteEndElement();
                 writer.WriteEndDocument();
 
@@ -817,6 +799,8 @@ namespace windowMediaPlayerDM
 
             //change this to auto start time match
             startautotime = false;
+
+            commentLimit = 65;
         
         }
         void switchPlayer(int c) {
@@ -1418,65 +1402,70 @@ namespace windowMediaPlayerDM
           
         }
         void createLabel(String comment) {
-            Label dm = new Label();
-            
-            //
-            Random ypos = new Random();
-            if (40 < fm3.ClientRectangle.Bottom - 80)
+
+            if (comment.Length < commentLimit || comment.Contains(Environment.NewLine))
             {
-                ycurrent = ypos.Next(40, fm3.ClientRectangle.Bottom-80);
+                Label dm = new Label();
+
+                //
+                Random ypos = new Random();
+                if (40 < fm3.ClientRectangle.Bottom - 80)
+                {
+                    ycurrent = ypos.Next(40, fm3.ClientRectangle.Bottom - 80);
+                }
+                else
+                {
+
+                    ycurrent = 40;
+                }
+                dm.Location = new Point(ClientRectangle.Right, ycurrent);
+
+                //
+                /*
+                if(ycurrent+20<ClientRectangle.Bottom-50){
+                ycurrent+= 20;}
+                else
+                {
+                    ycurrent=40;
+                };
+                */
+                //
+
+                dm.Text = comment;
+                dm.Name = comment;
+                dm.TabIndex = 3;
+                dm.Visible = true;
+                dm.AutoSize = true;
+
+                dm.Font = new Font("Microsoft Sans Serif", 24, FontStyle.Bold);
+                dm.ForeColor = userColor;
+                dm.MouseClick += new MouseEventHandler(dm_MouseClick);
+
+
+                dm.Size = new System.Drawing.Size(35, 15);
+                /*
+                            var position = this.PointToScreen(dm.Location);
+                            position = Media_Player.PointToClient(position);
+                            dm.Parent = Media_Player;
+                            dm.BackColor = Color.Transparent;
+                  */
+
+                /*
+                           *        var pos = this.PointToScreen(label1.Location);
+                      pos = pictureBox1.PointToClient(pos);
+                      label1.Parent = pictureBox1;
+                      label1.Location = pos;
+                      label1.BackColor = Color.Transparent;
+                           */
+
+                fm3.Controls.Add(dm);
+
+                // safecontrol(dm);
+
+                // comment_storage.Add(dm);
+                dm.BringToFront();
+                dm.Show();
             }
-            else {
-
-                ycurrent = 40;
-            }
-            dm.Location = new Point(ClientRectangle.Right, ycurrent);
-
-            //
-            /*
-            if(ycurrent+20<ClientRectangle.Bottom-50){
-            ycurrent+= 20;}
-            else
-            {
-                ycurrent=40;
-            };
-            */
-            //
-
-            dm.Text = comment;
-            dm.Name = comment;
-            dm.TabIndex = 3;
-            dm.Visible = true;
-            dm.AutoSize = true;
-            
-            dm.Font = new Font("Microsoft Sans Serif", 24, FontStyle.Bold);
-            dm.ForeColor = userColor;
-            dm.MouseClick += new MouseEventHandler(dm_MouseClick);
-            
-            
-            dm.Size = new System.Drawing.Size(35, 15);
-/*
-            var position = this.PointToScreen(dm.Location);
-            position = Media_Player.PointToClient(position);
-            dm.Parent = Media_Player;
-            dm.BackColor = Color.Transparent;
-  */
- 
-  /*
-             *        var pos = this.PointToScreen(label1.Location);
-        pos = pictureBox1.PointToClient(pos);
-        label1.Parent = pictureBox1;
-        label1.Location = pos;
-        label1.BackColor = Color.Transparent;
-             */
-
-            fm3.Controls.Add(dm);
-
-           // safecontrol(dm);
-
-           // comment_storage.Add(dm);
-            dm.BringToFront();
-            dm.Show();
         
         }
 
@@ -1491,6 +1480,7 @@ namespace windowMediaPlayerDM
 
                 fm3.Controls.Add(dm);
             }
+        
         
         }
 
@@ -2352,8 +2342,10 @@ namespace windowMediaPlayerDM
         }
         void makeComment() {
 
-           
-
+            if (vlcPlayer.Audio.Volume != vVolume)
+            {
+                vlcPlayer.Audio.Volume = vVolume;
+            };
 
             //time_counter = (int)(Media_Player.Ctlcontrols.currentPosition * 100);
 
@@ -3243,6 +3235,7 @@ namespace windowMediaPlayerDM
                 loadCheck();
                 fm4.Cspeed.Text = this._distance.ToString();
                 fm4.Cend.Text = this.commentdestroy.ToString();
+                fm4.setCommentLimit.Text = commentLimit.ToString();
                 loadAudio();
                 
             
@@ -3312,7 +3305,7 @@ namespace windowMediaPlayerDM
                     this.move_distance = Int32.Parse(fm4.Cspeed.Text);
 
                     this.commentdestroy = Int32.Parse(fm4.Cend.Text);
-
+                    commentLimit = Int32.Parse(fm4.setCommentLimit.Text);
                     
 
 
