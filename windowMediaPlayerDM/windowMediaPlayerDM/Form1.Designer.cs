@@ -40,6 +40,7 @@
             this.Media_DM_menu = new System.Windows.Forms.ToolStripMenuItem();
             this.Settings_menu = new System.Windows.Forms.ToolStripMenuItem();
             this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.setFromURL_menu = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.Media_status = new System.Windows.Forms.ToolStripStatusLabel();
             this.Danmoku_status = new System.Windows.Forms.ToolStripStatusLabel();
@@ -48,19 +49,18 @@
             this.debugtab2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.Video_comment = new System.Windows.Forms.ToolStripStatusLabel();
             this.vlc_display = new System.Windows.Forms.ToolStripStatusLabel();
+            this.downlaod_status = new System.Windows.Forms.ToolStripStatusLabel();
+            this.download_status2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.Media_Player = new AxWMPLib.AxWindowsMediaPlayer();
             this.vlcPlayer = new Vlc.DotNet.Forms.VlcControl();
             this.VLC_track = new System.Windows.Forms.TrackBar();
-            this.setFromURL_menu = new System.Windows.Forms.ToolStripMenuItem();
             this.next_track = new System.Windows.Forms.Button();
             this.last_track = new System.Windows.Forms.Button();
             this.loop_button = new System.Windows.Forms.Button();
             this.vlcSound_button = new System.Windows.Forms.Button();
             this.vlcStop_button = new System.Windows.Forms.Button();
             this.vlcPlay_button = new System.Windows.Forms.Button();
-            this.downlaod_status = new System.Windows.Forms.ToolStripStatusLabel();
-            this.download_status2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Media_Player)).BeginInit();
@@ -148,6 +148,13 @@
             this.testToolStripMenuItem.Text = "test";
             this.testToolStripMenuItem.Click += new System.EventHandler(this.testToolStripMenuItem_Click);
             // 
+            // setFromURL_menu
+            // 
+            this.setFromURL_menu.Name = "setFromURL_menu";
+            this.setFromURL_menu.Size = new System.Drawing.Size(100, 22);
+            this.setFromURL_menu.Text = "Set from URL";
+            this.setFromURL_menu.Click += new System.EventHandler(this.setFromURL_menu_Click);
+            // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -203,6 +210,16 @@
             this.vlc_display.Name = "vlc_display";
             this.vlc_display.Size = new System.Drawing.Size(0, 18);
             // 
+            // downlaod_status
+            // 
+            this.downlaod_status.Name = "downlaod_status";
+            this.downlaod_status.Size = new System.Drawing.Size(0, 18);
+            // 
+            // download_status2
+            // 
+            this.download_status2.Name = "download_status2";
+            this.download_status2.Size = new System.Drawing.Size(0, 18);
+            // 
             // Media_Player
             // 
             this.Media_Player.AllowDrop = true;
@@ -237,13 +254,6 @@
             this.VLC_track.SmallChange = 1000;
             this.VLC_track.TabIndex = 4;
             this.VLC_track.TickStyle = System.Windows.Forms.TickStyle.Both;
-            // 
-            // setFromURL_menu
-            // 
-            this.setFromURL_menu.Name = "setFromURL_menu";
-            this.setFromURL_menu.Size = new System.Drawing.Size(100, 22);
-            this.setFromURL_menu.Text = "Set from URL";
-            this.setFromURL_menu.Click += new System.EventHandler(this.setFromURL_menu_Click);
             // 
             // next_track
             // 
@@ -323,16 +333,6 @@
             this.vlcPlay_button.TabIndex = 5;
             this.vlcPlay_button.UseVisualStyleBackColor = true;
             this.vlcPlay_button.Click += new System.EventHandler(this.vlcPlay_button_Click);
-            // 
-            // downlaod_status
-            // 
-            this.downlaod_status.Name = "downlaod_status";
-            this.downlaod_status.Size = new System.Drawing.Size(0, 18);
-            // 
-            // download_status2
-            // 
-            this.download_status2.Name = "download_status2";
-            this.download_status2.Size = new System.Drawing.Size(0, 18);
             // 
             // Form1
             // 

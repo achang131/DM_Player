@@ -64,7 +64,7 @@ namespace windowMediaPlayerDM
             using (WebClient wb = new WebClient())
             {
 
-               //wb.Encoding = Encoding.UTF8;
+               wb.Encoding = Encoding.UTF8;
                fullcontent= wb.DownloadString(url);
 
 
@@ -90,15 +90,15 @@ namespace windowMediaPlayerDM
 
                  case "say-move.org":
 
-                     loadInfo(websiteLink);
+                     loadInfo_say(websiteLink);
                    title= getTitle();
                  
 
 
 
-                     byte[] tempbytes = Encoding.Default.GetBytes(title);
-                     fullcontent = Encoding.GetEncoding("shift-jis").GetString(tempbytes);
-                    title = getTitle();
+                 //    byte[] tempbytes = Encoding.Default.GetBytes(title);
+                 //    fullcontent = Encoding.GetEncoding("shift-jis").GetString(tempbytes);
+                  //  title = getTitle();
                     titles.Add(title);
                      getAllUrls_say();
                      downloadComment_say();
@@ -508,7 +508,15 @@ namespace windowMediaPlayerDM
              }
              else
              {
-
+                 filename = filename.Replace(":","");
+                 filename = filename.Replace("\\", "");
+                 filename = filename.Replace("*","");
+                 filename = filename.Replace("|","");
+                 filename = filename.Replace("\"","");
+                 filename = filename.Replace("?","");
+                 filename = filename.Replace("<","");
+                 filename = filename.Replace(">","");
+                 
                  FileInfo newfile = new FileInfo(ndir.FullName + "\\" + filename);
 
                  // if the file exists then stop download

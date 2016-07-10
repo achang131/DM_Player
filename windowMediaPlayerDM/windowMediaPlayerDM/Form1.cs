@@ -293,19 +293,27 @@ namespace windowMediaPlayerDM
             changetime();
 
         }
-
+        int vlc_track_time = -2;
         void changetime() {
 
 
-            if ( mousedown == true && VLC_track.Value != time_counter)
+           // if ( mousedown == true && VLC_track.Value != time_counter)
+           if(mousedown==true)
             {
              //   timerStop();
-                vlcPlayer.Time = VLC_track.Value * 10;
-                
-                if (VLC_track.Value * 10 >= vlcPlayer.Length) {
+             //   vlcPlayer.Time = VLC_track.Value * 10;
+                vlc_track_time = VLC_track.Value * 10;
+ 
 
-                    manual_checkend((int)vlcPlayer.Length,VLC_track.Value);
-                }
+               // if (VLC_track.Value * 10 >= vlcPlayer.Length) {
+
+                //    manual_checkend((int)vlcPlayer.Length,VLC_track.Value);
+                
+                    //diable this for now since already have timer to check
+
+                    //it it doesn't work out maybe disable the one in timer will be better ?
+                
+             //   }
 
 
             }
@@ -2184,6 +2192,15 @@ namespace windowMediaPlayerDM
 
 
             //time_counter = (int)(Media_Player.Ctlcontrols.currentPosition * 100);
+
+            if (vlc_track_time != -2) {
+
+                vlcPlayer.Time = vlc_track_time;
+
+                vlc_track_time = -2;
+            
+            }
+
             int comment_time;
 
             time_counter++;
@@ -3661,11 +3678,23 @@ namespace windowMediaPlayerDM
                 {
                     throw e.Error;
                 }
-               if (e.Cancelled) {
+                try
+                {
+                    if (e.Cancelled)
+                    {
 
 
-                   fm7.getDownloadstatus2.Text = "server error"; 
-               
+                        fm7.getDownloadstatus2.Text = "server error";
+              
+
+                    }
+                }
+                catch (WebException) {
+
+                    fm7.getDownloadstatus2.Text = "server error";
+
+                    WebClient wb = (WebClient)sender;
+                    wb.Dispose();
                 }
             //    if (!gb.downlaodFile.Any())
            //     {
@@ -3698,6 +3727,8 @@ namespace windowMediaPlayerDM
             ListBox box = (ListBox)sender;
             using (WebClient wb = new WebClient())
             {
+                wb.Encoding = Encoding.UTF8;
+
                 Uri filename = (Uri)box.SelectedItem;
                // wb.DownloadFileCompleted += new AsyncCompletedEventHandler(wb_DownloadFileCompleted);
                 wb.DownloadFileCompleted += DownloadFileCompleted(filename);
@@ -4192,6 +4223,7 @@ namespace windowMediaPlayerDM
                 {
                 WebBrowser wb = new WebBrowser();
 
+                
                 wb.ScriptErrorsSuppressed = true;
                 
                 wb.Url = address;
@@ -4231,22 +4263,42 @@ namespace windowMediaPlayerDM
 
             WebBrowser wb = (WebBrowser)sender;
 
+
+            wb.Document.Encoding = Encoding.UTF8.WebName;
+
+       //     List<String> viewer = new List<string>();
+      //      List<String> viewer2 = new List<string>();
+
+            for (int i = 0; i < wb.Document.GetElementsByTagName("select").GetElementsByName("limit")[0].GetElementsByTagName("option").Count; i++) {
+
+               
+              //  viewer.Add(wb.Document.GetElementsByTagName("select").GetElementsByName("limit")[0].GetElementsByTagName("option")[i].GetAttribute("value"));
+
+                wb.Document.GetElementsByTagName("select").GetElementsByName("limit")[0].GetElementsByTagName("option")[i].SetAttribute("value","20000");
+             //   viewer2.Add(wb.Document.GetElementsByTagName("select").GetElementsByName("limit")[0].GetElementsByTagName("option")[i].GetAttribute("value"));
+
             
-
-            for (int i = 0; i < wb.Document.GetElementsByTagName("input").Count; i++)
-            {
-
-
-
-                if (wb.Document.GetElementsByTagName("input")[i].GetAttribute("value").Equals("ダウンロード"))
-                {
-                    wb.Document.GetElementsByTagName("input")[i].InvokeMember("click");
-                    
-                    wb.Dispose();
-                    break;
-
-                }
             }
+           // throw new Exception("view value");
+
+
+
+
+
+                for (int i = 0; i < wb.Document.GetElementsByTagName("input").Count; i++)
+                {
+
+
+
+                    if (wb.Document.GetElementsByTagName("input")[i].GetAttribute("value").Equals("ダウンロード"))
+                    {
+                        wb.Document.GetElementsByTagName("input")[i].InvokeMember("click");
+
+                        wb.Dispose();
+                        break;
+
+                    }
+                }
            
             wb.Dispose();
         }
@@ -4348,26 +4400,28 @@ namespace windowMediaPlayerDM
             fm7.getLinks.SelectedIndex = selected;
 
             //if the link has been read before add if not in else area read the links and load it on dictionary
-
-            if (UrlDictionary.ContainsKey(Links.ElementAt(selected)))
+            if (selected >= 0)
             {
-                for (int i = 0; i < UrlDictionary[Links.ElementAt(selected)].Count(); i++)
+                if (UrlDictionary.ContainsKey(Links.ElementAt(selected)))
                 {
+                    for (int i = 0; i < UrlDictionary[Links.ElementAt(selected)].Count(); i++)
+                    {
 
-                    fm7.getFileUrl.Items.Add(UrlDictionary[Links.ElementAt(selected)].ElementAt(i));
+                        fm7.getFileUrl.Items.Add(UrlDictionary[Links.ElementAt(selected)].ElementAt(i));
+
+                    }
+
+                }
+                else
+                {
+                    // not doing anything here for now since it might conflict with later code
+                    // since everything in the links are supposed to be loaded and add into dictionary
+                    // so here is just to prevent the unexcepted error
+
 
                 }
 
             }
-            else { 
-            // not doing anything here for now since it might conflict with later code
-           // since everything in the links are supposed to be loaded and add into dictionary
-          // so here is just to prevent the unexcepted error
-            
-            
-            }
-
-
 
 
         }
