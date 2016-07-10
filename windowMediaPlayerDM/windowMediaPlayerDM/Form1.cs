@@ -133,6 +133,8 @@ namespace windowMediaPlayerDM
 
         int vVolume;
 
+        bool startautotime;
+
         public Form1()
         {
             InitializeComponent();
@@ -140,7 +142,7 @@ namespace windowMediaPlayerDM
             media = new OpenFileDialog();
             danmoku = new OpenFileDialog();
             danmoku.Filter = "xml |*.xml";
-
+            media.Filter = "";
            
 
          
@@ -235,6 +237,160 @@ namespace windowMediaPlayerDM
 
                 Media_Player.Dispose();
             }
+
+            form1_loadSetting_XML();
+
+          //  this.Disposed += new EventHandler(Form1_Disposed);
+
+            this.FormClosing += new FormClosingEventHandler(Form1_FormClosing);
+
+        }
+
+        void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            saveSettings();
+        }
+
+        //read the settings form the xml
+        void form1_loadSetting_XML() {
+
+
+            FileInfo config = new FileInfo(@Directory.GetCurrentDirectory() + "\\" + "settings.DMconfig");
+
+            if(config.Exists){
+            
+            XmlTextReader reader =new XmlTextReader(config.FullName);
+
+            try
+            {
+                String currentElement = "";
+                while (reader.Read())
+                {
+
+                    switch (reader.NodeType)
+                    {
+
+                        case XmlNodeType.Element:
+                            switch (reader.Name)
+                            {
+                                case "Default_Path":
+
+                                    currentElement = reader.Name;
+
+
+                                    break;
+
+                                case "Comment_Speed":
+                                    currentElement = reader.Name;
+
+                                    break;
+
+
+                                case "volume":
+
+                                    currentElement = reader.Name;
+
+
+                                    break;
+
+
+
+                            }
+
+                            break;
+
+                        case XmlNodeType.Text:
+
+                            switch(currentElement){
+                            
+                                case "Default_Path":
+
+                                    current_dir_url= reader.Value;
+
+
+                                    break;
+
+                                case "Comment_Speed":
+                                    move_distance = Int32.Parse(reader.Value);
+
+                                    break;
+
+
+                                case "volume":
+
+                                    vVolume = Int32.Parse(reader.Value);
+
+
+                                    break;
+
+                            
+                            
+                            
+                            
+                            }
+
+                            break;
+
+                        case XmlNodeType.EndElement:
+
+                            currentElement = "";
+                            break;
+
+
+                    }
+
+
+
+
+                }
+                reader.Close();
+
+            }
+            catch (XmlException) { };
+        
+            }
+        
+        
+        
+        }
+
+        void saveSettings() {
+
+            //throw new NotImplementedException();
+            //save the settings on disposed
+            FileInfo settings = new FileInfo(Directory.GetCurrentDirectory() + "\\settings.DMconfig");
+
+            if (settings.Exists)
+            {
+                try
+                {
+                    settings.Delete();
+                }
+                catch (IOException) { }
+            }
+
+            using (XmlWriter writer = XmlWriter.Create("settings.DMconfig"))
+            {
+
+                writer.WriteStartDocument();
+                writer.WriteStartElement("settings");
+                writer.WriteElementString("Default_Path", current_dir_url);
+                writer.WriteElementString("Comment_Speed", move_distance.ToString());
+                writer.WriteElementString("volume", vlcPlayer.Audio.Volume.ToString());
+                writer.WriteEndElement();
+                writer.WriteEndDocument();
+
+                writer.Close();
+
+                
+            }
+        }
+
+        //writes settings into xml file
+        void Form1_Disposed(object sender, EventArgs e)
+        {
+
+
             
 
 
@@ -658,6 +814,9 @@ namespace windowMediaPlayerDM
 
             videoloop = true;
 
+
+            //change this to auto start time match
+            startautotime = false;
         
         }
         void switchPlayer(int c) {
@@ -1032,9 +1191,12 @@ namespace windowMediaPlayerDM
             catch (NullReferenceException) { Console.WriteLine("in autoTimeSetup"); }
         }
 
+
+       
         void cautoSet() {
 
-            if (vpos_end > vpos_video * 1.3)
+
+            if (vpos_end > vpos_video * 1.3 || startautotime==false)
             {
 
                 auto_TimeMatch = false;
@@ -1045,6 +1207,8 @@ namespace windowMediaPlayerDM
 
                 auto_TimeMatch = true;
             }
+
+
             if (auto_TimeMatch==true && vpos_video > 0)
             {
                 auto_base = vpos_end - vpos_video;
@@ -2878,7 +3042,7 @@ namespace windowMediaPlayerDM
             fm2 = null;
         }
        
-
+        
         private void openMeidaToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
@@ -3488,7 +3652,19 @@ namespace windowMediaPlayerDM
                     fm6.setCacnel.Click += new EventHandler(setCacnel_Click);
                     fm6.setConfirm.Click += new EventHandler(setConfirm_Click);
                     fm6.Disposed += new EventHandler(fm6_Disposed);
+
+                    if (current_dir_url != null ) {
+
+                        fm6.getDri = current_dir_url;
+                    
+                    
+                    }
+
+
                     fm6.Show();
+
+
+
 
                 }
                 else {
@@ -3798,6 +3974,13 @@ namespace windowMediaPlayerDM
         }
         void autoLoadByName(FileInfo file)
         {
+
+            comment2.Clear();
+            comment.Clear();
+            playedcomment = 0;
+            _duplicates = 0;
+            DM_List.Clear();
+
 
           //  FileInfo file = new FileInfo(media.LocalPath);
 
