@@ -53,11 +53,225 @@ namespace windowMediaPlayerDM
 
             //System.Net.WebClient webclient = new System.Net.WebClient();
 
-            loadInfo(websiteLink);
+
+           otherSiteSupport(url);
+
+            
+        }
+        public void loadInfo_say(Uri url){
+
+
+            using (WebClient wb = new WebClient())
+            {
+
+               //wb.Encoding = Encoding.UTF8;
+               fullcontent= wb.DownloadString(url);
+
+
+
+
+               wb.Dispose();
+            }
+        
+        }
+
+         public void otherSiteSupport(Uri url) {
+
+             String siteLink = url.OriginalString;
+
+           //  http://himado.in/?sort=today_view_cnt&page=0
+             //remove the http:// on the link
+             siteLink = siteLink.Replace("http://", "");
+             int end = siteLink.IndexOf("/");
+             siteLink = siteLink.Substring(0, end);
+             // himado.in
+
+             switch (siteLink) {
+
+                 case "say-move.org":
+
+                     loadInfo(websiteLink);
+                   title= getTitle();
+                 
+
+
+
+                     byte[] tempbytes = Encoding.Default.GetBytes(title);
+                     fullcontent = Encoding.GetEncoding("shift-jis").GetString(tempbytes);
+                    title = getTitle();
+                    titles.Add(title);
+                     getAllUrls_say();
+                     downloadComment_say();
+
+                     break;
+
+
+
+                 default:
+
+           loadInfo(websiteLink);
            title= getTitle();
            titles.Add(title);
-            getAllUrls();
-        }
+                     getAllUrls();
+
+                     break;
+             
+             
+             
+             }
+
+         
+         }
+         void downloadComment_say() { 
+         //start from getting the comment file url
+
+             string leftbase = "http://say-move.org/comment_download.php";
+             string rightbase = "\">コメントをダウンロード</a><br>";
+             int start = fullcontent.IndexOf(leftbase);
+             int end = fullcontent.Length;
+
+             string link = fullcontent.Substring(start, end - start);
+             start = 0;
+             end = link.IndexOf("\"");
+             link = link.Substring(start, end - start);
+
+             // comment link get !
+
+
+             using(WebClient wb = new WebClient()){
+
+
+                 FileInfo file = new FileInfo(filestorage_dir + "\\" + title+".xml");
+
+                 //download the .xml file as the title name +.xml into the default folder 
+                 if (!file.Exists)
+                 {
+                     wb.DownloadFileAsync(new Uri(link), file.FullName);
+                 }
+                 else {
+                     wb.DownloadFileAsync(new Uri(link), file.FullName+"(s1)");
+                 
+                 }
+                 wb.Dispose();
+             
+             }
+          
+         
+         
+         
+         
+         }
+
+         void getAllUrls_say() { 
+         
+
+             //var ary_spare_sources = {"spare":[{"lid":"1","src":"http%3A%2F%2Ffleetupload.com%2Fmp3embed-gv3o70fbhxv2.mp3%3F"},{"lid":"2","src":"http%3A%2F%2Fwww.indishare.com%2Fmp3embed-q52air4wrwze.mp3%3F"},{"lid":"3","src":"http%3A%2F%2Fwww.indishare.com%2Fmp3embed-65a4s05kdbq2.mp3%3F"},{"lid":"4","src":"http%3A%2F%2Fsolidshelf.com%2Fmp3embed-ihu5ny2zk2e1.mp3%3F"},{"lid":"5","src":"http%3A%2F%2Fs3-us-west-1.amazonaws.com%2Fspliceproduction%2Fpreviews%2Fa9007396-0639-2680-1624-e3364fa3ecd748a6721%2Fa0221a42-0abd-6d80-73f2-a9777c63b96a461da92.mp3%3F"}]};
+             //{"lid":"1","src":"http%3A%2F%2Ffleetupload.com%2Fmp3embed-gv3o70fbhxv2.mp3%3F"},{"lid":"2","src":"http%3A%2F%2Fwww.indishare.com%2Fmp3embed-q52air4wrwze.mp3%3F"},{"lid":"3","src":"http%3A%2F%2Fwww.indishare.com%2Fmp3embed-65a4s05kdbq2.mp3%3F"},{"lid":"4","src":"http%3A%2F%2Fsolidshelf.com%2Fmp3embed-ihu5ny2zk2e1.mp3%3F"},{"lid":"5","src":"http%3A%2F%2Fs3-us-west-1.amazonaws.com%2Fspliceproduction%2Fpreviews%2Fa9007396-0639-2680-1624-e3364fa3ecd748a6721%2Fa0221a42-0abd-6d80-73f2-a9777c63b96a461da92.mp3%3F"}
+             //
+             // count "lid":"5
+             // ,"src":
+             //lid":"5"
+           //  getbaseUrl(fullcontent);
+
+             String fcut = "コメントについて - FC2ヘルプ</a><br>";
+             String scut = ">この動画の配信元サイトへのリンク";
+             int left = fullcontent.IndexOf(fcut);
+             int right = fullcontent.IndexOf(scut);
+             String target;
+             if (right > left && left > -1)
+             {
+              target = fullcontent.Substring(left, right - left);
+             //>コメントについて - FC2ヘルプ</a><br><a target="_blank" href="http://video.fc2.com/content/20160710fQWKUAmS"
+             left = target.IndexOf("http://");
+             right = target.LastIndexOf("\"");
+ 
+                 target = target.Substring(left, right - left);
+                 target = target.Replace("%2F", "/");
+                 target = target.Replace("%3A", ":");
+                 target = target.Replace("%3F", "?");
+                 target = target.Replace("&amp;", "&");
+
+                 Allfiles.Add(new Uri(target));
+
+             }
+             else {
+
+                 fcut = "FLVURL:<br>";
+                 scut = "href=\"http://say-move.org/comment_download";
+                 left = fullcontent.IndexOf(fcut);
+                 right = fullcontent.IndexOf(scut);
+                 if (right > left)
+                 {
+                     target = fullcontent.Substring(left, right - left);
+
+                     left = target.IndexOf("http");
+                     right = target.Length;
+
+                     target = target.Substring(left, right - left);
+                     right = target.IndexOf("\"");
+                     target = target.Substring(0, right);
+                     target = target.Replace("%2F", "/");
+                     target = target.Replace("%3A", ":");
+                     target = target.Replace("%3F", "?");
+                     target = target.Replace("&amp;", "&");
+
+                     Allfiles.Add(new Uri(target));
+
+                 }
+             
+             }
+             //base url obtained !!!
+
+             if (fullcontent.Contains("flvlink"))
+             {
+                 fcut = "FlashVars=";
+                 scut = "pluginspage=";
+                 left = fullcontent.IndexOf(fcut);
+                 right = fullcontent.IndexOf(scut);
+                 if (right > left)
+                 {
+                     target = fullcontent.Substring(left, right - left);
+
+                     left = target.LastIndexOf("flvlink");
+                     right = target.Length;
+                     String getcount = target.Substring(left, right - left);
+                     right = getcount.IndexOf("=");
+                     getcount = getcount.Substring(0, right);
+                     getcount = getcount.Replace("flvlink", "");
+                     int number = Int32.Parse(getcount);
+
+
+
+                     for (int i = 0; i < number; i++)
+                     {
+                         left = target.IndexOf("flvlink");
+                         right = target.Length;
+                         target = target.Substring(left, right - left);
+
+
+                         left = target.IndexOf("http");
+                         right = target.IndexOf("&add");
+                         if (right > left)
+                         {
+                             String templink = target.Substring(left, right - left);
+
+                             templink = templink.Replace("%2F", "/");
+                             templink = templink.Replace("%3A", ":");
+                             templink = templink.Replace("%3F", "?");
+                             templink = templink.Replace("&amp;","&");
+
+                             Allfiles.Add(new Uri(templink));
+
+                             target = target.Substring(right, target.Length-right);
+
+                         }
+                     }
+
+                 }
+             }
+       
+         
+         }
 
         public void changeOnlineUrl(Uri url){
 

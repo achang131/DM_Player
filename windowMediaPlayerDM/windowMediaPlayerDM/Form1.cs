@@ -3558,6 +3558,8 @@ namespace windowMediaPlayerDM
                 xml.CopyTo(dif.FullName + "\\" + transtemp + ".xml", true);
 
                 xml.Delete();
+
+                fm7.getDownloadstatus1.Text = "xml file renamed to : "+transtemp + ".xml";
             }
         }
 
@@ -3659,11 +3661,12 @@ namespace windowMediaPlayerDM
                 {
                     throw e.Error;
                 }
-               // if (e.Cancelled) { 
-                
-                
-                
-               // }
+               if (e.Cancelled) {
+
+
+                   fm7.getDownloadstatus2.Text = "server error"; 
+               
+                }
             //    if (!gb.downlaodFile.Any())
            //     {
             //        complited = true;
@@ -3713,7 +3716,7 @@ namespace windowMediaPlayerDM
 
                 for (int i = 0; i < findDM.Count(); i++)
                 {
-                    if (findDM[i].Name.Contains(".xml"))
+                    if (findDM[i].Name.Contains("*.xml"))
                     {
                         string[] tdm = { findDM[i].FullName, findDM[i].Name };
                         DM_List.Add(tdm);
@@ -3833,7 +3836,7 @@ namespace windowMediaPlayerDM
         void autoLoadByName(Uri media) {
             FileInfo file = new FileInfo(media.LocalPath);
 
-            throw new Exception("just to see"){};
+         //   throw new Exception("just to see"){};
             //search the parent dir of the file to see if there's other files has the same name
             FileInfo[] files = file.Directory.GetFiles("*.xml");
 
@@ -3990,7 +3993,7 @@ namespace windowMediaPlayerDM
 
                     for (int i = 0; i < findDM.Count(); i++)
                     {
-                        if (findDM[i].Name.Contains(".xml"))
+                        if (findDM[i].Name.Contains("*.xml"))
                         {
                             string[] tdm = { findDM[i].FullName, findDM[i].Name };
                             DM_List.Add(tdm);
@@ -4109,7 +4112,7 @@ namespace windowMediaPlayerDM
 
                     for (int i = 0; i < findDM.Count(); i++)
                     {
-                        if (findDM[i].Name.Contains(".xml"))
+                        if (findDM[i].Name.Contains("*.xml"))
                         {
                             string[] tdm = { findDM[i].FullName, findDM[i].Name };
                             DM_List.Add(tdm);
@@ -4183,20 +4186,26 @@ namespace windowMediaPlayerDM
                 fm7.getTitle.Items.Add(gb.getCurrentTitle);
                 //load url itembox with all the links
 
+
+                //only do this if it's on himado.in since this only works on there
+                if (address.OriginalString.Contains("himado.in"))
+                {
                 WebBrowser wb = new WebBrowser();
 
-                //wb.Url = address;
-
-
-
-                wb.Navigate(address);
-
                 wb.ScriptErrorsSuppressed = true;
+                
+                wb.Url = address;
+
+
+               
+               // wb.Navigate(address);
+                
+               
 
                // wb.Navigated +=new WebBrowserNavigatedEventHandler(wb_Navigated);
 
                 wb.DocumentCompleted += new WebBrowserDocumentCompletedEventHandler(wb_DocumentCompleted);
-                    
+                }
 
                 for (int i = 0; i < urls.Count; i++)
                 {
@@ -4221,8 +4230,8 @@ namespace windowMediaPlayerDM
 
 
             WebBrowser wb = (WebBrowser)sender;
+
             
- 
 
             for (int i = 0; i < wb.Document.GetElementsByTagName("input").Count; i++)
             {
@@ -4232,12 +4241,13 @@ namespace windowMediaPlayerDM
                 if (wb.Document.GetElementsByTagName("input")[i].GetAttribute("value").Equals("ダウンロード"))
                 {
                     wb.Document.GetElementsByTagName("input")[i].InvokeMember("click");
+                    
                     wb.Dispose();
                     break;
 
                 }
             }
-
+           
             wb.Dispose();
         }
 
@@ -4259,6 +4269,8 @@ namespace windowMediaPlayerDM
                     
                 }
             }
+
+ 
             wb.Dispose();
             
         }
