@@ -209,6 +209,7 @@ namespace windowMediaPlayerDM
 
             }
 
+            this.MouseWheel+=new MouseEventHandler(Form1_MouseWheel);
 
             vlcPlayer.MouseWheel+=new MouseEventHandler(Form1_MouseWheel);
             vlcPlayer.MouseClick += new MouseEventHandler(vlcPlayer_MouseClick);
@@ -218,7 +219,7 @@ namespace windowMediaPlayerDM
             vlcPlayer.MediaChanged += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerMediaChangedEventArgs>(vlcPlayer_MediaChanged);
             vlcPlayer.TimeChanged += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerTimeChangedEventArgs>(vlcPlayer_TimeChanged);
             vlcPlayer.Opening += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerOpeningEventArgs>(vlcPlayer_Opening);
-                        
+        
 
 
             VLC_track.MouseDown += new MouseEventHandler(VLC_track_MouseDown);
@@ -226,9 +227,12 @@ namespace windowMediaPlayerDM
             VLC_track.ValueChanged += new EventHandler(VLC_track_ValueChanged);
             VLC_track.MouseMove += new MouseEventHandler(VLC_track_MouseMove);
             
-            
 
+            this.KeyUp += new KeyEventHandler(Form1_KeyUp);
 
+            vlcPlayer.KeyUp += new KeyEventHandler(vlcPlayer_KeyUp);
+
+            fullscreen = false;
 
             if (choose_player == 1)
             {
@@ -248,152 +252,324 @@ namespace windowMediaPlayerDM
 
         }
 
-        void Form1_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            saveSettings();
-        }
 
-        //read the settings form the xml
-        void form1_loadSetting_XML() {
+        bool fullscreen;
+        Size playersize;
+        Point playerlocation;
+        Size commentPanelsize;
+        Point commentPanelLocation;
 
+        void keyUpActions(KeyEventArgs e) {
+            Danmoku_status.Text = e.KeyValue.ToString();
 
-            FileInfo config = new FileInfo(@Directory.GetCurrentDirectory() + "\\" + "settings.DMconfig");
+            switch (e.KeyValue) { 
+                    //esc key
+                case 27:
 
-            if(config.Exists){
+                    if (fullscreen) {
+
+                        show_all_fm1();
+                    
+                    }
+
+                    break;
             
-            XmlTextReader reader =new XmlTextReader(config.FullName);
-
-            try
-            {
-                String currentElement = "";
-                while (reader.Read())
-                {
-
-                    switch (reader.NodeType)
+                    //F11 key
+                case 122:
+                    //hide if false and show if true
+                    if (fullscreen)
                     {
 
-                        case XmlNodeType.Element:
+                        show_all_fm1();
+                    }
+                    else {
 
-                            currentElement = reader.Name;
-
-                            break;
-
-                        case XmlNodeType.Text:
-
-                            switch(currentElement){
-                            
-                                case "Default_Path":
-
-                                    current_dir_url= reader.Value;
-
-
-                                    break;
-
-                                case "Comment_Speed":
-                                    move_distance = Int32.Parse(reader.Value);
-
-                                    break;
-
-
-                                case "volume":
-
-                                    vVolume = Int32.Parse(reader.Value);
-
-
-                                    break;
-
-                                case "CommentLimit":
-
-                                    commentLimit = Int32.Parse(reader.Value);
-
-                                    break;
-                            
-                            }
-
-                            break;
-
-                        case XmlNodeType.EndElement:
-
-                            currentElement = "";
-                            break;
-
-
+                        hide_All_fm1();
                     }
 
 
-
-
-                }
-                reader.Close();
-
+                    break;
+            
+            
             }
-            catch (XmlException) { };
-        
-            }
-        
-        
         
         }
+        void vlcPlayer_KeyUp(object sender, KeyEventArgs e)
+        {
+            keyUpActions(e);
+        }
 
-        void saveSettings() {
+        void Form1_KeyUp(object sender, KeyEventArgs e)
+        {
+            keyUpActions(e);
+        }
 
-            //throw new NotImplementedException();
-            //save the settings on disposed
-            FileInfo settings = new FileInfo(Directory.GetCurrentDirectory() + "\\settings.DMconfig");
+        void show_all_fm1() {
+          //  if (Windowstate == FormWindowState.Maximized)
+          //  {
+               this.WindowState = FormWindowState.Maximized;
+         //   }
+         //   else {
 
-            if (settings.Exists)
+         ////       this.Size = originalsize;
+         //       this.Location = originalLocation;
+            
+            
+         //   }
+            for (int i = 0; i < this.Controls.OfType<Button>().Count(); i++)
             {
+                this.Controls.OfType<Button>().ElementAt(i).Show();
+            }
+            for (int i = 0; i < this.Controls.OfType<Label>().Count(); i++)
+            {
+                this.Controls.OfType<Label>().ElementAt(i).Show();
+
+            }
+
+            this.menuStrip1.Show();
+
+            this.statusStrip1.Show();
+            this.statusStrip1.BringToFront();
+
+            this.VLC_track.Show();
+            this.VLC_track.BringToFront();
+            this.FormBorderStyle = FormBorderStyle.Sizable;
+            fullscreen = false;
+
+            vlcPlayer.Size = playersize;
+            vlcPlayer.Location = playerlocation;
+
+          //  this.TopMost = false;
+
+            if (fm3 != null) {
+
+                fm3.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
+                fm3.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
+             //   fm3.TopMost = false;
+
+             //   fm3.Owner = this;
+            }
+        }
+        FormWindowState Windowstate;
+        Size originalsize;
+        Point originalLocation;
+        void hide_All_fm1() {
+
+            originalsize = this.currentMediaWindowSize;
+            originalLocation = this.currentMediaWindowLocation;
+
+            this.WindowState = FormWindowState.Normal;
+
+            playersize = vlcPlayer.Size;
+            playerlocation = vlcPlayer.Location;
+
+            if (fm3 != null)
+            {
+                commentPanelsize = fm3.Size;
+                commentPanelLocation = fm3.Location;
+
+
+            }
+            //hide all buttons
+            for (int i = 0; i < this.Controls.OfType<Button>().Count();i++ ){
+                this.Controls.OfType<Button>().ElementAt(i).Hide();
+
+            }
+            for (int i = 0; i < this.Controls.OfType<Label>().Count(); i++) {
+                this.Controls.OfType<Label>().ElementAt(i).Hide();
+            
+            }
+
+            this.menuStrip1.Hide();
+
+            this.statusStrip1.Hide();
+
+            this.VLC_track.Hide();
+
+                this.FormBorderStyle = FormBorderStyle.None;
+
+
+                fullscreen = true;
+
+           //     if (this.ClientRectangle.Size.Height < 1028)
+          //      {
+             //       vlcPlayer.Size = this.ClientRectangle.Size;
+             //       vlcPlayer.Location = new Point(this.ClientRectangle.Location.X, this.ClientRectangle.Location.Y);
+          //      }
+          //      else {
+
+                   // vlcPlayer.Size = new Size(this.ClientRectangle.Width+8, this.ClientRectangle.Height+30);
+//
+                    vlcPlayer.Size = new Size(1920,1080);
+         //           vlcPlayer.Size = new Size(Screen.PrimaryScreen.WorkingArea.Width,Screen.PrimaryScreen.WorkingArea.Height);
+        //           vlcPlayer.Location = new Point(this.ClientRectangle.Location.X+8, this.ClientRectangle.Location.Y+8);
+                   vlcPlayer.Location = new Point(0, 0);
+         //       }
+           
+               // vlcPlayer.Location = new Point(this.ClientRectangle.Location.X, this.ClientRectangle.Location.Y);
+
+
+
+
+                if (fm3 != null) {
+
+                    fm3.Size = vlcPlayer.Size;
+                    fm3.Location = vlcPlayer.Location;
+                
+                }
+
+               // this.MaximizedBounds = Screen.PrimaryScreen.Bounds;
+                this.Bounds = Screen.PrimaryScreen.Bounds;
+
+        
+            }
+
+            void Form1_FormClosing(object sender, FormClosingEventArgs e)
+            {
+                saveSettings();
+            }
+
+            //read the settings form the xml
+            void form1_loadSetting_XML() {
+
+
+                FileInfo config = new FileInfo(@Directory.GetCurrentDirectory() + "\\" + "settings.DMconfig");
+
+                if(config.Exists){
+            
+                XmlTextReader reader =new XmlTextReader(config.FullName);
+
                 try
                 {
-                    settings.Delete();
+                    String currentElement = "";
+                    while (reader.Read())
+                    {
+
+                        switch (reader.NodeType)
+                        {
+
+                            case XmlNodeType.Element:
+
+                                currentElement = reader.Name;
+
+                                break;
+
+                            case XmlNodeType.Text:
+
+                                switch(currentElement){
+                            
+                                    case "Default_Path":
+
+                                        current_dir_url= reader.Value;
+
+
+                                        break;
+
+                                    case "Comment_Speed":
+                                        move_distance = Int32.Parse(reader.Value);
+
+                                        break;
+
+
+                                    case "volume":
+
+                                        vVolume = Int32.Parse(reader.Value);
+
+
+                                        break;
+
+                                    case "CommentLimit":
+
+                                        commentLimit = Int32.Parse(reader.Value);
+
+                                        break;
+                            
+                                }
+
+                                break;
+
+                            case XmlNodeType.EndElement:
+
+                                currentElement = "";
+                                break;
+
+
+                        }
+
+
+
+
+                    }
+                    reader.Close();
+
                 }
-                catch (IOException) { }
+                catch (XmlException) { };
+        
+                }
+        
+        
+        
             }
 
-            using (XmlWriter writer = XmlWriter.Create("settings.DMconfig"))
-            {
+            void saveSettings() {
 
-                writer.WriteStartDocument();
-                writer.WriteStartElement("settings");
-                writer.WriteElementString("Default_Path", current_dir_url);
-                writer.WriteElementString("Comment_Speed", move_distance.ToString());
-                writer.WriteElementString("volume", vlcPlayer.Audio.Volume.ToString());
-                writer.WriteElementString("CommentLimit", commentLimit.ToString());
-                writer.WriteEndElement();
-                writer.WriteEndDocument();
+                //throw new NotImplementedException();
+                //save the settings on disposed
+                FileInfo settings = new FileInfo(Directory.GetCurrentDirectory() + "\\settings.DMconfig");
 
-                writer.Close();
+                if (settings.Exists)
+                {
+                    try
+                    {
+                        settings.Delete();
+                    }
+                    catch (IOException) { }
+                }
+
+                using (XmlWriter writer = XmlWriter.Create("settings.DMconfig"))
+                {
+
+                    writer.WriteStartDocument();
+                    writer.WriteStartElement("settings");
+                    writer.WriteElementString("Default_Path", current_dir_url);
+                    writer.WriteElementString("Comment_Speed", move_distance.ToString());
+                    writer.WriteElementString("volume", vVolume.ToString());
+                    writer.WriteElementString("CommentLimit", commentLimit.ToString());
+                    writer.WriteEndElement();
+                    writer.WriteEndDocument();
+
+                    writer.Close();
 
                 
+                }
             }
-        }
 
-        //writes settings into xml file
-        void Form1_Disposed(object sender, EventArgs e)
-        {
+            //writes settings into xml file
+            void Form1_Disposed(object sender, EventArgs e)
+            {
 
 
             
 
 
-        }
-
-        void vlcPlayer_Opening(object sender, Vlc.DotNet.Core.VlcMediaPlayerOpeningEventArgs e)
-        {
-           // throw new NotImplementedException();
-            /*
-            onLoadUp();
-            if (_first_load == false)
-            {
-                vlc_videoSetup();
             }
-            test_label.Text = vlcPlayer.State.ToString();
+
+            void vlcPlayer_Opening(object sender, Vlc.DotNet.Core.VlcMediaPlayerOpeningEventArgs e)
+            {
+               // throw new NotImplementedException();
+                /*
+                onLoadUp();
+                if (_first_load == false)
+                {
+                    vlc_videoSetup();
+                }
+                test_label.Text = vlcPlayer.State.ToString();
 
 
 
-            timerStart();
-             */
-            vlcPlayer.Audio.Volume = vVolume;
+                timerStart();
+                 */
+                vlcPlayer.Audio.Volume = vVolume;
             Uri nuri = new Uri(vlcPlayer.GetCurrentMedia().Mrl);
             FileInfo nfile = new FileInfo(nuri.LocalPath);
             selectPlaying_box(nfile.Name);
@@ -972,8 +1148,12 @@ namespace windowMediaPlayerDM
         }
         void Form1_MouseWheel(object sender, MouseEventArgs e)
         {
+            if (vVolume < 0) {
 
-           
+                vVolume = 50;
+            }
+
+           Danmoku_status.Text=e.Delta.ToString();
             switch (e.Delta)
             {
                 case 120:
@@ -987,6 +1167,7 @@ namespace windowMediaPlayerDM
                         vlcPlayer.Audio.Volume = vVolume;
                         //vlcPlayer.Audio.Volume++;
                         printvlc("Volume: "+vlcPlayer.Audio.Volume);
+                       // throw new Exception("get here");
                     }
 
                     break;
@@ -999,7 +1180,9 @@ namespace windowMediaPlayerDM
                     }
                     else
                     {
+                        if(vVolume!=0){
                         vVolume--;
+                        };
                         vlcPlayer.Audio.Volume = vVolume;
                         //vlcPlayer.Audio.Volume--;
                         printvlc("Volume: " + vlcPlayer.Audio.Volume);
@@ -1131,13 +1314,20 @@ namespace windowMediaPlayerDM
 
             if (fm3 != null)
             {
-                fm3.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
-                fm3.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
+                if (fullscreen == false)
+                {
+                    fm3.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
+                    fm3.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
+                }
+            
             }
-         
 
-            vlcPlayer.Size = new Size(ClientRectangle.Width, ClientRectangle.Height - 94);
-            vlcPlayer.Location = new Point(0, ClientRectangle.Top + 29);
+            if (fullscreen == false)
+            {
+                vlcPlayer.Size = new Size(ClientRectangle.Width, ClientRectangle.Height - 94);
+                vlcPlayer.Location = new Point(0, ClientRectangle.Top + 29);
+            }
+           
 
             vlcPlay_button.Location = new Point(32,ClientRectangle.Bottom-42);
 
@@ -2306,10 +2496,18 @@ namespace windowMediaPlayerDM
             fm3.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
             fm3.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
             fm3.MouseClick += new MouseEventHandler(dm_MouseClick);
+
+
+            fm3.KeyUp += new KeyEventHandler(fm3_KeyUp);
             fm3.MouseWheel += new MouseEventHandler(Form1_MouseWheel);
             fm3.Owner = this;
         
         
+        }
+
+        void fm3_KeyUp(object sender, KeyEventArgs e)
+        {
+            keyUpActions(e);
         }
         //modified from String[] to List so multiple files can be selected at once.
 
