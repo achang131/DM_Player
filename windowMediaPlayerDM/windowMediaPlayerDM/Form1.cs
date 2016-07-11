@@ -226,7 +226,12 @@ namespace windowMediaPlayerDM
             VLC_track.MouseUp += new MouseEventHandler(VLC_track_MouseUp);
             VLC_track.ValueChanged += new EventHandler(VLC_track_ValueChanged);
             VLC_track.MouseMove += new MouseEventHandler(VLC_track_MouseMove);
-            
+
+            sound_trackbar.Maximum = 150;
+            sound_trackbar.Minimum = 0;
+            sound_trackbar.Value = vVolume;
+            sound_trackbar.ValueChanged += new EventHandler(sound_trackbar_ValueChanged);
+
 
             this.KeyUp += new KeyEventHandler(Form1_KeyUp);
 
@@ -251,6 +256,27 @@ namespace windowMediaPlayerDM
             this.FormClosing += new FormClosingEventHandler(Form1_FormClosing);
 
         }
+        int temp_sound;
+        void sound_trackbar_ValueChanged(object sender, EventArgs e)
+        {
+            
+            
+                vVolume = sound_trackbar.Value;
+                vlcPlayer.Audio.Volume = vVolume;
+                printvlc("Volume: " + vVolume);
+                if (vVolume == 0)
+                {
+
+                    vlcSound_button.BackgroundImage = Properties.Resources.mute;
+
+
+                }
+                else {
+
+                    vlcSound_button.BackgroundImage = Properties.Resources.sound;
+                }
+
+        }
 
 
         bool fullscreen;
@@ -260,7 +286,8 @@ namespace windowMediaPlayerDM
         Point commentPanelLocation;
 
         void keyUpActions(KeyEventArgs e) {
-            Danmoku_status.Text = e.KeyValue.ToString();
+           
+            //Danmoku_status.Text = e.KeyValue.ToString();
 
             switch (e.KeyValue) { 
                     //esc key
@@ -325,14 +352,14 @@ namespace windowMediaPlayerDM
                 this.Controls.OfType<Label>().ElementAt(i).Show();
 
             }
-
+            this.sound_trackbar.Show();
             this.menuStrip1.Show();
 
             this.statusStrip1.Show();
-            this.statusStrip1.BringToFront();
+          //  this.statusStrip1.BringToFront();
 
             this.VLC_track.Show();
-            this.VLC_track.BringToFront();
+         //   this.VLC_track.BringToFront();
             this.FormBorderStyle = FormBorderStyle.Sizable;
             fullscreen = false;
 
@@ -349,7 +376,35 @@ namespace windowMediaPlayerDM
 
              //   fm3.Owner = this;
             }
+
+            Cursor.Show();
+
         }
+
+        void hideCursor() {
+
+            if (vlcPlayer.IsPlaying)
+            {
+                if (mousemoving)
+                {
+
+
+                    Cursor.Show();
+                }
+                else
+                {
+                    Cursor.Hide();
+                }
+            }
+            else
+            {
+                
+                Cursor.Show();
+            }
+        
+        }
+
+
         FormWindowState Windowstate;
         Size originalsize;
         Point originalLocation;
@@ -379,7 +434,7 @@ namespace windowMediaPlayerDM
                 this.Controls.OfType<Label>().ElementAt(i).Hide();
             
             }
-
+            this.sound_trackbar.Hide();
             this.menuStrip1.Hide();
 
             this.statusStrip1.Hide();
@@ -420,8 +475,8 @@ namespace windowMediaPlayerDM
 
                // this.MaximizedBounds = Screen.PrimaryScreen.Bounds;
                 this.Bounds = Screen.PrimaryScreen.Bounds;
-
-        
+                Cursor.Hide();
+ 
             }
 
             void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -576,16 +631,15 @@ namespace windowMediaPlayerDM
             setVLCname(nfile);
         }
         bool mousemoving;
+        Point mouseLocation;
         void VLC_track_MouseMove(object sender, MouseEventArgs e)
         {
-            if (mousedown)
-            {
-                mousemoving = true;
-            }
-            else {
 
-                mousemoving = false;
-            }
+            mouseLocation = System.Windows.Forms.Cursor.Position;
+                mousemoving = true;
+
+            
+
         }
 
         void vlcPlayer_Paused(object sender, Vlc.DotNet.Core.VlcMediaPlayerPausedEventArgs e)
@@ -1153,7 +1207,7 @@ namespace windowMediaPlayerDM
                 vVolume = 50;
             }
 
-           Danmoku_status.Text=e.Delta.ToString();
+       //    Danmoku_status.Text=e.Delta.ToString();
             switch (e.Delta)
             {
                 case 120:
@@ -1164,6 +1218,7 @@ namespace windowMediaPlayerDM
                     }
                     else {
                         vVolume++;
+                        sound_trackbar.Value = vVolume;
                         vlcPlayer.Audio.Volume = vVolume;
                         //vlcPlayer.Audio.Volume++;
                         printvlc("Volume: "+vlcPlayer.Audio.Volume);
@@ -1183,6 +1238,7 @@ namespace windowMediaPlayerDM
                         if(vVolume!=0){
                         vVolume--;
                         };
+                        sound_trackbar.Value = vVolume;
                         vlcPlayer.Audio.Volume = vVolume;
                         //vlcPlayer.Audio.Volume--;
                         printvlc("Volume: " + vlcPlayer.Audio.Volume);
@@ -1327,20 +1383,25 @@ namespace windowMediaPlayerDM
                 vlcPlayer.Size = new Size(ClientRectangle.Width, ClientRectangle.Height - 94);
                 vlcPlayer.Location = new Point(0, ClientRectangle.Top + 29);
             }
-           
 
-            vlcPlay_button.Location = new Point(32,ClientRectangle.Bottom-42);
 
-            vlcStop_button.Location = new Point(77, ClientRectangle.Bottom - 42);
+            vlcPlay_button.Location = new Point(32, statusStrip1.Location.Y - 19);
+
+            vlcStop_button.Location = new Point(77, statusStrip1.Location.Y - 19);
+
+            vlcSound_button.Location = new Point(ClientRectangle.Right - 182, statusStrip1.Location.Y - 19);
+
+            loop_button.Location = new Point(ClientRectangle.Right - 218, statusStrip1.Location.Y - 19);
+
+            last_track.Location = new Point(145, statusStrip1.Location.Y - 19);
+            next_track.Location = new Point(194, statusStrip1.Location.Y - 19);
+
+            VLC_track.Size = new Size(statusStrip1.Size.Width-171, 45);
+            VLC_track.Location = new Point(0,statusStrip1.Location.Y-46);
+            sound_trackbar.Location = new Point(VLC_track.Size.Width, statusStrip1.Location.Y-46);
             
-            vlcSound_button.Location = new Point(ClientRectangle.Right-81, ClientRectangle.Bottom - 42);
-
-            loop_button.Location = new Point(ClientRectangle.Right - 111, ClientRectangle.Bottom - 42);
-
-            last_track.Location = new Point(145, ClientRectangle.Bottom - 42);
-            next_track.Location = new Point(194, ClientRectangle.Bottom - 42);
         }
-
+        
         // form1 ends
         void autoTimesetup()
         {
@@ -2564,6 +2625,7 @@ namespace windowMediaPlayerDM
             if (vlcPlayer.Audio.Volume != vVolume)
             {
                 vlcPlayer.Audio.Volume = vVolume;
+                sound_trackbar.Value = vVolume;
             };
 
             //time_counter = (int)(Media_Player.Ctlcontrols.currentPosition * 100);
@@ -2577,7 +2639,17 @@ namespace windowMediaPlayerDM
             
             }
 
+            if (System.Windows.Forms.Cursor.Position==mouseLocation) {
+
+                mousemoving = false;
+            }
+
+
             time_counter++;
+
+
+
+
 
             if (choose_player != 1)
             {
@@ -3651,16 +3723,22 @@ namespace windowMediaPlayerDM
         {
             if (!vlcPlayer.Audio.IsMute)
             {
-                vlcSound_button.BackgroundImage = Properties.Resources.mute;
-                vlcPlayer.Audio.IsMute = true;
+                if (vVolume!=0)
+                {
+                    vlcSound_button.BackgroundImage = Properties.Resources.mute;
+                    vlcPlayer.Audio.IsMute = true;
+                }
 
             }
             else
             {
+                if (vVolume!=0)
+                {
+                    vlcSound_button.BackgroundImage = Properties.Resources.sound;
 
-                vlcSound_button.BackgroundImage = Properties.Resources.sound;
+                    vlcPlayer.Audio.IsMute = false;
 
-                vlcPlayer.Audio.IsMute = false;
+                }
                 //vlcPlayer.Audio.Volume = current_volume;
 
             }
@@ -4075,6 +4153,7 @@ namespace windowMediaPlayerDM
                 {
                     throw e.Error;
                 }
+
                 try
                 {
                     if (e.Cancelled)
@@ -4086,7 +4165,7 @@ namespace windowMediaPlayerDM
 
                     }
                 }
-                catch (WebException) {
+                catch (Exception) {
 
                     fm7.getDownloadstatus2.Text = "server error";
 

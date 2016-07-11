@@ -141,15 +141,15 @@ namespace windowMediaPlayerDM
              using(WebClient wb = new WebClient()){
 
 
-                 FileInfo file = new FileInfo(filestorage_dir + "\\" + title+".xml");
+                 FileInfo file = new FileInfo(filestorage_dir + "\\" + title);
 
                  //download the .xml file as the title name +.xml into the default folder 
                  if (!file.Exists)
                  {
-                     wb.DownloadFileAsync(new Uri(link), file.FullName);
+                     wb.DownloadFileAsync(new Uri(link), file.FullName+".xml");
                  }
                  else {
-                     wb.DownloadFileAsync(new Uri(link), file.FullName+"(s1)");
+                     wb.DownloadFileAsync(new Uri(link), file.FullName+"(S).xml");
                  
                  }
                  wb.Dispose();
