@@ -219,7 +219,8 @@ namespace windowMediaPlayerDM
             vlcPlayer.MediaChanged += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerMediaChangedEventArgs>(vlcPlayer_MediaChanged);
             vlcPlayer.TimeChanged += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerTimeChangedEventArgs>(vlcPlayer_TimeChanged);
             vlcPlayer.Opening += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerOpeningEventArgs>(vlcPlayer_Opening);
-        
+            vlcPlayer.DragDrop += new DragEventHandler(vlcPlayer_DragDrop);
+            vlcPlayer.AllowDrop = true;
 
 
             VLC_track.MouseDown += new MouseEventHandler(VLC_track_MouseDown);
@@ -254,6 +255,14 @@ namespace windowMediaPlayerDM
           //  this.Disposed += new EventHandler(Form1_Disposed);
 
             this.FormClosing += new FormClosingEventHandler(Form1_FormClosing);
+
+        }
+
+        void vlcPlayer_DragDrop(object sender, DragEventArgs e)
+        {
+            //throw new NotImplementedException();
+            printvlc(e.GetType().ToString());
+
 
         }
         int temp_sound;
@@ -3267,7 +3276,6 @@ namespace windowMediaPlayerDM
                 vlcPlayer.SetMedia(newMedia);
                 vlc_track_time = -2;
 
-                autoLoadByName(newMedia);
                 vlcPlayer.Play();
 
                 //unload the loaded dm files, to avoid using the wrong dm on different media files?
@@ -3287,6 +3295,7 @@ namespace windowMediaPlayerDM
 
                 }
 
+                autoLoadByName(newMedia);
                 if (fm3 == null) {
 
                     commentWindowSetup();
@@ -3801,7 +3810,7 @@ namespace windowMediaPlayerDM
                 }
                 vlcPlayer.SetMedia(nfile2);
                 vlc_track_time = -2;
-                autoLoadByName(nfile2);
+             
                 comment2.Clear();
                 comment.Clear();
                 DM_List.Clear();
@@ -3809,6 +3818,7 @@ namespace windowMediaPlayerDM
                 _duplicates = 0;
                 time_counter = 0;
                 setVLCname(nfile2);
+                autoLoadByName(nfile2);
                 timerStop();
                 vlcPlayer.Play();
    
@@ -3914,13 +3924,14 @@ namespace windowMediaPlayerDM
                 }
                 vlcPlayer.SetMedia(nfile2);
                 vlc_track_time = -2;
-                autoLoadByName(nfile2);
+           
                 comment2.Clear();
                 comment.Clear();
                 DM_List.Clear();
                 playedcomment = 0;
                 _duplicates = 0;
                 time_counter = 0;
+                autoLoadByName(nfile2);
                 setVLCname(nfile2);
                 timerStop();
                 vlcPlayer.Play();
@@ -4103,7 +4114,7 @@ namespace windowMediaPlayerDM
                         autoLoadMlist(temp);
                         autoLoadDMlist(temp);
 
-                        vlcPlayer.SetMedia(file);
+                        // vlcPlayer.SetMedia(file);
                         vlc_track_time = -2;
                         autoLoadByName(file);
                         //this should return 1 or 2 files 

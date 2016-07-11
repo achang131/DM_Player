@@ -234,6 +234,7 @@
             // 
             // vlcPlayer
             // 
+            this.vlcPlayer.AllowDrop = true;
             this.vlcPlayer.BackColor = System.Drawing.Color.Black;
             this.vlcPlayer.Location = new System.Drawing.Point(0, 29);
             this.vlcPlayer.Name = "vlcPlayer";
@@ -254,6 +255,7 @@
             this.VLC_track.Size = new System.Drawing.Size(824, 45);
             this.VLC_track.SmallChange = 1000;
             this.VLC_track.TabIndex = 1;
+            this.VLC_track.TabStop = false;
             this.VLC_track.TickStyle = System.Windows.Forms.TickStyle.None;
             // 
             // next_track
@@ -341,6 +343,7 @@
             this.sound_trackbar.Name = "sound_trackbar";
             this.sound_trackbar.Size = new System.Drawing.Size(171, 45);
             this.sound_trackbar.TabIndex = 8;
+            this.sound_trackbar.TabStop = false;
             this.sound_trackbar.TickStyle = System.Windows.Forms.TickStyle.None;
             // 
             // Form1
