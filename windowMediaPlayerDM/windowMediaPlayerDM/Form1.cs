@@ -242,6 +242,9 @@ namespace windowMediaPlayerDM
             this.KeyUp += new KeyEventHandler(Form1_KeyUp);
 
             vlcPlayer.KeyUp += new KeyEventHandler(vlcPlayer_KeyUp);
+            vlcPlayer.MouseDoubleClick += new MouseEventHandler(vlcPlayer_MouseDoubleClick);
+            this.MouseDoubleClick += new MouseEventHandler(Form1_MouseDoubleClick);
+
 
             fullscreen = false;
 
@@ -261,6 +264,16 @@ namespace windowMediaPlayerDM
 
             this.FormClosing += new FormClosingEventHandler(Form1_FormClosing);
 
+        }
+
+        void Form1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            FullScreenSwitch();
+        }
+
+        void vlcPlayer_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            FullScreenSwitch();
         }
 
         void vlcPlayer_DragEnter(object sender, DragEventArgs e)
@@ -301,7 +314,22 @@ namespace windowMediaPlayerDM
         Size commentPanelsize;
         Point commentPanelLocation;
 
-        void keyUpActions(KeyEventArgs e) {
+        void FullScreenSwitch() {
+            if (fullscreen)
+            {
+
+                show_all_fm1();
+            }
+            else
+            {
+
+                hide_All_fm1();
+            }
+        
+        
+        }
+
+        void KeyUpActions(KeyEventArgs e) {
            
             //Danmoku_status.Text = e.KeyValue.ToString();
 
@@ -320,16 +348,7 @@ namespace windowMediaPlayerDM
                     //F11 key
                 case 122:
                     //hide if false and show if true
-                    if (fullscreen)
-                    {
-
-                        show_all_fm1();
-                    }
-                    else {
-
-                        hide_All_fm1();
-                    }
-
+                    FullScreenSwitch();
 
                     break;
             
@@ -339,12 +358,12 @@ namespace windowMediaPlayerDM
         }
         void vlcPlayer_KeyUp(object sender, KeyEventArgs e)
         {
-            keyUpActions(e);
+            KeyUpActions(e);
         }
 
         void Form1_KeyUp(object sender, KeyEventArgs e)
         {
-            keyUpActions(e);
+            KeyUpActions(e);
         }
 
         void show_all_fm1() {
@@ -2658,7 +2677,7 @@ namespace windowMediaPlayerDM
             fm3.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
             fm3.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
             fm3.MouseClick += new MouseEventHandler(dm_MouseClick);
-
+            fm3.MouseDoubleClick += new MouseEventHandler(fm3_MouseDoubleClick);
 
             fm3.KeyUp += new KeyEventHandler(fm3_KeyUp);
             fm3.MouseWheel += new MouseEventHandler(Form1_MouseWheel);
@@ -2667,9 +2686,14 @@ namespace windowMediaPlayerDM
         
         }
 
+        void fm3_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            FullScreenSwitch();
+        }
+
         void fm3_KeyUp(object sender, KeyEventArgs e)
         {
-            keyUpActions(e);
+            KeyUpActions(e);
         }
         //modified from String[] to List so multiple files can be selected at once.
 
