@@ -53,6 +53,11 @@ namespace windowMediaPlayerDM
 
             //System.Net.WebClient webclient = new System.Net.WebClient();
 
+            DirectoryInfo checkxml = new DirectoryInfo(dirpath + "\\temp_xml");
+            if (!checkxml.Exists) {
+                checkxml.Create();
+            }
+
 
            otherSiteSupport(url);
 

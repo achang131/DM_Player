@@ -13,6 +13,7 @@ using System.Windows.Threading;
 using System.IO;
 using System.Net.Http;
 using System.Net;
+using System.Text;
 
 
 namespace windowMediaPlayerDM
@@ -219,9 +220,13 @@ namespace windowMediaPlayerDM
             vlcPlayer.MediaChanged += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerMediaChangedEventArgs>(vlcPlayer_MediaChanged);
             vlcPlayer.TimeChanged += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerTimeChangedEventArgs>(vlcPlayer_TimeChanged);
             vlcPlayer.Opening += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerOpeningEventArgs>(vlcPlayer_Opening);
-            vlcPlayer.DragDrop += new DragEventHandler(vlcPlayer_DragDrop);
+            
+            
+            
             vlcPlayer.AllowDrop = true;
-
+            vlcPlayer.DragEnter += new DragEventHandler(vlcPlayer_DragEnter);
+            
+            
 
             VLC_track.MouseDown += new MouseEventHandler(VLC_track_MouseDown);
             VLC_track.MouseUp += new MouseEventHandler(VLC_track_MouseUp);
@@ -258,13 +263,15 @@ namespace windowMediaPlayerDM
 
         }
 
-        void vlcPlayer_DragDrop(object sender, DragEventArgs e)
+        void vlcPlayer_DragEnter(object sender, DragEventArgs e)
         {
             //throw new NotImplementedException();
-            printvlc(e.GetType().ToString());
 
+            
+            //printvlc(e.Data.GetDataPresent(DataFormats.Locale).ToString());
 
         }
+
         int temp_sound;
         void sound_trackbar_ValueChanged(object sender, EventArgs e)
         {
@@ -1344,7 +1351,8 @@ namespace windowMediaPlayerDM
         //time counter dependent
             if (time == time_counter) {
 
-                createLabel(comment);
+                //createLabel(comment);
+                makeCCompact(comment);
             
             }
         
@@ -1355,7 +1363,8 @@ namespace windowMediaPlayerDM
             if (currenttime!=vpos && d.ContainsKey(currenttime))
             {
                 playedcomment++;
-                createLabel(d[currenttime]);
+               // createLabel(d[currenttime]);
+                makeCCompact(d[currenttime]);
                 vpos = currenttime;
             }
         
@@ -1366,7 +1375,9 @@ namespace windowMediaPlayerDM
             if (currenttime == time) {
 
                 playedcomment++;
-                createLabel(comment);
+               // createLabel(comment);
+
+                makeCCompact(comment);
                 
             }
         }
@@ -1679,10 +1690,91 @@ namespace windowMediaPlayerDM
             }
           
         }
-        void createLabel(String comment) {
+        String makeCCompactComponet(String comment) {
+            String result = "";
 
-            if (comment.Length < commentLimit || comment.Contains(Environment.NewLine))
+            if (comment.Length / commentLimit > 0)
             {
+
+                for (int j = 0; j < comment.Length / commentLimit; j++)
+                {
+                    //use commentLimit-1 instead commentLimit to avoid overflow
+                    comment = comment.Insert((commentLimit - 1) * (j + 1), Environment.NewLine);
+
+
+                }
+            }
+
+            result = comment;
+
+            return result;
+        
+        
+        }
+
+        void makeCCompact(String comment) {
+
+
+            if (comment.Length > commentLimit)
+            {
+
+                //if the comment is longer than limit and it contains newline
+                if (comment.Contains(Environment.NewLine))
+                {
+
+                    string[] comments = comment.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
+                    // now all the comments originally in newlines are now seperate
+
+                    for (int i = 0; i < comments.Length; i++)
+                    {
+
+                        //iterate  through each strings
+
+                        comments[i] = makeCCompactComponet(comments[i]);
+                        createLabel(comments[i]);
+
+
+
+                    }
+
+
+
+                }
+                else {
+
+                    comment = makeCCompactComponet(comment);
+                    createLabel(comment);
+                
+                }
+
+
+
+
+            }
+            else {
+
+
+                createLabel(comment);
+            
+            }
+            
+
+
+
+
+        }
+        void createLabel(String comment) {
+            //instead of filtering out the comment make it more compact on the screen ?
+
+          //  comment = comment.Insert(commentLimit, Environment.NewLine);
+
+
+        //    if (comment.Length < commentLimit || comment.Contains(Environment.NewLine))
+        //    {
+
+
+
                 Label dm = new Label();
 
                 //
@@ -1743,7 +1835,7 @@ namespace windowMediaPlayerDM
                 // comment_storage.Add(dm);
                 dm.BringToFront();
                 dm.Show();
-            }
+         //   }
         
         }
 
@@ -4039,14 +4131,18 @@ namespace windowMediaPlayerDM
         
         
         }
-
-        void getTitle_DoubleClick(object sender, EventArgs e)
-        {
+        void renametoXML() {
             //throw new NotImplementedException();
             //rename the shattered xml file to the current file name
 
             DirectoryInfo dif = new DirectoryInfo(current_dir_url);
-            FileInfo[] files = dif.GetFiles("*・xml");
+
+            DirectoryInfo chk = new DirectoryInfo(dif.FullName + "\\temp_xml");
+            if (!chk.Exists) {
+                chk.Create();
+            
+            }
+            FileInfo[] files = chk.GetFiles("*xml");
 
             //only do this if there's only 1 file that suits the condition 
             if (files.Count() == 1)
@@ -4061,8 +4157,13 @@ namespace windowMediaPlayerDM
 
                 xml.Delete();
 
-                fm7.getDownloadstatus1.Text = "xml file renamed to : "+transtemp + ".xml";
+                fm7.getDownloadstatus1.Text = "xml file renamed to : " + transtemp + ".xml";
             }
+        
+        }
+        void getTitle_DoubleClick(object sender, EventArgs e)
+        {
+            renametoXML();
         }
 
         void fm7_Disposed(object sender, EventArgs e)
@@ -4078,22 +4179,9 @@ namespace windowMediaPlayerDM
 
             //・xml
 
+            renametoXML();
+
             DirectoryInfo dif = new DirectoryInfo(current_dir_url);
-            FileInfo[] files = dif.GetFiles("*・xml");
-            
-            //only do this if there's only 1 file that suits the condition 
-            if (files.Count() == 1) {
-
-                FileInfo xml = files.ElementAt(0);
-                
-                byte[] tempbytes = Encoding.Default.GetBytes(gb.getCurrentTitle);
-                string transtemp = Encoding.GetEncoding("shift-jis").GetString(tempbytes);
-                
-                xml.CopyTo(dif.FullName+"\\"+transtemp+".xml",true);
-
-                xml.Delete();
-            }
-            
 
             ListBox box = (ListBox)sender;
             FileInfo file = new FileInfo(current_dir_url+"\\" + fm7.getTitle.SelectedItem.ToString());
@@ -4699,8 +4787,11 @@ namespace windowMediaPlayerDM
                 {
                 WebBrowser wb = new WebBrowser();
 
-                
+              //  wb.TopLevelControl.Visible = false;
+                wb.Visible = false;
+                //wb.Document.Encoding = "UTF-8";
                 wb.ScriptErrorsSuppressed = true;
+               // printvlc(wb.Version.ToString());
                 
                 wb.Url = address;
 
@@ -4740,7 +4831,7 @@ namespace windowMediaPlayerDM
             WebBrowser wb = (WebBrowser)sender;
 
 
-            wb.Document.Encoding = Encoding.UTF8.WebName;
+            wb.Document.Encoding = "UTF-8";
 
        //     List<String> viewer = new List<string>();
       //      List<String> viewer2 = new List<string>();
