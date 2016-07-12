@@ -11,13 +11,21 @@ using System.Net.Http;
 using System.Net;
 using Newtonsoft.Json;
 using System.Runtime.InteropServices;
-
+using System.Threading;
+using System.Threading.Tasks;
+using System.Diagnostics;
 namespace windowMediaPlayerDM
 {
     public partial class VLC_test : Form
     {
 
        // DirectoryInfo dc = new DirectoryInfo("C:\\Users\\Alan\\Documents\\GitHub\\DM_Player\\lib");
+
+        List<Label> testlist = new List<Label>();
+        List<Label> testlist2 = new List<Label>();
+        List<Label> testlist3 = new List<Label>();
+        System.Timers.Timer timer = new System.Timers.Timer();
+        Label[] atest = new Label[100];
 
         public VLC_test()
         {
@@ -32,6 +40,26 @@ namespace windowMediaPlayerDM
             
             
          //   vlcControl1.VlcLibDirectory = dc;
+            
+
+            for (int i = 0; i < 100; i++) {
+
+                Label l = new Label();
+                l.Location = new Point(ClientRectangle.Right+i,i);
+                l.Text = " test ";
+                this.Controls.Add(l);
+             //   this.testlist.Add(l);
+
+                Label j = new Label();
+                j.Text = " test ";
+                j.Location = new Point(ClientRectangle.Right + i, i);
+                this.testlist.Add(j);
+                Label k = new Label();
+                this.testlist3.Add(k);
+                k.Text = " test ";
+                k.Location = new Point(ClientRectangle.Right + i, i);
+                atest[i] = k;
+            }
 
             
             
@@ -60,7 +88,7 @@ namespace windowMediaPlayerDM
 
                 vlcControl1.Play();
 
-                label1.Text = vlcControl1.State.ToString() +"   " + vlcControl1.GetCurrentMedia().Duration.Milliseconds + "/" + vlcControl1.GetCurrentMedia().Duration.TotalMilliseconds + vlcControl1.Audio.Channel;
+             //   label1.Text = vlcControl1.State.ToString() +"   " + vlcControl1.GetCurrentMedia().Duration.Milliseconds + "/" + vlcControl1.GetCurrentMedia().Duration.TotalMilliseconds + vlcControl1.Audio.Channel;
             
             }
         }
@@ -196,6 +224,169 @@ namespace windowMediaPlayerDM
             //throw new NotImplementedException();
 
             
+        }
+
+        private void test_button_Click(object sender, EventArgs e)
+        {
+
+            Stopwatch sw = new Stopwatch();
+
+            int listn = testlist.Count;
+
+
+
+            sw.Start();
+            int controln = (Controls.OfType<Label>().Count());
+            while (Controls.OfType<Label>().Count() > 0)
+            {
+
+
+                for (int i = 0; i < Controls.OfType<Label>().Count(); i++)
+                {
+
+                    if (Controls.OfType<Label>().ElementAt(i).Location.X > 0)
+                    {
+
+                        Controls.OfType<Label>().ElementAt(i).Location = new Point(Controls.OfType<Label>().ElementAt(i).Location.X - 10, Controls.OfType<Label>().ElementAt(i).Location.Y);
+
+
+                    }
+                    else
+                    {
+
+                        Controls.OfType<Label>().ElementAt(i).Dispose();
+                    }
+
+
+
+                }
+
+
+
+            }
+
+
+
+
+            for (int i = 0; i < Controls.OfType<Label>().Count(); i++)
+            {
+
+                Controls.OfType<Label>().ElementAt(i).Text = " " + i;
+
+            }
+            sw.Stop();
+
+
+
+
+            long totalt = sw.ElapsedMilliseconds;
+
+            foreach (Label l in testlist)
+            {
+
+                this.Controls.Add(l);
+            }
+            sw.Reset();
+            
+            
+            
+            sw.Start();
+            while (testlist.Count > 0)
+            {
+                List<Label> removelist = new List<Label>();
+
+                for (int i = 0; i < testlist.Count; i++)
+                {
+
+                    if (testlist.ElementAt(i).Location.X > 0)
+                    {
+
+                        testlist.ElementAt(i).Location = new Point(testlist.ElementAt(i).Location.X - 10, testlist.ElementAt(i).Location.Y);
+
+
+                    }
+                    else {
+                        removelist.Add(testlist.ElementAt(i));
+                        testlist.ElementAt(i).Dispose();
+                    }
+
+
+
+                }
+
+                if (removelist.Count > 0)
+                {
+                    for (int i = 0; i < removelist.Count; i++)
+                    {
+                        testlist.Remove(removelist.ElementAt(i));
+
+                    }
+                }
+
+            }
+            sw.Stop();
+
+            
+
+            long totalt2 = sw.ElapsedMilliseconds;
+
+            foreach (Label l in testlist3)
+            {
+
+                this.Controls.Add(l);
+            }
+            int arrayn = atest.Length;
+            sw.Reset();
+
+            sw.Start();
+            int c = 0;
+
+            while (c < 100) {
+
+                for (int i = 0; i < atest.Length; i++) {
+
+                    if (atest[i] != null)
+                    {
+                        if (atest[i].Location.X > 0)
+                        {
+                            atest[i].Location=new Point(atest[i].Location.X-10,atest[i].Location.Y);
+
+
+
+                        }
+                        else {
+
+
+                            atest[i].Dispose();
+                            atest[i] = null;
+                            c++;
+                        }
+
+
+                    }
+
+                
+                
+                
+                
+                }
+            
+            
+            
+            
+            
+            }
+
+            sw.Stop();
+
+            long totalt3 = sw.ElapsedMilliseconds;
+
+            test_sLabel.Text = "controls " + totalt + " Lists " + totalt2 + " array " + totalt3;
+
+
+            print.Text = listn + " " + controln + " " + arrayn;
+
+
         }
         
 

@@ -556,7 +556,7 @@ namespace windowMediaPlayerDM
                                         break;
 
                                     case "Comment_Speed":
-                                        move_distance = Int32.Parse(reader.Value);
+                                        _distance = Int32.Parse(reader.Value);
 
                                         break;
 
@@ -1137,11 +1137,11 @@ namespace windowMediaPlayerDM
                 int lnumber = fm3.Controls.OfType<Label>().Count();
                 if (lnumber > 70)
                 {
-                    move_distance = (int)(_distance * 2.7);
+                    move_distance = (int)(_distance * 4);
                 }
                 else if (lnumber > 60)
                 {
-                    move_distance = (int)(_distance * 2.3);
+                    move_distance = (int)(_distance * 3.5);
                 }
                 else if (lnumber > 50)
                 {
@@ -2731,7 +2731,7 @@ namespace windowMediaPlayerDM
         }
         void change_move_distance(int s) {
 
-            move_distance = s;
+            _distance = s;
         
         }
 
@@ -2744,33 +2744,53 @@ namespace windowMediaPlayerDM
 
             debugtab2.Text = s;
         }
-        void makeComment() {
-            
 
+        void autoSetVolumn() {
             if (vlcPlayer.Audio.Volume != vVolume)
             {
                 vlcPlayer.Audio.Volume = vVolume;
                 sound_trackbar.Value = vVolume;
             };
+        
+        }
 
-            //time_counter = (int)(Media_Player.Ctlcontrols.currentPosition * 100);
+        void autoSetTrackTime() {
 
-            if (vlc_track_time != -2) {
+
+            if (vlc_track_time != -2)
+            {
 
                 vlcPlayer.Time = vlc_track_time;
                 time_counter = vlc_track_time / 10;
 
                 vlc_track_time = -2;
-            
-            }
 
+            }
+        
+        }
+        int comment_time;
+
+        void makeComment() {
+            
+            //sets the player volume if it's not equal to the current user volume
+            autoSetVolumn();
+
+            //component for track bar, checks if the track value has changed if yes then set
+            autoSetTrackTime();
+
+            //time_counter = (int)(Media_Player.Ctlcontrols.currentPosition * 100);
+
+
+
+            //for checking mouse location not in use for now
+            /*
             if (System.Windows.Forms.Cursor.Position==mouseLocation) {
 
                 mousemoving = false;
             }
+            */
 
-
-            time_counter++;
+ 
 
 
 
@@ -2781,12 +2801,13 @@ namespace windowMediaPlayerDM
 
                 try
                 {
+                    //checks if the video reaches the end of the video
                     manual_checkend((int)vlcPlayer.Length / 10, time_counter);
                 }
                 catch (NullReferenceException) { Console.WriteLine("in make comment"); }
             }
 
-            int comment_time;
+           
 
             
             try
@@ -2809,12 +2830,12 @@ namespace windowMediaPlayerDM
                     default:
 
                        
-
+                        //if auto match is on then offset the comments by the comment's largest vpos-video time
                         if (auto_TimeMatch == false)
                         {
 
 
-
+                            //second important element in the engine, basiclly time_counter with user offset to get the comments to the right video position
                             comment_time = time_counter+ time_offset;
                         }
                         else
@@ -2828,33 +2849,9 @@ namespace windowMediaPlayerDM
 
             }
             catch (Exception) { comment_time = 0; }
-            int vlc_offset;
 
-            /*
-            if(auto_TimeMatch){
 
-              vlc_offset = (int)(vlcPlayer.Time)/10+time_offset;
 
-            }else{
-
-                vlc_offset = (int)(vlcPlayer.Time) / 10 + auto_base + offset_auto;
-
-            }
-
-            //if the counter is too slow or too fast it'll bring the counter back to the current vlc time 
-            if (time_counter > vlc_offset + 10 || time_counter < vlc_offset - 10)
-            {
-                if (auto_TimeMatch)
-                {
-                    time_counter = (int)(vlcPlayer.Time)/10+time_offset;
-                }
-                else {
-
-                    time_counter = (int)(vlcPlayer.Time) / 10 + auto_base + offset_auto;
-                }
-            }
-            */
-            vlcTIme = (int)(vlcPlayer.Time / 10);
             print(showTime(((int)(vlcPlayer.Time)) ) + "/" + comment_time + "/" + time_counter);
 
 
@@ -2867,17 +2864,15 @@ namespace windowMediaPlayerDM
                 print2(playedcomment + "/" + (comment.Count() + _duplicates));
             
             }
-            /*
-            foreach(String[] c in comment){
-                addComment(comment_time,Int32.Parse(c[0]), c[1]);
-                        
+
+            //only runs if there's comments avaliable;
+            if (comment2.Count > 0)
+            {
+                addComment(comment_time, comment2);
+
             }
-            */
-
-
-
-            addComment(comment_time, comment2);
-
+            //super important the main clock for the comment engine;
+            time_counter++;
         
         }
 
@@ -2947,33 +2942,16 @@ namespace windowMediaPlayerDM
         
         }
         void moveComment_thread() {
-            if (time_counter % speed_control == 0)
-            {
-
-/*
-                    foreach (Label l in Controls.OfType<Label>())
-                    {
-
-                        MoveLabel_threadEX(l);
-
-
-                    }
-
-*/
-                    try
-                    {
+         //   if (time_counter % speed_control == 0 && fm3!=null)
+           if(fm3!=null)
+           {
+               //not sure how fast this is compare to actual label need to do test on this
                         for (int i = 0; i < fm3.Controls.OfType<Label>().Count(); i++)
                         {
 
                             MoveLabel_threadEX(fm3.Controls.OfType<Label>().ElementAt(i));
 
-
-
                         }
-                    }
-                    catch (Exception) { }
-
-
             }
             
         

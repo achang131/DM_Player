@@ -34,7 +34,6 @@
             this.Play = new System.Windows.Forms.Button();
             this.Stop = new System.Windows.Forms.Button();
             this.Pause = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
             this.web_button = new System.Windows.Forms.Button();
             this.dir_box = new System.Windows.Forms.TextBox();
             this.Url_List = new System.Windows.Forms.ComboBox();
@@ -43,6 +42,9 @@
             this.download_status = new System.Windows.Forms.ToolStripStatusLabel();
             this.downloadstatus2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.comment_test = new System.Windows.Forms.RichTextBox();
+            this.test_button = new System.Windows.Forms.Button();
+            this.test_sLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.print = new System.Windows.Forms.ToolStripStatusLabel();
             ((System.ComponentModel.ISupportInitialize)(this.vlcControl1)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -98,14 +100,6 @@
             this.Pause.UseVisualStyleBackColor = true;
             this.Pause.Click += new System.EventHandler(this.Pause_Click);
             // 
-            // label1
-            // 
-            this.label1.Location = new System.Drawing.Point(512, 429);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(35, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "label1";
-            // 
             // web_button
             // 
             this.web_button.Location = new System.Drawing.Point(431, 420);
@@ -142,7 +136,9 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.download_status,
-            this.downloadstatus2});
+            this.downloadstatus2,
+            this.test_sLabel,
+            this.print});
             this.statusStrip1.Location = new System.Drawing.Point(0, 510);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(1487, 22);
@@ -167,18 +163,38 @@
             this.comment_test.TabIndex = 7;
             this.comment_test.Text = "";
             // 
+            // test_button
+            // 
+            this.test_button.Location = new System.Drawing.Point(13, 461);
+            this.test_button.Name = "test_button";
+            this.test_button.Size = new System.Drawing.Size(75, 23);
+            this.test_button.TabIndex = 8;
+            this.test_button.Text = "test";
+            this.test_button.UseVisualStyleBackColor = true;
+            this.test_button.Click += new System.EventHandler(this.test_button_Click);
+            // 
+            // test_sLabel
+            // 
+            this.test_sLabel.Name = "test_sLabel";
+            this.test_sLabel.Size = new System.Drawing.Size(0, 17);
+            // 
+            // print
+            // 
+            this.print.Name = "print";
+            this.print.Size = new System.Drawing.Size(0, 17);
+            // 
             // VLC_test
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1487, 532);
+            this.Controls.Add(this.test_button);
             this.Controls.Add(this.comment_test);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.downloadbar);
             this.Controls.Add(this.Url_List);
             this.Controls.Add(this.dir_box);
             this.Controls.Add(this.web_button);
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.Pause);
             this.Controls.Add(this.Stop);
             this.Controls.Add(this.Play);
@@ -201,7 +217,6 @@
         private System.Windows.Forms.Button Play;
         private System.Windows.Forms.Button Stop;
         private System.Windows.Forms.Button Pause;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button web_button;
         private System.Windows.Forms.TextBox dir_box;
         private System.Windows.Forms.ComboBox Url_List;
@@ -210,5 +225,8 @@
         private System.Windows.Forms.ToolStripStatusLabel download_status;
         private System.Windows.Forms.ToolStripStatusLabel downloadstatus2;
         private System.Windows.Forms.RichTextBox comment_test;
+        private System.Windows.Forms.ToolStripStatusLabel test_sLabel;
+        private System.Windows.Forms.Button test_button;
+        private System.Windows.Forms.ToolStripStatusLabel print;
     }
 }
