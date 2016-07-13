@@ -28,7 +28,7 @@ namespace windowMediaPlayerDM
         int time_counter;
         int speed_control;
         Color userColor;
-      //  List<Label> comment_storage = new List<Label>();
+        List<Label> comment_storage = new List<Label>();
         XmlTextReader dm_comment;
         List<String[]> comment = new List<String[]>();
       //  List<Label> remove_List = new List<Label>();
@@ -137,6 +137,8 @@ namespace windowMediaPlayerDM
         bool startautotime;
 
         int commentLimit;
+
+        int commentmethod;
 
         public Form1()
         {
@@ -1084,6 +1086,10 @@ namespace windowMediaPlayerDM
             startautotime = false;
 
             commentLimit = 65;
+
+
+            //set the comment method  0 = default 1 = using list to move labels
+            commentmethod = 1;
         
         }
         void switchPlayer(int c) {
@@ -1174,7 +1180,7 @@ namespace windowMediaPlayerDM
             {
 
                 changingSpeedontime();
-                moveComment_thread();
+                moveComment_thread2();
 
                 //commentEngine_thread();
 
@@ -1797,15 +1803,37 @@ namespace windowMediaPlayerDM
                 Label dm = new Label();
 
                 //
-                Random ypos = new Random();
-                if (40 < fm3.ClientRectangle.Bottom - 80)
-                {
-                    ycurrent = ypos.Next(40, fm3.ClientRectangle.Bottom - 80);
-                }
-                else
-                {
 
-                    ycurrent = 40;
+                dm.Text = comment;
+                dm.Name = comment;
+                dm.TabIndex = 3;
+                dm.Visible = true;
+                dm.AutoSize = true;
+
+                dm.Font = new Font("Microsoft Sans Serif", 24, FontStyle.Bold);
+                dm.ForeColor = userColor;
+                dm.MouseClick += new MouseEventHandler(dm_MouseClick);
+
+
+                Random ypos = new Random();
+
+                if (!fullscreen)
+                {
+                    if (40 < fm3.ClientRectangle.Bottom - 80)
+                    {
+                        ycurrent = ypos.Next(40, fm3.ClientRectangle.Bottom - 80);
+                    }
+                    else
+                    {
+
+                        ycurrent = 40;
+                    }
+                }
+                else {
+
+
+                    ycurrent = ypos.Next(fm3.ClientRectangle.Top, fm3.ClientRectangle.Bottom - dm.Size.Height);
+                
                 }
                 dm.Location = new Point(ClientRectangle.Right, ycurrent);
 
@@ -1820,18 +1848,9 @@ namespace windowMediaPlayerDM
                 */
                 //
 
-                dm.Text = comment;
-                dm.Name = comment;
-                dm.TabIndex = 3;
-                dm.Visible = true;
-                dm.AutoSize = true;
-
-                dm.Font = new Font("Microsoft Sans Serif", 24, FontStyle.Bold);
-                dm.ForeColor = userColor;
-                dm.MouseClick += new MouseEventHandler(dm_MouseClick);
 
 
-                dm.Size = new System.Drawing.Size(35, 15);
+        //        dm.Size = new System.Drawing.Size(35, 15);
                 /*
                             var position = this.PointToScreen(dm.Location);
                             position = Media_Player.PointToClient(position);
@@ -1848,10 +1867,19 @@ namespace windowMediaPlayerDM
                            */
 
                 fm3.Controls.Add(dm);
+                if (commentmethod == 1)
+                {
 
-                // safecontrol(dm);
+                    //basically splits the comments into two lists
+                    if (playedcomment % 2 == 0)
+                    {
+                        comment_storage.Add(dm);
+                    }
+                    else {
 
-                // comment_storage.Add(dm);
+                        comment_storage2.Add(dm);
+                    }
+                }
                 dm.BringToFront();
                 dm.Show();
          //   }
@@ -2014,11 +2042,15 @@ namespace windowMediaPlayerDM
             l.Location = new Point(ClientRectangle.Right, l.Location.Y);
         
         }
+        
+
         void MoveLabel(Label l) {
             
             // where the DM start to hit
             int xstart = ClientRectangle.Right;
-            int xend = commentdestroy;
+           // int xend = commentdestroy;
+
+            int xend = 0 - l.Size.Width;
             //where the DM ends
 
 
@@ -2031,6 +2063,7 @@ namespace windowMediaPlayerDM
             if (initialx > xend)
             {
                 l.Location = new Point(initialx - move_distance, l.Location.Y);
+              
             }
             else {
                 //need to de comment this when the xml actually loads since it's going to add the comments on depending on the time counter real time
@@ -2039,8 +2072,10 @@ namespace windowMediaPlayerDM
               //  comment_storage.Remove(l);
              //   remove_List.Add(l);
                 //remove_List.AddLast(l);
+
+          
                 l.Dispose();
-              
+               
             
             }
         
@@ -2115,6 +2150,7 @@ namespace windowMediaPlayerDM
 
                     //  comment_storage.Remove(l);
                    // remove_List.AddLast(l);
+
                     l.Dispose();
 
 
@@ -2857,8 +2893,16 @@ namespace windowMediaPlayerDM
 
             if (fm3 != null)
             {
-                print2(showTime((int)vlcPlayer.Length)+"  L: " + fm3.Controls.OfType<Label>().Count().ToString() + " " + (playedcomment+_duplicates) + "/" + (comment.Count()));
-            }
+                if (commentmethod != 1)
+                {
+                    print2(showTime((int)vlcPlayer.Length) + "  L: " + fm3.Controls.OfType<Label>().Count()+ " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
+                }
+                else {
+
+                    print2(showTime((int)vlcPlayer.Length) + "  L1: " + (comment_storage.Count)+ " L2: "+comment_storage2.Count + " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
+      
+                }
+                }
             else {
 
                 print2(playedcomment + "/" + (comment.Count() + _duplicates));
@@ -2912,9 +2956,44 @@ namespace windowMediaPlayerDM
                 }
                 
 */
-                try
-                {
-                    for (int i = 0; i < fm3.Controls.OfType<Label>().Count(); i++)
+
+                    switch(commentmethod){
+
+
+                        case 1:
+                            List<Label> removetemp = new List<Label>();
+                            for (int i = 0; i < comment_storage.Count; i++) {
+
+
+                                MoveLabel(comment_storage.ElementAt(i));
+
+                                if (comment_storage.ElementAt(i).IsDisposed) {
+
+                                    removetemp.Add(comment_storage.ElementAt(i));
+                                }
+                            
+                            }
+
+                            if (removetemp.Count > 0)
+                            {
+                                for (int i = 0; i < removetemp.Count; i++)
+                                {
+
+                                    comment_storage.Remove(removetemp.ElementAt(i));
+
+                            
+                                
+                                }
+
+                            }
+                            //clear removelist here ?    but it should be empty by the end of the code
+                           
+
+                                break;
+                 
+                        
+                    default:
+                        for (int i = 0; i < fm3.Controls.OfType<Label>().Count(); i++)
                     {
 
 
@@ -2923,8 +3002,13 @@ namespace windowMediaPlayerDM
 
 
                     }
+
+                    break;
+
+                
+                
                 }
-                catch (Exception) { };
+
                 
                 
                 
@@ -2941,17 +3025,148 @@ namespace windowMediaPlayerDM
             }
         
         }
+
+        List<Label> comment_storage2 = new List<Label>();
+        void moveComment_thread2()
+        {
+            //   if (time_counter % speed_control == 0 && fm3!=null)
+            if (fm3 != null)
+            {
+                //not sure how fast this is compare to actual label need to do test on this
+                switch (commentmethod)
+                {
+
+
+                    case 1:
+                        try
+                        {
+
+                            List<Label> removetemp2 = new List<Label>();
+
+
+                            for (int i = 0; i < comment_storage2.Count; i++)
+                            {
+
+
+                                MoveLabel_threadEX(comment_storage2.ElementAt(i));
+
+                                if (comment_storage2.ElementAt(i).IsDisposed)
+                                {
+                                    removetemp2.Add(comment_storage2.ElementAt(i));
+                                }
+
+                            }
+
+                            if (removetemp2.Count > 0)
+                            {
+                                for (int i = 0; i < removetemp2.Count; i++)
+                                {
+
+                                    comment_storage2.Remove(removetemp2.ElementAt(i));
+
+
+
+                                }
+
+
+                            }
+                        }
+                        catch (Exception) { };
+                        //clear removelist here ?    but it should be empty by the end of the code
+
+
+                        break;
+
+
+                    default:
+                        for (int i = 0; i < fm3.Controls.OfType<Label>().Count(); i++)
+                        {
+
+
+                            MoveLabel_threadEX(fm3.Controls.OfType<Label>().ElementAt(i));
+
+
+
+                        }
+
+                        break;
+
+
+
+                }
+
+            }
+
+
+        }
+
         void moveComment_thread() {
          //   if (time_counter % speed_control == 0 && fm3!=null)
            if(fm3!=null)
            {
                //not sure how fast this is compare to actual label need to do test on this
+                               switch(commentmethod){
+
+
+                        case 1:
+                                       try
+                                       {
+                                           List<Label> removetemp = new List<Label>();
+                               
+
+                                           for (int i = 0; i < comment_storage.Count; i++)
+                                           {
+
+
+                                               MoveLabel_threadEX(comment_storage.ElementAt(i));
+
+                                               if (comment_storage.ElementAt(i).IsDisposed)
+                                               {
+                                                   removetemp.Add(comment_storage.ElementAt(i));
+                                               }
+
+                                           }
+
+                                           if (removetemp.Count > 0)
+                                           {
+                                               for (int i = 0; i < removetemp.Count; i++)
+                                               {
+
+                                                   comment_storage.Remove(removetemp.ElementAt(i));
+
+
+
+                                               }
+
+
+                                           }
+
+
+                                       }
+                                       catch (Exception) { };
+                            //clear removelist here ?    but it should be empty by the end of the code
+                           
+
+                                break;
+                 
+                        
+                    default:
                         for (int i = 0; i < fm3.Controls.OfType<Label>().Count(); i++)
-                        {
+                    {
 
-                            MoveLabel_threadEX(fm3.Controls.OfType<Label>().ElementAt(i));
 
-                        }
+                        MoveLabel_threadEX(fm3.Controls.OfType<Label>().ElementAt(i));
+
+
+
+                    }
+
+                    break;
+
+                
+                
+                }
+
             }
             
         

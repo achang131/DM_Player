@@ -44,7 +44,7 @@
             this.comment_test = new System.Windows.Forms.RichTextBox();
             this.test_button = new System.Windows.Forms.Button();
             this.test_sLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.print = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             ((System.ComponentModel.ISupportInitialize)(this.vlcControl1)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -138,10 +138,10 @@
             this.download_status,
             this.downloadstatus2,
             this.test_sLabel,
-            this.print});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 510);
+            this.toolStripStatusLabel1});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 509);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1487, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(1487, 23);
             this.statusStrip1.TabIndex = 6;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -178,10 +178,11 @@
             this.test_sLabel.Name = "test_sLabel";
             this.test_sLabel.Size = new System.Drawing.Size(0, 17);
             // 
-            // print
+            // toolStripStatusLabel1
             // 
-            this.print.Name = "print";
-            this.print.Size = new System.Drawing.Size(0, 17);
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(134, 18);
+            this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
             // 
             // VLC_test
             // 
@@ -227,6 +228,6 @@
         private System.Windows.Forms.RichTextBox comment_test;
         private System.Windows.Forms.ToolStripStatusLabel test_sLabel;
         private System.Windows.Forms.Button test_button;
-        private System.Windows.Forms.ToolStripStatusLabel print;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
     }
 }
