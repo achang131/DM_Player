@@ -624,7 +624,7 @@ namespace windowMediaPlayerDM
                     writer.WriteStartDocument();
                     writer.WriteStartElement("settings");
                     writer.WriteElementString("Default_Path", current_dir_url);
-                    writer.WriteElementString("Comment_Speed", move_distance.ToString());
+                    writer.WriteElementString("Comment_Speed", _distance.ToString());
                     writer.WriteElementString("volume", vVolume.ToString());
                     writer.WriteElementString("CommentLimit", commentLimit.ToString());
                     writer.WriteEndElement();
@@ -992,7 +992,7 @@ namespace windowMediaPlayerDM
 
             move_distance = 10;
 
-            _distance = move_distance;
+            _distance = 10;
 
             timer1.Interval = 1;
 
@@ -1010,9 +1010,9 @@ namespace windowMediaPlayerDM
 
             userColor = Color.DarkGray;
 
-            replacetimer1_interval = 30;
-            replacetimer3_interval = 29;
-            replacetimer2_interval = 10;
+            replacetimer1_interval = 14;
+            replacetimer3_interval = 15;
+            replacetimer2_interval = 9;
 
             auto_TimeMatch = true;
 
@@ -1143,21 +1143,21 @@ namespace windowMediaPlayerDM
                 int lnumber = fm3.Controls.OfType<Label>().Count();
                 if (lnumber > 70)
                 {
-                    move_distance = (int)(_distance * 4);
+                    move_distance = (int)(_distance * 2.3);
                 }
                 else if (lnumber > 60)
                 {
-                    move_distance = (int)(_distance * 3.5);
+                    move_distance = (int)(_distance * 2);
                 }
                 else if (lnumber > 50)
                 {
-                    move_distance = _distance * 2;
+                    move_distance = (int)(_distance * 1.7);
 
                 }
                 else if (lnumber > 40)
                 {
 
-                    move_distance = (int)(_distance * 1.7);
+                    move_distance = (int)(_distance * 1.5);
 
                 }
                 else if (lnumber > 30)
@@ -1204,22 +1204,25 @@ namespace windowMediaPlayerDM
         void replacetimer3_start()
         {
             if (!replacetimer3.IsBusy)
+            {
                 replacetimer3.RunWorkerAsync();
+
+            }
 
         }
         void replacetimer3_stop()
         {
             //only stops if they are running to avoid freeze ?
 
-            if (replacetimer3.IsBusy)
-            {
+        //    if (replacetimer3.IsBusy)
+        //    {
                 try
                 {
                     replacetimer3.CancelAsync();
                 }
                 catch (Exception) { }
 
-            }
+          //  }
         }
         void replacetimer2_start() {
             if(!replacetimer2.IsBusy)
@@ -1227,14 +1230,14 @@ namespace windowMediaPlayerDM
         
         }
         void replacetimer2_stop() {
-            if (replacetimer2.IsBusy)
-            {
+          //  if (replacetimer2.IsBusy)
+          //  {
                 try
                 {
                     replacetimer2.CancelAsync();
                 }
                 catch (Exception) { }
-            }
+           // }
         }
 
         void printvlc(String s) {
@@ -2899,7 +2902,7 @@ namespace windowMediaPlayerDM
                 }
                 else {
 
-                    print2(showTime((int)vlcPlayer.Length) + "  L1: " + (comment_storage.Count)+ " L2: "+comment_storage2.Count + " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
+                    print2(showTime((int)vlcPlayer.Length) + "L: "+(comment_storage.Count+comment_storage2.Count)+ "  L1: " + (comment_storage.Count)+ " L2: "+comment_storage2.Count + " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
       
                 }
                 }
