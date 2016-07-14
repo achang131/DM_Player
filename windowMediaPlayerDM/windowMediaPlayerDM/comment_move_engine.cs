@@ -29,7 +29,7 @@ namespace windowMediaPlayerDM
 
          //   comment_storage = comments;
             _playing = false;
-            interval = 40;
+            interval = 50;
             move_distance = moved;
             bk201.WorkerSupportsCancellation = true;
             bk201.DoWork += new DoWorkEventHandler(bk201_DoWork);

@@ -276,16 +276,13 @@ namespace windowMediaPlayerDM
 
           cme1 = new comment_move_engine(move_distance);
           cme2 = new comment_move_engine(move_distance);
-          cme3 = new comment_move_engine(move_distance);
-          cme4 = new comment_move_engine(move_distance);
-          cme5 = new comment_move_engine(move_distance);
-          cme6 = new comment_move_engine(move_distance);
+
 
           CSettings();
   
         }
         Comment_window fm3_1, fm3_2, fm3_3,fm3_4,fm3_5,fm3_6,fm3_7;
-        comment_move_engine cme1,cme3,cme4,cme5,cme6;
+        comment_move_engine cme1;
         comment_move_engine cme2;
         int threadNumber;
 
@@ -532,6 +529,22 @@ namespace windowMediaPlayerDM
 
                     fm3.Size = vlcPlayer.Size;
                     fm3.Location = vlcPlayer.Location;
+
+                    fm3_1.Size = vlcPlayer.Size;
+                    fm3_2.Size = vlcPlayer.Size;
+                    fm3_3.Size = vlcPlayer.Size;
+                    fm3_4.Size = vlcPlayer.Size;
+                    fm3_5.Size = vlcPlayer.Size;
+                    fm3_6.Size = vlcPlayer.Size;
+                    fm3_7.Size = vlcPlayer.Size;
+
+                    fm3_1.setLocation = vlcPlayer.Location;
+                    fm3_2.setLocation = vlcPlayer.Location;
+                    fm3_3.setLocation = vlcPlayer.Location;
+                    fm3_4.setLocation = vlcPlayer.Location;
+                    fm3_5.setLocation = vlcPlayer.Location;
+                    fm3_6.setLocation = vlcPlayer.Location;
+                    fm3_7.setLocation = vlcPlayer.Location;
                 
                 }
 
@@ -1041,10 +1054,10 @@ namespace windowMediaPlayerDM
 
 
             
-            cme1.setInterval = 40;
-            cme2.setInterval = 41;
+            cme1.setInterval = 50;
+            cme2.setInterval = 51;
 
-            threadNumber = 8;
+            threadNumber = 4;
 
             auto_TimeMatch = true;
 
@@ -1177,30 +1190,34 @@ namespace windowMediaPlayerDM
 
             if (fm3 != null)
             {
-                int lnumber = fm3.Controls.OfType<Label>().Count();
-                if (lnumber > 70)
+                int lnumber = comment_storage.Count + comment_storage2.Count + cme1.setStorage.Count + cme2.setStorage.Count;
+                if (lnumber > 80) {
+
+                    move_distance = (int)(_distance * 2.5);
+                }
+                else if (lnumber > 70)
                 {
-                    move_distance = (int)(_distance * 3);
+                    move_distance = (int)(_distance * 2);
                 }
                 else if (lnumber > 60)
                 {
-                    move_distance = (int)(_distance * 2.5);
+                    move_distance = (int)(_distance * 1.7);
                 }
                 else if (lnumber > 50)
                 {
-                    move_distance = (int)(_distance * 1.7);
+                    move_distance = (int)(_distance * 1.5);
 
                 }
                 else if (lnumber > 40)
                 {
 
-                    move_distance = (int)(_distance * 1.5);
+                    move_distance = (int)(_distance * 1.3);
 
                 }
                 else if (lnumber > 30)
                 {
 
-                    move_distance = (int)(_distance * 1.3);
+                    move_distance = (int)(_distance * 1.1);
                 }
                 else
                 {
@@ -1210,17 +1227,11 @@ namespace windowMediaPlayerDM
                 if (cme1 != null) {
 
                     cme1.setMoveDistance = move_distance;
-
                 
                 }
                 if (cme2 != null) {
 
                     cme2.setMoveDistance = move_distance;
-                    cme3.setMoveDistance = move_distance;
-                    cme4.setMoveDistance = move_distance;
-                    cme5.setMoveDistance = move_distance;
-                    cme6.setMoveDistance = move_distance;
-
                 }
 
             }
@@ -1714,10 +1725,6 @@ namespace windowMediaPlayerDM
                 {
                     cme1.Start();
                     cme2.Start();
-                    cme3.Start();
-                    cme4.Start();
-                    cme5.Start();
-                    cme6.Start();
                 }
                 catch (NullReferenceException) { };
             
@@ -1742,10 +1749,6 @@ namespace windowMediaPlayerDM
             if (cme2 != null)
             {
                 cme2.Stop();
-                cme3.Stop();
-                cme4.Stop();
-                cme5.Stop();
-                cme6.Stop();
             }
         }
         void removeAllComments() {
@@ -1957,64 +1960,68 @@ namespace windowMediaPlayerDM
                     switch (playedcomment % threadNumber) { 
                     
                         case 1:
-
+                            if (core3 == false)
+                            {
                                 comment_storage2.Add(dm);
                                 fm3_1.Controls.Add(dm);
+                                core3 = !core3;
+                            }
+                            else
+                            {
+                                comment_storage2.Add(dm);
+                                fm3_7.Controls.Add(dm);
+                                core3 = !core3;
+                            }
 
                             break;
                         case 2:
                             if (cme1 != null)
                             {
-              
+                                if (core2 == false)
+                                {
                                     cme1.setStorage.Add(dm);
                                     fm3_2.Controls.Add(dm);
-
+                                    core2 = !core2;
+                                }
+                                else
+                                {
+                                    cme1.setStorage.Add(dm);
+                                    fm3_6.Controls.Add(dm);
+                                    core2 = !core2;
+                                }
                             }
                             break;
                         case 3:
                             if (cme2 != null)
                             {
-     
+                                if (core1 == false)
+                                {
                                     cme2.setStorage.Add(dm);
                                     fm3_3.Controls.Add(dm);
-          
-                               
+                                    core1 = !core1;
+                                }
+                                else
+                                {
+                                    cme2.setStorage.Add(dm);
+                                    fm3_5.Controls.Add(dm);
+                                    core1 = !core1;
+                                }
+                                break;
                             }
                             break;
-                        case 4:
-                            cme3.setStorage.Add(dm);
-                            fm3_4.Controls.Add(dm);
-                            break;
-
-                        case 5:
-
-                            cme4.setStorage.Add(dm);
-
-                            fm3_5.Controls.Add(dm);
-                            break;
-
-                        case 6:
-
-
-                            cme5.setStorage.Add(dm);
-
-                            fm3_6.Controls.Add(dm);
-                            break;
-
-                        case 7:
-
-
-                            cme6.setStorage.Add(dm);
-
-                            fm3_7.Controls.Add(dm);
-
-                            break;
-
+                    
                         default:
-
+                            if (core0 == false)
+                            {
                                 comment_storage.Add(dm);
                                 fm3.Controls.Add(dm);
-      
+                                core0 = !core0;
+                            }
+                            else {
+                                comment_storage.Add(dm);
+                                fm3_4.Controls.Add(dm);
+                                core0 = !core0;
+                            }
                             break;
                     
                     }
@@ -3093,7 +3100,7 @@ namespace windowMediaPlayerDM
        //             print2(showTime((int)vlcPlayer.Length) + "L: " + (comment_storage.Count+comment_storage2.Count) + "  L1: " + (comment_storage.Count) + " L2: " + comment_storage2.Count  + " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
       
               //      print2(showTime((int)vlcPlayer.Length) + "L: "+(fm3.Controls.OfType<Label>().Count())+ "  L1: " + (comment_storage.Count)+ " L2: "+comment_storage2.Count+" L3 "+cme1.setStorage.Count+" L4: "+cme2.setStorage.Count + " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
-                    print2(showTime((int)vlcPlayer.Length) + "L: " + (cme1.setStorage.Count + cme2.setStorage.Count + cme3.setStorage.Count + cme4.setStorage.Count + cme5.setStorage.Count + cme6.setStorage.Count + comment_storage.Count + comment_storage2.Count) + "  L1: " + (comment_storage.Count) + " L2: " + comment_storage2.Count + " L3 " + cme1.setStorage.Count + " L4: " + cme2.setStorage.Count + " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
+                    print2(showTime((int)vlcPlayer.Length) + "L: " + (cme1.setStorage.Count+cme2.setStorage.Count+comment_storage.Count+comment_storage2.Count) + "  L1: " + (comment_storage.Count) + " L2: " + comment_storage2.Count + " L3 " + cme1.setStorage.Count + " L4: " + cme2.setStorage.Count + " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
       
                 }
                 }
