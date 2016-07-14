@@ -29,7 +29,7 @@ namespace windowMediaPlayerDM
 
          //   comment_storage = comments;
             _playing = false;
-            interval = 15;
+            interval = 40;
             move_distance = moved;
             bk201.WorkerSupportsCancellation = true;
             bk201.DoWork += new DoWorkEventHandler(bk201_DoWork);
@@ -82,8 +82,11 @@ namespace windowMediaPlayerDM
                 }
                 else
                 {
-
-                    l.Dispose();
+                    try
+                    {
+                        l.Dispose();
+                    }
+                    catch (Exception) { };
                 }
             
             

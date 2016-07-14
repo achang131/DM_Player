@@ -276,13 +276,16 @@ namespace windowMediaPlayerDM
 
           cme1 = new comment_move_engine(move_distance);
           cme2 = new comment_move_engine(move_distance);
-
+          cme3 = new comment_move_engine(move_distance);
+          cme4 = new comment_move_engine(move_distance);
+          cme5 = new comment_move_engine(move_distance);
+          cme6 = new comment_move_engine(move_distance);
 
           CSettings();
   
         }
-        Form fm3_1, fm3_2, fm3_3;
-        comment_move_engine cme1;
+        Comment_window fm3_1, fm3_2, fm3_3,fm3_4,fm3_5,fm3_6,fm3_7;
+        comment_move_engine cme1,cme3,cme4,cme5,cme6;
         comment_move_engine cme2;
         int threadNumber;
 
@@ -433,7 +436,7 @@ namespace windowMediaPlayerDM
                 fm3.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
              //   fm3.TopMost = false;
 
-             //   fm3.Owner = this;
+             //   ///////fm3.Owner = this;
             }
 
             Cursor.Show();
@@ -1041,7 +1044,7 @@ namespace windowMediaPlayerDM
             cme1.setInterval = 40;
             cme2.setInterval = 41;
 
-            threadNumber = 4;
+            threadNumber = 8;
 
             auto_TimeMatch = true;
 
@@ -1207,11 +1210,17 @@ namespace windowMediaPlayerDM
                 if (cme1 != null) {
 
                     cme1.setMoveDistance = move_distance;
+
                 
                 }
                 if (cme2 != null) {
 
                     cme2.setMoveDistance = move_distance;
+                    cme3.setMoveDistance = move_distance;
+                    cme4.setMoveDistance = move_distance;
+                    cme5.setMoveDistance = move_distance;
+                    cme6.setMoveDistance = move_distance;
+
                 }
 
             }
@@ -1345,6 +1354,13 @@ namespace windowMediaPlayerDM
                 fm3.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
                // fm3.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
 
+                fm3_1.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
+                fm3_2.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
+                fm3_3.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
+                fm3_4.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
+                fm3_5.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
+                fm3_6.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
+                fm3_7.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
             }
         }
         public Size currentMediaWindowSize {
@@ -1467,12 +1483,21 @@ namespace windowMediaPlayerDM
                 {
                     fm3.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
                     fm3.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
-                    fm3_1.Size = fm3.Size;
-                    fm3_2.Size = fm3.Size;
-                    fm3_3.Size = fm3.Size;
-                    fm3_1.Location = fm3.Location;
-                    fm3_2.Location = fm3.Location;
-                    fm3_3.Location = fm3.Location;
+                    fm3_1.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
+                    fm3_2.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
+                    fm3_3.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
+                    fm3_4.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
+                    fm3_5.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
+                    fm3_6.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
+                    fm3_7.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
+
+                    fm3_1.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
+                    fm3_2.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
+                    fm3_3.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
+                    fm3_4.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
+                    fm3_5.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
+                    fm3_6.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
+                    fm3_7.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
                 }
             
             }
@@ -1689,6 +1714,10 @@ namespace windowMediaPlayerDM
                 {
                     cme1.Start();
                     cme2.Start();
+                    cme3.Start();
+                    cme4.Start();
+                    cme5.Start();
+                    cme6.Start();
                 }
                 catch (NullReferenceException) { };
             
@@ -1713,6 +1742,10 @@ namespace windowMediaPlayerDM
             if (cme2 != null)
             {
                 cme2.Stop();
+                cme3.Stop();
+                cme4.Stop();
+                cme5.Stop();
+                cme6.Stop();
             }
         }
         void removeAllComments() {
@@ -1857,6 +1890,13 @@ namespace windowMediaPlayerDM
 
 
         }
+
+        bool core0 = false;
+        bool core1 = false;
+        bool core2 = false;
+        bool core3 = false;
+
+
         void createLabel(String comment) {
             //instead of filtering out the comment make it more compact on the screen ?
 
@@ -1905,36 +1945,8 @@ namespace windowMediaPlayerDM
                 }
                 dm.Location = new Point(ClientRectangle.Right, ycurrent);
 
-                //
-                /*
-                if(ycurrent+20<ClientRectangle.Bottom-50){
-                ycurrent+= 20;}
-                else
-                {
-                    ycurrent=40;
-                };
-                */
-                //
 
-
-
-        //        dm.Size = new System.Drawing.Size(35, 15);
-                /*
-                            var position = this.PointToScreen(dm.Location);
-                            position = Media_Player.PointToClient(position);
-                            dm.Parent = Media_Player;
-                            dm.BackColor = Color.Transparent;
-                  */
-
-                /*
-                           *        var pos = this.PointToScreen(label1.Location);
-                      pos = pictureBox1.PointToClient(pos);
-                      label1.Parent = pictureBox1;
-                      label1.Location = pos;
-                      label1.BackColor = Color.Transparent;
-                           */
-
-                fm3.Controls.Add(dm);
+            
                 if (commentmethod == 1)
                 {
 
@@ -1945,24 +1957,64 @@ namespace windowMediaPlayerDM
                     switch (playedcomment % threadNumber) { 
                     
                         case 1:
-                            comment_storage2.Add(dm);
+
+                                comment_storage2.Add(dm);
+                                fm3_1.Controls.Add(dm);
 
                             break;
                         case 2:
                             if (cme1 != null)
                             {
-                                cme1.setStorage.Add(dm);
+              
+                                    cme1.setStorage.Add(dm);
+                                    fm3_2.Controls.Add(dm);
+
                             }
                             break;
                         case 3:
                             if (cme2 != null)
                             {
-                                cme2.setStorage.Add(dm);
+     
+                                    cme2.setStorage.Add(dm);
+                                    fm3_3.Controls.Add(dm);
+          
+                               
                             }
                             break;
-                    
+                        case 4:
+                            cme3.setStorage.Add(dm);
+                            fm3_4.Controls.Add(dm);
+                            break;
+
+                        case 5:
+
+                            cme4.setStorage.Add(dm);
+
+                            fm3_5.Controls.Add(dm);
+                            break;
+
+                        case 6:
+
+
+                            cme5.setStorage.Add(dm);
+
+                            fm3_6.Controls.Add(dm);
+                            break;
+
+                        case 7:
+
+
+                            cme6.setStorage.Add(dm);
+
+                            fm3_7.Controls.Add(dm);
+
+                            break;
+
                         default:
-                            comment_storage.Add(dm);
+
+                                comment_storage.Add(dm);
+                                fm3.Controls.Add(dm);
+      
                             break;
                     
                     }
@@ -2477,7 +2529,7 @@ namespace windowMediaPlayerDM
                 if (fm3 != null)
                 {
 
-                    fm3.Owner = this;
+                    ///////fm3.Owner = this;
 
                 }
 
@@ -2516,7 +2568,7 @@ namespace windowMediaPlayerDM
             if (fm3 != null)
             {
 
-                fm3.Owner = this;
+                ///////fm3.Owner = this;
             }
             
 
@@ -2563,7 +2615,7 @@ namespace windowMediaPlayerDM
 
             if (fm3 != null)
             {
-                fm3.Owner = this;
+                ///////fm3.Owner = this;
 
             }
 
@@ -2703,7 +2755,7 @@ namespace windowMediaPlayerDM
                 try
                 {
                     this.Owner = fm3;
-                    //fm3.Owner = this;
+                    /////////fm3.Owner = this;
                 }
                 catch (Exception) { }
 
@@ -2774,7 +2826,7 @@ namespace windowMediaPlayerDM
                 }
                 else
                 {
-                    fm3.Owner = this;
+                    ///////fm3.Owner = this;
 
                 }
 
@@ -2786,7 +2838,7 @@ namespace windowMediaPlayerDM
                 Danmoku_status.Text = "No DM";
                 if (fm3 != null)
                 {
-                    fm3.Owner = this;
+                    ///////fm3.Owner = this;
                 }
             }
         
@@ -2808,24 +2860,58 @@ namespace windowMediaPlayerDM
 
             fm3.KeyUp += new KeyEventHandler(fm3_KeyUp);
             fm3.MouseWheel += new MouseEventHandler(Form1_MouseWheel);
-            fm3.Owner = this;
+            
 
             fm3_1 = new Comment_window();
             fm3_2 = new Comment_window();
             fm3_3 = new Comment_window();
 
+            fm3_4 = new Comment_window();
+            fm3_5 = new Comment_window();
+            fm3_6 = new Comment_window();
+
+            fm3_7 = new Comment_window();
 
                 fm3_1.Size = fm3.Size;
                 fm3_2.Size = fm3.Size;
                 fm3_3.Size = fm3.Size;
+                fm3_4.Size = fm3.Size;
+                fm3_5.Size = fm3.Size;
+                fm3_6.Size = fm3.Size;
+                fm3_7.Size = fm3.Size;
+
                 fm3_1.Location = fm3.Location;
                 fm3_2.Location = fm3.Location;
                 fm3_3.Location = fm3.Location;
+                fm3_4.Location = fm3.Location;
+                fm3_5.Location = fm3.Location;
+                fm3_6.Location = fm3.Location;
+                fm3_7.Location = fm3.Location;
+            
+            
+            
                 fm3_1.Show();
                 fm3_2.Show();
                 fm3_3.Show();
-            
+                fm3_4.Show();
+                fm3_5.Show();
+                fm3_6.Show();
+                fm3_7.Show();
 
+
+
+                fm3_1.Owner = this;
+                fm3_2.Owner = fm3_1;
+                fm3_3.Owner = fm3_2;
+                fm3_4.Owner = fm3_3;
+                fm3_5.Owner = fm3_4;
+                fm3_6.Owner = fm3_5;
+                fm3_7.Owner = fm3_6;
+                fm3.Owner = fm3_7;
+
+
+
+               // ///////fm3.Owner = this;
         }
 
         void fm3_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -3007,7 +3093,7 @@ namespace windowMediaPlayerDM
        //             print2(showTime((int)vlcPlayer.Length) + "L: " + (comment_storage.Count+comment_storage2.Count) + "  L1: " + (comment_storage.Count) + " L2: " + comment_storage2.Count  + " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
       
               //      print2(showTime((int)vlcPlayer.Length) + "L: "+(fm3.Controls.OfType<Label>().Count())+ "  L1: " + (comment_storage.Count)+ " L2: "+comment_storage2.Count+" L3 "+cme1.setStorage.Count+" L4: "+cme2.setStorage.Count + " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
-                    print2(showTime((int)vlcPlayer.Length) + "L: " + (cme1.setStorage.Count+cme2.setStorage.Count+comment_storage.Count+comment_storage2.Count) + "  L1: " + (comment_storage.Count) + " L2: " + comment_storage2.Count + " L3 " + cme1.setStorage.Count + " L4: " + cme2.setStorage.Count + " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
+                    print2(showTime((int)vlcPlayer.Length) + "L: " + (cme1.setStorage.Count + cme2.setStorage.Count + cme3.setStorage.Count + cme4.setStorage.Count + cme5.setStorage.Count + cme6.setStorage.Count + comment_storage.Count + comment_storage2.Count) + "  L1: " + (comment_storage.Count) + " L2: " + comment_storage2.Count + " L3 " + cme1.setStorage.Count + " L4: " + cme2.setStorage.Count + " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
       
                 }
                 }
@@ -3750,7 +3836,7 @@ namespace windowMediaPlayerDM
             if (fm3 != null)
             {
 
-                fm3.Owner = this;
+                ///////fm3.Owner = this;
 
                 
             }
@@ -4546,7 +4632,7 @@ namespace windowMediaPlayerDM
                             }
                             else
                             {
-                                fm3.Owner = this;
+                                ///////fm3.Owner = this;
 
                             }
                         
@@ -4667,7 +4753,7 @@ namespace windowMediaPlayerDM
                 }
                 else
                 {
-                    fm3.Owner = this;
+                    ///////fm3.Owner = this;
 
 
                 }
@@ -4766,7 +4852,7 @@ namespace windowMediaPlayerDM
             }
             else
             {
-                fm3.Owner = this;
+                ///////fm3.Owner = this;
 
             }
         
@@ -4829,7 +4915,7 @@ namespace windowMediaPlayerDM
             }
             else
             {
-                fm3.Owner = this;
+                ///////fm3.Owner = this;
 
             }
         
@@ -5045,7 +5131,7 @@ namespace windowMediaPlayerDM
                             }
                             else
                             {
-                                fm3.Owner = this;
+                                ///////fm3.Owner = this;
 
                             }
 
