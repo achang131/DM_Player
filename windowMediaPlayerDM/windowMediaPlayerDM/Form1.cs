@@ -272,15 +272,16 @@ namespace windowMediaPlayerDM
 
             //CommentEngineSetup(cme1, comment_storage3, move_distance);
             //CommentEngineSetup(cme2, comment_storage4, move_distance);
+          //  commentWindowSetup();
+
           cme1 = new comment_move_engine(move_distance);
           cme2 = new comment_move_engine(move_distance);
-
-
 
 
           CSettings();
   
         }
+        Form fm3_1, fm3_2, fm3_3;
         comment_move_engine cme1;
         comment_move_engine cme2;
         int threadNumber;
@@ -1466,6 +1467,12 @@ namespace windowMediaPlayerDM
                 {
                     fm3.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
                     fm3.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
+                    fm3_1.Size = fm3.Size;
+                    fm3_2.Size = fm3.Size;
+                    fm3_3.Size = fm3.Size;
+                    fm3_1.Location = fm3.Location;
+                    fm3_2.Location = fm3.Location;
+                    fm3_3.Location = fm3.Location;
                 }
             
             }
@@ -2802,8 +2809,23 @@ namespace windowMediaPlayerDM
             fm3.KeyUp += new KeyEventHandler(fm3_KeyUp);
             fm3.MouseWheel += new MouseEventHandler(Form1_MouseWheel);
             fm3.Owner = this;
-        
-        
+
+            fm3_1 = new Comment_window();
+            fm3_2 = new Comment_window();
+            fm3_3 = new Comment_window();
+
+
+                fm3_1.Size = fm3.Size;
+                fm3_2.Size = fm3.Size;
+                fm3_3.Size = fm3.Size;
+                fm3_1.Location = fm3.Location;
+                fm3_2.Location = fm3.Location;
+                fm3_3.Location = fm3.Location;
+                fm3_1.Show();
+                fm3_2.Show();
+                fm3_3.Show();
+            
+
         }
 
         void fm3_MouseDoubleClick(object sender, MouseEventArgs e)

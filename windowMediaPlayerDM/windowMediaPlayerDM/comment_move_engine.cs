@@ -24,7 +24,7 @@ namespace windowMediaPlayerDM
         int interval;
         int move_distance;
         Thread tb;
-
+        Form display;
         public comment_move_engine(int moved) {
 
          //   comment_storage = comments;
@@ -34,6 +34,8 @@ namespace windowMediaPlayerDM
             bk201.WorkerSupportsCancellation = true;
             bk201.DoWork += new DoWorkEventHandler(bk201_DoWork);
            // tb = new Thread(threadstart);
+
+            
 
             
         }
