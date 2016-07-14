@@ -13,7 +13,6 @@ using System.Windows.Threading;
 using System.IO;
 using System.Net.Http;
 using System.Net;
-using System.Text;
 
 
 namespace windowMediaPlayerDM
@@ -73,6 +72,8 @@ namespace windowMediaPlayerDM
         delegate void setInt(int i);
 
         delegate void setString(String s);
+
+        delegate void setUPCommentMoveEngine(comment_move_engine cme,List<Label> storage, int moved);
 
         Dictionary<int, String> comment2 = new Dictionary<int, String>();
 
@@ -140,6 +141,9 @@ namespace windowMediaPlayerDM
 
         int commentmethod;
 
+
+
+
         public Form1()
         {
             InitializeComponent();
@@ -159,7 +163,6 @@ namespace windowMediaPlayerDM
             //comment settings
 
 
-            CSettings();
           
             Media_Player.ClickEvent += new AxWMPLib._WMPOCXEvents_ClickEventHandler(Media_Player_ClickEvent);
 
@@ -260,13 +263,27 @@ namespace windowMediaPlayerDM
                 Media_Player.Dispose();
             }
 
-            form1_loadSetting_XML();
+        
 
           //  this.Disposed += new EventHandler(Form1_Disposed);
 
             this.FormClosing += new FormClosingEventHandler(Form1_FormClosing);
 
+
+            //CommentEngineSetup(cme1, comment_storage3, move_distance);
+            //CommentEngineSetup(cme2, comment_storage4, move_distance);
+          cme1 = new comment_move_engine(move_distance);
+          cme2 = new comment_move_engine(move_distance);
+
+
+
+
+          CSettings();
+  
         }
+        comment_move_engine cme1;
+        comment_move_engine cme2;
+        int threadNumber;
 
         void Form1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
@@ -280,7 +297,7 @@ namespace windowMediaPlayerDM
 
         void vlcPlayer_DragEnter(object sender, DragEventArgs e)
         {
-            //throw new NotImplementedException();
+            //throw new NotImplementedException(;)
 
             
             //printvlc(e.Data.GetDataPresent(DataFormats.Locale).ToString());
@@ -288,6 +305,10 @@ namespace windowMediaPlayerDM
         }
 
         int temp_sound;
+
+        
+        
+        
         void sound_trackbar_ValueChanged(object sender, EventArgs e)
         {
             
@@ -1010,9 +1031,16 @@ namespace windowMediaPlayerDM
 
             userColor = Color.DarkGray;
 
-            replacetimer1_interval = 14;
-            replacetimer3_interval = 15;
+            replacetimer1_interval = 29;
+            replacetimer3_interval = 30;
             replacetimer2_interval = 9;
+
+
+            
+            cme1.setInterval = 40;
+            cme2.setInterval = 41;
+
+            threadNumber = 4;
 
             auto_TimeMatch = true;
 
@@ -1058,7 +1086,7 @@ namespace windowMediaPlayerDM
             xstart = ClientRectangle.Right;
 
 
-            Media_Player.enableContextMenu = true;
+            //Media_Player.enableContextMenu = true;
 
 
             //
@@ -1090,6 +1118,11 @@ namespace windowMediaPlayerDM
 
             //set the comment method  0 = default 1 = using list to move labels
             commentmethod = 1;
+
+
+            form1_loadSetting_XML();
+
+
         
         }
         void switchPlayer(int c) {
@@ -1143,11 +1176,11 @@ namespace windowMediaPlayerDM
                 int lnumber = fm3.Controls.OfType<Label>().Count();
                 if (lnumber > 70)
                 {
-                    move_distance = (int)(_distance * 2.3);
+                    move_distance = (int)(_distance * 3);
                 }
                 else if (lnumber > 60)
                 {
-                    move_distance = (int)(_distance * 2);
+                    move_distance = (int)(_distance * 2.5);
                 }
                 else if (lnumber > 50)
                 {
@@ -1169,6 +1202,15 @@ namespace windowMediaPlayerDM
                 {
 
                     move_distance = _distance;
+                }
+                if (cme1 != null) {
+
+                    cme1.setMoveDistance = move_distance;
+                
+                }
+                if (cme2 != null) {
+
+                    cme2.setMoveDistance = move_distance;
                 }
 
             }
@@ -1196,6 +1238,8 @@ namespace windowMediaPlayerDM
                // moveComment_thread();
 
                 commentEngine_thread();
+
+                changingSpeedontime();
 
                 System.Threading.Thread.Sleep(TimeSpan.FromMilliseconds(replacetimer2_interval));
             
@@ -1633,6 +1677,13 @@ namespace windowMediaPlayerDM
                 replacetimer2_start();
             
                 replacetimer3_start();
+
+                try
+                {
+                    cme1.Start();
+                    cme2.Start();
+                }
+                catch (NullReferenceException) { };
             
             
         }
@@ -1647,8 +1698,15 @@ namespace windowMediaPlayerDM
             replacetimer2_stop();
 
             replacetimer3_stop();
-        
-        
+
+            if (cme1 != null)
+            {
+                cme1.Stop();
+            }
+            if (cme2 != null)
+            {
+                cme2.Stop();
+            }
         }
         void removeAllComments() {
 
@@ -1874,14 +1932,37 @@ namespace windowMediaPlayerDM
                 {
 
                     //basically splits the comments into two lists
-                    if (playedcomment % 2 == 0)
-                    {
-                        comment_storage.Add(dm);
-                    }
-                    else {
 
-                        comment_storage2.Add(dm);
+
+
+                    switch (playedcomment % threadNumber) { 
+                    
+                        case 1:
+                            comment_storage2.Add(dm);
+
+                            break;
+                        case 2:
+                            if (cme1 != null)
+                            {
+                                cme1.setStorage.Add(dm);
+                            }
+                            break;
+                        case 3:
+                            if (cme2 != null)
+                            {
+                                cme2.setStorage.Add(dm);
+                            }
+                            break;
+                    
+                        default:
+                            comment_storage.Add(dm);
+                            break;
+                    
                     }
+
+
+
+
                 }
                 dm.BringToFront();
                 dm.Show();
@@ -2898,11 +2979,13 @@ namespace windowMediaPlayerDM
             {
                 if (commentmethod != 1)
                 {
-                    print2(showTime((int)vlcPlayer.Length) + "  L: " + fm3.Controls.OfType<Label>().Count()+ " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
+                    print2(showTime((int)vlcPlayer.Length) + "  L: " +fm3.Controls.OfType<Label>().Count()+ " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
                 }
                 else {
-
-                    print2(showTime((int)vlcPlayer.Length) + "L: "+(comment_storage.Count+comment_storage2.Count)+ "  L1: " + (comment_storage.Count)+ " L2: "+comment_storage2.Count + " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
+       //             print2(showTime((int)vlcPlayer.Length) + "L: " + (comment_storage.Count+comment_storage2.Count) + "  L1: " + (comment_storage.Count) + " L2: " + comment_storage2.Count  + " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
+      
+              //      print2(showTime((int)vlcPlayer.Length) + "L: "+(fm3.Controls.OfType<Label>().Count())+ "  L1: " + (comment_storage.Count)+ " L2: "+comment_storage2.Count+" L3 "+cme1.setStorage.Count+" L4: "+cme2.setStorage.Count + " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
+                    print2(showTime((int)vlcPlayer.Length) + "L: " + (cme1.setStorage.Count+cme2.setStorage.Count+comment_storage.Count+comment_storage2.Count) + "  L1: " + (comment_storage.Count) + " L2: " + comment_storage2.Count + " L3 " + cme1.setStorage.Count + " L4: " + cme2.setStorage.Count + " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
       
                 }
                 }
@@ -3130,8 +3213,8 @@ namespace windowMediaPlayerDM
 
                                            }
 
-                                           if (removetemp.Count > 0)
-                                           {
+                                  
+                                           
                                                for (int i = 0; i < removetemp.Count; i++)
                                                {
 
@@ -3142,7 +3225,7 @@ namespace windowMediaPlayerDM
                                                }
 
 
-                                           }
+                                           
 
 
                                        }
