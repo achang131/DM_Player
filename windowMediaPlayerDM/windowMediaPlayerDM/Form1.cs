@@ -153,16 +153,6 @@ namespace windowMediaPlayerDM
             danmoku = new OpenFileDialog();
             danmoku.Filter = "xml |*.xml";
             media.Filter = "";
-           
-
-         
-
-          //  fm2 = new Form2();
-
-            // controls the speed of the DM  default at 5? the lesser the faster 
-
-            //comment settings
-
 
           
             Media_Player.ClickEvent += new AxWMPLib._WMPOCXEvents_ClickEventHandler(Media_Player_ClickEvent);
@@ -178,28 +168,11 @@ namespace windowMediaPlayerDM
 
             Media_Player.stretchToFit = true;
 
-
-
             audioinfo = "test";
-           
-           /*
-            
-            this.th1.StartNew(()=>{
-                this.runEngine(2);
-            
-            });
 
-
-           */
             //maybe add a 3rd backgroundworker to move comment will make the programe even more smoother ?
 
             BackgroundworkerSetup();
-
-
-            
-       //     Media_Player.SendToBack();
-            
-
 
             this.LocationChanged += new EventHandler(Form1_LocationChanged);
 
@@ -207,8 +180,6 @@ namespace windowMediaPlayerDM
             {
 
                 Media_Playlist = Media_Player.playlistCollection.newPlaylist("My_List");
-
-
 
                 //replacetimer1.WorkerSupportsCancellation = true;
 
@@ -273,13 +244,17 @@ namespace windowMediaPlayerDM
 
             //CommentEngineSetup(cme1, comment_storage3, move_distance);
             //CommentEngineSetup(cme2, comment_storage4, move_distance);
-          //  commentWindowSetup();
+            
 
           cme1 = new comment_move_engine(move_distance);
           cme2 = new comment_move_engine(move_distance);
 
+          this.DoubleBuffered = true;
+          
 
           CSettings();
+
+          //commentWindowSetup();
   
         }
         Comment_window fm3_1, fm3_2, fm3_3,fm3_4,fm3_5,fm3_6,fm3_7;
@@ -857,7 +832,7 @@ namespace windowMediaPlayerDM
                             else
                             {
                                 currentinx++;
-                            }
+                            }//werid stopping problem happens here probably because it can't get media form current video in vlc ?
                             FileInfo nv = new FileInfo(Media_List.ElementAt(currentinx)[0]);
                       //      if (vlcPlayer.IsPlaying)
                      //       {
@@ -1050,14 +1025,14 @@ namespace windowMediaPlayerDM
 
             userColor = Color.DarkGray;
 
-            replacetimer1_interval = 29;
-            replacetimer3_interval = 30;
+            replacetimer1_interval = 59;
+            replacetimer3_interval = 60;
             replacetimer2_interval = 9;
 
 
             
-            cme1.setInterval = 32;
-            cme2.setInterval = 33;
+            cme1.setInterval = 64;
+            cme2.setInterval = 63;
 
             threadNumber = 4;
 
@@ -2653,6 +2628,13 @@ namespace windowMediaPlayerDM
         private void setDMToolStripMenuItem_Click(object sender, EventArgs e)
         {
             setMedia();
+
+
+            this.Focus();
+            if (fm3 == null) {
+                commentWindowSetup();
+            
+            }
         }
         void print3(String s) {
 
@@ -2865,7 +2847,7 @@ namespace windowMediaPlayerDM
 
             fm3 = new Comment_window();
             fm3.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
-            fm3.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
+            fm3.Size = new Size(vlcPlayer.Size.Width, vlcPlayer.Size.Height); // - 45
             fm3.MouseClick += new MouseEventHandler(dm_MouseClick);
             fm3.MouseDoubleClick += new MouseEventHandler(fm3_MouseDoubleClick);
 
@@ -3074,8 +3056,9 @@ namespace windowMediaPlayerDM
             }
             catch (Exception) { comment_time = 0; }
 
+            
 
-
+            //comment_time is time_counter + the offset
             print(showTime(((int)(vlcPlayer.Time)) ) + "/" + comment_time + "/" + time_counter);
 
 
