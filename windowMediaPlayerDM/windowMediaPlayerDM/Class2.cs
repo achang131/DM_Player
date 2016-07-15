@@ -469,31 +469,62 @@ namespace windowMediaPlayerDM
 
          //    wb.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler(wb_DownloadFileCompleted);
          //    wb.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wb_DownloadProgressChanged);
-             String fileU = filepath.AbsolutePath;
-
-             int fstart = fileU.LastIndexOf("/") + 1;
-
-             String filename = fileU.Substring(fstart, fileU.Length - fstart);
-
-
-
-             FolderBrowserDialog fb = new FolderBrowserDialog();
-
-
-             //if an actuall dir is set and it exist then it won't prompt up to ask user to set a dir
-
-             DirectoryInfo ndir = new DirectoryInfo(filestorage_dir);
-
-
-
-             if (!ndir.Exists)
+             try
              {
+                 String fileU = filepath.AbsolutePath;
 
-                 //selet a folder to hold the file
+                 int fstart = fileU.LastIndexOf("/") + 1;
 
-                 if (fb.ShowDialog() == DialogResult.OK)
+                 String filename = fileU.Substring(fstart, fileU.Length - fstart);
+
+
+
+                 FolderBrowserDialog fb = new FolderBrowserDialog();
+
+
+                 //if an actuall dir is set and it exist then it won't prompt up to ask user to set a dir
+
+                 DirectoryInfo ndir = new DirectoryInfo(filestorage_dir);
+
+
+
+                 if (!ndir.Exists)
                  {
-                     FileInfo newfile = new FileInfo(fb.SelectedPath + "\\" + filename);
+
+                     //selet a folder to hold the file
+
+                     if (fb.ShowDialog() == DialogResult.OK)
+                     {
+                         FileInfo newfile = new FileInfo(fb.SelectedPath + "\\" + filename);
+
+                         // if the file exists then stop download
+                         if (!newfile.Exists)
+                         {
+                             wb.DownloadFileAsync(filepath, @newfile.FullName);
+
+
+                             dlfilepath = newfile.FullName;
+                         }
+                         else
+                         {
+
+
+                             dlfilepath = newfile.FullName;
+                         }
+                     }
+                 }
+                 else
+                 {
+                     filename = filename.Replace(":", "");
+                     filename = filename.Replace("\\", "");
+                     filename = filename.Replace("*", "");
+                     filename = filename.Replace("|", "");
+                     filename = filename.Replace("\"", "");
+                     filename = filename.Replace("?", "");
+                     filename = filename.Replace("<", "");
+                     filename = filename.Replace(">", "");
+
+                     FileInfo newfile = new FileInfo(ndir.FullName + "\\" + filename);
 
                      // if the file exists then stop download
                      if (!newfile.Exists)
@@ -502,51 +533,24 @@ namespace windowMediaPlayerDM
 
 
                          dlfilepath = newfile.FullName;
+
                      }
                      else
                      {
 
-
                          dlfilepath = newfile.FullName;
                      }
                  }
+
+
+
+
+
+
+                 //throw a file not found exception if dlfilepath is null ?
+                 wb.Dispose();
              }
-             else
-             {
-                 filename = filename.Replace(":","");
-                 filename = filename.Replace("\\", "");
-                 filename = filename.Replace("*","");
-                 filename = filename.Replace("|","");
-                 filename = filename.Replace("\"","");
-                 filename = filename.Replace("?","");
-                 filename = filename.Replace("<","");
-                 filename = filename.Replace(">","");
-                 
-                 FileInfo newfile = new FileInfo(ndir.FullName + "\\" + filename);
-
-                 // if the file exists then stop download
-                 if (!newfile.Exists)
-                 {
-                     wb.DownloadFileAsync(filepath, @newfile.FullName);
-
-
-                     dlfilepath = newfile.FullName;
-
-                 }
-                 else
-                 {
-
-                     dlfilepath = newfile.FullName;
-                 }
-             }
-
-
-
-
-
-
-             //throw a file not found exception if dlfilepath is null ?
-             wb.Dispose();
+             catch (NullReferenceException) { };
 
 
 

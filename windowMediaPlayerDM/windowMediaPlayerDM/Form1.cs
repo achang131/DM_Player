@@ -834,10 +834,7 @@ namespace windowMediaPlayerDM
                                 currentinx++;
                             }//werid stopping problem happens here probably because it can't get media form current video in vlc ?
                             FileInfo nv = new FileInfo(Media_List.ElementAt(currentinx)[0]);
-                      //      if (vlcPlayer.IsPlaying)
-                     //       {
-                     //           vlcPlayer.Stop();
-                     //       }
+           
                             comment.Clear();
                             comment2.Clear();
                             DM_List.Clear();
@@ -846,6 +843,7 @@ namespace windowMediaPlayerDM
                             vlcPlayer.SetMedia(nv);
                             vlc_track_time = -2;
                             autoLoadByName(nv);
+                            //vlcPlayer.Play();
                             vlcPlayer.Play();
                             timerStart();
 
@@ -1218,7 +1216,8 @@ namespace windowMediaPlayerDM
         }
         void replacetimer3_DoWork(object sender, DoWorkEventArgs e)
         {
-            while (!replacetimer3.CancellationPending)
+            //while (!replacetimer3.CancellationPending)
+            while(_isPlaying)
             {
 
                 changingSpeedontime();
@@ -1600,12 +1599,14 @@ namespace windowMediaPlayerDM
 
             for (int i = 0; i < vlcPlayer.Audio.Tracks.Count; i++)
             {
+                try
+                {
+                    if (vlcPlayer.Audio.Tracks.All.ElementAt(i).ID.Equals(vlcPlayer.Audio.Tracks.Current.ID))
 
-                if (vlcPlayer.Audio.Tracks.All.ElementAt(i).ID.Equals(vlcPlayer.Audio.Tracks.Current.ID))
 
-
-                    currentLanguage = i;
-
+                        currentLanguage = i;
+                }
+                catch (ArgumentOutOfRangeException) { };
 
             }
 
@@ -2370,6 +2371,9 @@ namespace windowMediaPlayerDM
             vlcPlayer.SetMedia(temp);
             vlc_track_time = -2;
             autoLoadByName(temp);
+            
+            vlcPlayer.Play();
+            timerStart();
             //onLoadUp();
             // need to manulally create a method to play the list of files in media_linklist after the first loaded video done playing
             
@@ -2546,6 +2550,8 @@ namespace windowMediaPlayerDM
                 vlcPlayer.SetMedia(temp);
                 vlc_track_time = -2;
                 autoLoadByName(temp);
+                vlcPlayer.Play();
+                timerStart();
             }
            // onLoadUp();
             break;
@@ -3759,6 +3765,7 @@ namespace windowMediaPlayerDM
                 vlc_track_time = -2;
 
                 vlcPlayer.Play();
+                timerStart();
 
                 //unload the loaded dm files, to avoid using the wrong dm on different media files?
 
@@ -4287,9 +4294,7 @@ namespace windowMediaPlayerDM
                 }
 
                 FileInfo nfile2 = new FileInfo(Media_List.ElementAt(currentindex)[0]);
-                if (vlcPlayer.IsPlaying) {
-                    vlcPlayer.Stop();
-                }
+
                 vlcPlayer.SetMedia(nfile2);
                 vlc_track_time = -2;
              
@@ -4301,8 +4306,9 @@ namespace windowMediaPlayerDM
                 time_counter = 0;
                 setVLCname(nfile2);
                 autoLoadByName(nfile2);
-                timerStop();
+                //timerStop();
                 vlcPlayer.Play();
+                timerStart();
    
 
             }
@@ -4400,10 +4406,7 @@ namespace windowMediaPlayerDM
                 }
 
                 FileInfo nfile2 = new FileInfo(Media_List.ElementAt(currentindex)[0]);
-                if (vlcPlayer.IsPlaying)
-                {
-                    vlcPlayer.Stop();
-                }
+
                 vlcPlayer.SetMedia(nfile2);
                 vlc_track_time = -2;
            
@@ -4415,9 +4418,9 @@ namespace windowMediaPlayerDM
                 time_counter = 0;
                 autoLoadByName(nfile2);
                 setVLCname(nfile2);
-                timerStop();
+                //timerStop();
                 vlcPlayer.Play();
-              
+                timerStart();
 
             }
         }
@@ -4703,7 +4706,7 @@ namespace windowMediaPlayerDM
                 //add the used link as a key for getting the title of the current file
                 MultiDownloadLinks.Add((Uri)box.SelectedItem, fm7.getTitle.SelectedItem.ToString());
 
-                vlcPlayer.SetMedia(gb.playDownlist);
+              //vlcPlayer.SetMedia(gb.playDownlist);
                 vlc_track_time = -2;
                 //autoLoadByName(gb.playDownlist);
 
@@ -5083,8 +5086,10 @@ namespace windowMediaPlayerDM
                 if (vlcPlayer.IsPlaying)
                 {
                     long temptime = vlcPlayer.Time;
-                    vlcPlayer.Stop();
+                 //   vlcPlayer.Stop();
                     vlcPlayer.SetMedia(temp);
+                    vlcPlayer.Play();
+                    timerStart();
                     vlc_track_time = -2;
                     autoLoadByName(temp);
                     vlcPlayer.Time = temptime;
@@ -5122,6 +5127,8 @@ namespace windowMediaPlayerDM
                     vlcPlayer.SetMedia(temp);
                     vlc_track_time = -2;
                     autoLoadByName(temp);
+                    vlcPlayer.Play();
+                    timerStart();
          //           vlcPlayer.Play();
                 
                 }

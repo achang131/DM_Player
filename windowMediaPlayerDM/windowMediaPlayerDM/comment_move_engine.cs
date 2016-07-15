@@ -43,8 +43,10 @@ namespace windowMediaPlayerDM
         void bk201_DoWork(object sender, DoWorkEventArgs e)
         {
            // throw new NotImplementedException();
-            while (!bk201.CancellationPending) {
-              //  MethodInvoker mti = new MethodInvoker(moveComment_part1);
+            //while (!bk201.CancellationPending) {
+            while(_playing){  
+            
+            //  MethodInvoker mti = new MethodInvoker(moveComment_part1);
                // mti.Invoke();
                 moveComment_part1();
 
@@ -199,7 +201,12 @@ namespace windowMediaPlayerDM
     }
 
         public List<Label> setStorage {
-            get { return comment_storage; }
+            get {
+                if (!bk201.IsBusy) {
+                    _playing = true;
+                    Start();
+                }
+                return comment_storage; }
 
 
             set { comment_storage = value; }
