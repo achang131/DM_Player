@@ -15,6 +15,7 @@ using System.Net.Http;
 using System.Net;
 
 
+
 namespace windowMediaPlayerDM
 {
     public partial class Form1 : Form{
@@ -557,6 +558,7 @@ namespace windowMediaPlayerDM
             void Form1_FormClosing(object sender, FormClosingEventArgs e)
             {
                 saveSettings();
+
             }
 
             //read the settings form the xml
@@ -1054,8 +1056,8 @@ namespace windowMediaPlayerDM
 
 
             
-            cme1.setInterval = 50;
-            cme2.setInterval = 51;
+            cme1.setInterval = 32;
+            cme2.setInterval = 33;
 
             threadNumber = 4;
 
@@ -1138,6 +1140,8 @@ namespace windowMediaPlayerDM
 
 
             form1_loadSetting_XML();
+
+            
 
 
         
@@ -3013,31 +3017,16 @@ namespace windowMediaPlayerDM
             //component for track bar, checks if the track value has changed if yes then set
             autoSetTrackTime();
 
-            //time_counter = (int)(Media_Player.Ctlcontrols.currentPosition * 100);
-
-
-
-            //for checking mouse location not in use for now
-            /*
-            if (System.Windows.Forms.Cursor.Position==mouseLocation) {
-
-                mousemoving = false;
-            }
-            */
-
- 
-
-
-
-
-
             if (choose_player != 1)
             {
 
                 try
                 {
-                    //checks if the video reaches the end of the video
-                    manual_checkend((int)vlcPlayer.Length / 10, time_counter);
+                    if (vlcPlayer.IsPlaying)
+                    {
+                        //checks if the video reaches the end of the video
+                        manual_checkend((int)vlcPlayer.Length / 10, time_counter);
+                    }
                 }
                 catch (NullReferenceException) { Console.WriteLine("in make comment"); }
             }

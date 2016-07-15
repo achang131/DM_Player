@@ -150,35 +150,39 @@ namespace windowMediaPlayerDM
 
 
         public void Start() {
-            /*
+            if(method ==0){
             this._playing = true;
 
             if (!bk201.IsBusy) {
 
                 bk201.RunWorkerAsync();
             }
-             * */
-           
+            }else{
+           tb = new Thread(threadstart); ;
 
-                tb = new Thread(threadstart); ;
+           tb.IsBackground = true;
             
-
-
+            
             this._playing = true;
             tb.Start();
-        
+        }
         
         }
-
+        int method = 0;
         public void Stop() {
 
-            _playing = false;
-            if (tb != null && tb.IsAlive)
+            if (method == 1)
             {
-                tb.Abort();
+                if (tb != null && tb.IsAlive)
+                {
+                    tb.Abort();
+                }
             }
-
-          //  bk201.CancelAsync();
+            else
+            {
+                _playing = false;
+                bk201.CancelAsync();
+            }
         
         }
         public int setMoveDistance {

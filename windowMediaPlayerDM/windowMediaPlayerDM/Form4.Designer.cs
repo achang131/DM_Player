@@ -28,105 +28,185 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.offset_label1 = new System.Windows.Forms.Label();
-            this.offset_box = new System.Windows.Forms.TextBox();
-            this.offset_check = new System.Windows.Forms.CheckBox();
-            this.confirm = new System.Windows.Forms.Button();
-            this.Cancel = new System.Windows.Forms.Button();
-            this.cdistance = new System.Windows.Forms.Label();
-            this.comment_speed_box = new System.Windows.Forms.TextBox();
-            this.comment_switch_label = new System.Windows.Forms.Label();
-            this.comment_switch_box = new System.Windows.Forms.ComboBox();
-            this.comment_end_label = new System.Windows.Forms.Label();
-            this.comment_end_box = new System.Windows.Forms.TextBox();
-            this.apply_button = new System.Windows.Forms.Button();
-            this.default_button = new System.Windows.Forms.Button();
-            this.audio_label = new System.Windows.Forms.Label();
-            this.audio_up = new System.Windows.Forms.Button();
-            this.audio_down = new System.Windows.Forms.Button();
-            this.current_audio = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.Setting_tab = new System.Windows.Forms.TabPage();
+            this.video_tab = new System.Windows.Forms.TabPage();
             this.total_audio = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.current_audio = new System.Windows.Forms.Label();
+            this.audio_down = new System.Windows.Forms.Button();
+            this.audio_up = new System.Windows.Forms.Button();
+            this.apply_button = new System.Windows.Forms.Button();
             this.audio_info = new System.Windows.Forms.Label();
+            this.audio_label = new System.Windows.Forms.Label();
             this.Comment_Limit_label = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.comment_end_label = new System.Windows.Forms.Label();
+            this.comment_switch_box = new System.Windows.Forms.ComboBox();
+            this.comment_switch_label = new System.Windows.Forms.Label();
             this.commentLimit_box = new System.Windows.Forms.TextBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.comment_end_box = new System.Windows.Forms.TextBox();
+            this.comment_speed_box = new System.Windows.Forms.TextBox();
+            this.cdistance = new System.Windows.Forms.Label();
+            this.default_button = new System.Windows.Forms.Button();
+            this.Cancel = new System.Windows.Forms.Button();
+            this.confirm = new System.Windows.Forms.Button();
+            this.offset_check = new System.Windows.Forms.CheckBox();
+            this.offset_box = new System.Windows.Forms.TextBox();
+            this.offset_label1 = new System.Windows.Forms.Label();
+            this.audio_tab = new System.Windows.Forms.TabPage();
+            this.tabControl1.SuspendLayout();
+            this.Setting_tab.SuspendLayout();
             this.SuspendLayout();
             // 
-            // offset_label1
+            // tabControl1
             // 
-            this.offset_label1.AutoSize = true;
-            this.offset_label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.offset_label1.Location = new System.Drawing.Point(74, 76);
-            this.offset_label1.Name = "offset_label1";
-            this.offset_label1.Size = new System.Drawing.Size(81, 17);
-            this.offset_label1.TabIndex = 0;
-            this.offset_label1.Text = "Time Offset";
+            this.tabControl1.Controls.Add(this.Setting_tab);
+            this.tabControl1.Controls.Add(this.video_tab);
+            this.tabControl1.Controls.Add(this.audio_tab);
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.Location = new System.Drawing.Point(0, 0);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(375, 513);
+            this.tabControl1.TabIndex = 0;
             // 
-            // offset_box
+            // Setting_tab
             // 
-            this.offset_box.Location = new System.Drawing.Point(161, 75);
-            this.offset_box.Name = "offset_box";
-            this.offset_box.Size = new System.Drawing.Size(100, 20);
-            this.offset_box.TabIndex = 1;
+            this.Setting_tab.Controls.Add(this.total_audio);
+            this.Setting_tab.Controls.Add(this.label1);
+            this.Setting_tab.Controls.Add(this.current_audio);
+            this.Setting_tab.Controls.Add(this.audio_down);
+            this.Setting_tab.Controls.Add(this.audio_up);
+            this.Setting_tab.Controls.Add(this.apply_button);
+            this.Setting_tab.Controls.Add(this.audio_info);
+            this.Setting_tab.Controls.Add(this.audio_label);
+            this.Setting_tab.Controls.Add(this.Comment_Limit_label);
+            this.Setting_tab.Controls.Add(this.comment_end_label);
+            this.Setting_tab.Controls.Add(this.comment_switch_box);
+            this.Setting_tab.Controls.Add(this.comment_switch_label);
+            this.Setting_tab.Controls.Add(this.commentLimit_box);
+            this.Setting_tab.Controls.Add(this.textBox1);
+            this.Setting_tab.Controls.Add(this.comment_end_box);
+            this.Setting_tab.Controls.Add(this.comment_speed_box);
+            this.Setting_tab.Controls.Add(this.cdistance);
+            this.Setting_tab.Controls.Add(this.default_button);
+            this.Setting_tab.Controls.Add(this.Cancel);
+            this.Setting_tab.Controls.Add(this.confirm);
+            this.Setting_tab.Controls.Add(this.offset_check);
+            this.Setting_tab.Controls.Add(this.offset_box);
+            this.Setting_tab.Controls.Add(this.offset_label1);
+            this.Setting_tab.Location = new System.Drawing.Point(4, 22);
+            this.Setting_tab.Name = "Setting_tab";
+            this.Setting_tab.Padding = new System.Windows.Forms.Padding(3);
+            this.Setting_tab.Size = new System.Drawing.Size(367, 487);
+            this.Setting_tab.TabIndex = 0;
+            this.Setting_tab.Text = "Settings";
+            this.Setting_tab.UseVisualStyleBackColor = true;
             // 
-            // offset_check
+            // video_tab
             // 
-            this.offset_check.AutoSize = true;
-            this.offset_check.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.offset_check.Location = new System.Drawing.Point(12, 76);
-            this.offset_check.Name = "offset_check";
-            this.offset_check.Size = new System.Drawing.Size(56, 21);
-            this.offset_check.TabIndex = 2;
-            this.offset_check.Text = "Auto";
-            this.offset_check.UseVisualStyleBackColor = true;
+            this.video_tab.Location = new System.Drawing.Point(4, 22);
+            this.video_tab.Name = "video_tab";
+            this.video_tab.Padding = new System.Windows.Forms.Padding(3);
+            this.video_tab.Size = new System.Drawing.Size(367, 487);
+            this.video_tab.TabIndex = 1;
+            this.video_tab.Text = "Video";
+            this.video_tab.UseVisualStyleBackColor = true;
             // 
-            // confirm
+            // total_audio
             // 
-            this.confirm.Location = new System.Drawing.Point(16, 478);
-            this.confirm.Name = "confirm";
-            this.confirm.Size = new System.Drawing.Size(52, 23);
-            this.confirm.TabIndex = 3;
-            this.confirm.Text = "Confirm";
-            this.confirm.UseVisualStyleBackColor = true;
-            this.confirm.Click += new System.EventHandler(this.confirm_Click);
+            this.total_audio.AutoSize = true;
+            this.total_audio.Location = new System.Drawing.Point(243, 224);
+            this.total_audio.Name = "total_audio";
+            this.total_audio.Size = new System.Drawing.Size(16, 13);
+            this.total_audio.TabIndex = 33;
+            this.total_audio.Text = "-1";
             // 
-            // Cancel
+            // label1
             // 
-            this.Cancel.Location = new System.Drawing.Point(230, 478);
-            this.Cancel.Name = "Cancel";
-            this.Cancel.Size = new System.Drawing.Size(52, 23);
-            this.Cancel.TabIndex = 4;
-            this.Cancel.Text = "Cancel";
-            this.Cancel.UseVisualStyleBackColor = true;
-            this.Cancel.Click += new System.EventHandler(this.Cancel_Click);
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(221, 224);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(12, 13);
+            this.label1.TabIndex = 34;
+            this.label1.Text = "/";
             // 
-            // cdistance
+            // current_audio
             // 
-            this.cdistance.AutoSize = true;
-            this.cdistance.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.cdistance.Location = new System.Drawing.Point(9, 129);
-            this.cdistance.Name = "cdistance";
-            this.cdistance.Size = new System.Drawing.Size(112, 17);
-            this.cdistance.TabIndex = 5;
-            this.cdistance.Text = "Comment Speed";
+            this.current_audio.AutoSize = true;
+            this.current_audio.Location = new System.Drawing.Point(199, 224);
+            this.current_audio.Name = "current_audio";
+            this.current_audio.Size = new System.Drawing.Size(16, 13);
+            this.current_audio.TabIndex = 35;
+            this.current_audio.Text = "-1";
             // 
-            // comment_speed_box
+            // audio_down
             // 
-            this.comment_speed_box.Location = new System.Drawing.Point(161, 129);
-            this.comment_speed_box.Name = "comment_speed_box";
-            this.comment_speed_box.Size = new System.Drawing.Size(100, 20);
-            this.comment_speed_box.TabIndex = 6;
+            this.audio_down.Location = new System.Drawing.Point(164, 218);
+            this.audio_down.Name = "audio_down";
+            this.audio_down.Size = new System.Drawing.Size(29, 23);
+            this.audio_down.TabIndex = 31;
+            this.audio_down.Text = "↓";
+            this.audio_down.UseVisualStyleBackColor = true;
             // 
-            // comment_switch_label
+            // audio_up
             // 
-            this.comment_switch_label.AutoSize = true;
-            this.comment_switch_label.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.comment_switch_label.Location = new System.Drawing.Point(9, 25);
-            this.comment_switch_label.Name = "comment_switch_label";
-            this.comment_switch_label.Size = new System.Drawing.Size(123, 17);
-            this.comment_switch_label.TabIndex = 7;
-            this.comment_switch_label.Text = "Comment ON/OFF";
+            this.audio_up.Location = new System.Drawing.Point(265, 218);
+            this.audio_up.Name = "audio_up";
+            this.audio_up.Size = new System.Drawing.Size(29, 23);
+            this.audio_up.TabIndex = 32;
+            this.audio_up.Text = "↑";
+            this.audio_up.UseVisualStyleBackColor = true;
+            // 
+            // apply_button
+            // 
+            this.apply_button.Location = new System.Drawing.Point(96, 460);
+            this.apply_button.Name = "apply_button";
+            this.apply_button.Size = new System.Drawing.Size(52, 23);
+            this.apply_button.TabIndex = 30;
+            this.apply_button.Text = "Apply";
+            this.apply_button.UseVisualStyleBackColor = true;
+            // 
+            // audio_info
+            // 
+            this.audio_info.AutoSize = true;
+            this.audio_info.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.audio_info.Location = new System.Drawing.Point(146, 267);
+            this.audio_info.Name = "audio_info";
+            this.audio_info.Size = new System.Drawing.Size(118, 17);
+            this.audio_info.TabIndex = 27;
+            this.audio_info.Text = "Current AudioInfo";
+            // 
+            // audio_label
+            // 
+            this.audio_label.AutoSize = true;
+            this.audio_label.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.audio_label.Location = new System.Drawing.Point(12, 224);
+            this.audio_label.Name = "audio_label";
+            this.audio_label.Size = new System.Drawing.Size(131, 17);
+            this.audio_label.TabIndex = 26;
+            this.audio_label.Text = "Current AudioTrack";
+            // 
+            // Comment_Limit_label
+            // 
+            this.Comment_Limit_label.AutoSize = true;
+            this.Comment_Limit_label.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.Comment_Limit_label.Location = new System.Drawing.Point(12, 195);
+            this.Comment_Limit_label.Name = "Comment_Limit_label";
+            this.Comment_Limit_label.Size = new System.Drawing.Size(100, 17);
+            this.Comment_Limit_label.TabIndex = 29;
+            this.Comment_Limit_label.Text = "Comment Limit";
+            // 
+            // comment_end_label
+            // 
+            this.comment_end_label.AutoSize = true;
+            this.comment_end_label.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.comment_end_label.Location = new System.Drawing.Point(12, 163);
+            this.comment_end_label.Name = "comment_end_label";
+            this.comment_end_label.Size = new System.Drawing.Size(132, 17);
+            this.comment_end_label.TabIndex = 28;
+            this.comment_end_label.Text = "Comment End Point";
             // 
             // comment_switch_box
             // 
@@ -134,197 +214,169 @@
             this.comment_switch_box.Items.AddRange(new object[] {
             "ON",
             "OFF"});
-            this.comment_switch_box.Location = new System.Drawing.Point(161, 21);
+            this.comment_switch_box.Location = new System.Drawing.Point(164, 3);
             this.comment_switch_box.Name = "comment_switch_box";
             this.comment_switch_box.Size = new System.Drawing.Size(121, 21);
-            this.comment_switch_box.TabIndex = 8;
+            this.comment_switch_box.TabIndex = 25;
             // 
-            // comment_end_label
+            // comment_switch_label
             // 
-            this.comment_end_label.AutoSize = true;
-            this.comment_end_label.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.comment_end_label.Location = new System.Drawing.Point(9, 181);
-            this.comment_end_label.Name = "comment_end_label";
-            this.comment_end_label.Size = new System.Drawing.Size(132, 17);
-            this.comment_end_label.TabIndex = 9;
-            this.comment_end_label.Text = "Comment End Point";
-            // 
-            // comment_end_box
-            // 
-            this.comment_end_box.Location = new System.Drawing.Point(161, 178);
-            this.comment_end_box.Name = "comment_end_box";
-            this.comment_end_box.Size = new System.Drawing.Size(100, 20);
-            this.comment_end_box.TabIndex = 6;
-            // 
-            // apply_button
-            // 
-            this.apply_button.Location = new System.Drawing.Point(93, 478);
-            this.apply_button.Name = "apply_button";
-            this.apply_button.Size = new System.Drawing.Size(52, 23);
-            this.apply_button.TabIndex = 10;
-            this.apply_button.Text = "Apply";
-            this.apply_button.UseVisualStyleBackColor = true;
-            this.apply_button.Click += new System.EventHandler(this.apply_button_Click);
-            // 
-            // default_button
-            // 
-            this.default_button.Location = new System.Drawing.Point(299, 478);
-            this.default_button.Name = "default_button";
-            this.default_button.Size = new System.Drawing.Size(52, 23);
-            this.default_button.TabIndex = 4;
-            this.default_button.Text = "Default";
-            this.default_button.UseVisualStyleBackColor = true;
-            this.default_button.Click += new System.EventHandler(this.default_button_Click);
-            // 
-            // audio_label
-            // 
-            this.audio_label.AutoSize = true;
-            this.audio_label.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.audio_label.Location = new System.Drawing.Point(9, 242);
-            this.audio_label.Name = "audio_label";
-            this.audio_label.Size = new System.Drawing.Size(131, 17);
-            this.audio_label.TabIndex = 9;
-            this.audio_label.Text = "Current AudioTrack";
-            // 
-            // audio_up
-            // 
-            this.audio_up.Location = new System.Drawing.Point(262, 236);
-            this.audio_up.Name = "audio_up";
-            this.audio_up.Size = new System.Drawing.Size(29, 23);
-            this.audio_up.TabIndex = 11;
-            this.audio_up.Text = "↑";
-            this.audio_up.UseVisualStyleBackColor = true;
-            // 
-            // audio_down
-            // 
-            this.audio_down.Location = new System.Drawing.Point(161, 236);
-            this.audio_down.Name = "audio_down";
-            this.audio_down.Size = new System.Drawing.Size(29, 23);
-            this.audio_down.TabIndex = 11;
-            this.audio_down.Text = "↓";
-            this.audio_down.UseVisualStyleBackColor = true;
-            // 
-            // current_audio
-            // 
-            this.current_audio.AutoSize = true;
-            this.current_audio.Location = new System.Drawing.Point(196, 242);
-            this.current_audio.Name = "current_audio";
-            this.current_audio.Size = new System.Drawing.Size(16, 13);
-            this.current_audio.TabIndex = 12;
-            this.current_audio.Text = "-1";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(218, 242);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(12, 13);
-            this.label1.TabIndex = 12;
-            this.label1.Text = "/";
-            // 
-            // total_audio
-            // 
-            this.total_audio.AutoSize = true;
-            this.total_audio.Location = new System.Drawing.Point(240, 242);
-            this.total_audio.Name = "total_audio";
-            this.total_audio.Size = new System.Drawing.Size(16, 13);
-            this.total_audio.TabIndex = 12;
-            this.total_audio.Text = "-1";
-            // 
-            // audio_info
-            // 
-            this.audio_info.AutoSize = true;
-            this.audio_info.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.audio_info.Location = new System.Drawing.Point(143, 285);
-            this.audio_info.Name = "audio_info";
-            this.audio_info.Size = new System.Drawing.Size(118, 17);
-            this.audio_info.TabIndex = 9;
-            this.audio_info.Text = "Current AudioInfo";
-            // 
-            // Comment_Limit_label
-            // 
-            this.Comment_Limit_label.AutoSize = true;
-            this.Comment_Limit_label.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.Comment_Limit_label.Location = new System.Drawing.Point(9, 213);
-            this.Comment_Limit_label.Name = "Comment_Limit_label";
-            this.Comment_Limit_label.Size = new System.Drawing.Size(100, 17);
-            this.Comment_Limit_label.TabIndex = 9;
-            this.Comment_Limit_label.Text = "Comment Limit";
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(161, 212);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 20);
-            this.textBox1.TabIndex = 6;
+            this.comment_switch_label.AutoSize = true;
+            this.comment_switch_label.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.comment_switch_label.Location = new System.Drawing.Point(12, 7);
+            this.comment_switch_label.Name = "comment_switch_label";
+            this.comment_switch_label.Size = new System.Drawing.Size(123, 17);
+            this.comment_switch_label.TabIndex = 24;
+            this.comment_switch_label.Text = "Comment ON/OFF";
             // 
             // commentLimit_box
             // 
-            this.commentLimit_box.Location = new System.Drawing.Point(161, 210);
+            this.commentLimit_box.Location = new System.Drawing.Point(164, 192);
             this.commentLimit_box.Name = "commentLimit_box";
             this.commentLimit_box.Size = new System.Drawing.Size(100, 20);
-            this.commentLimit_box.TabIndex = 6;
+            this.commentLimit_box.TabIndex = 21;
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(164, 194);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(100, 20);
+            this.textBox1.TabIndex = 20;
+            // 
+            // comment_end_box
+            // 
+            this.comment_end_box.Location = new System.Drawing.Point(164, 160);
+            this.comment_end_box.Name = "comment_end_box";
+            this.comment_end_box.Size = new System.Drawing.Size(100, 20);
+            this.comment_end_box.TabIndex = 23;
+            // 
+            // comment_speed_box
+            // 
+            this.comment_speed_box.Location = new System.Drawing.Point(164, 111);
+            this.comment_speed_box.Name = "comment_speed_box";
+            this.comment_speed_box.Size = new System.Drawing.Size(100, 20);
+            this.comment_speed_box.TabIndex = 22;
+            // 
+            // cdistance
+            // 
+            this.cdistance.AutoSize = true;
+            this.cdistance.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.cdistance.Location = new System.Drawing.Point(12, 111);
+            this.cdistance.Name = "cdistance";
+            this.cdistance.Size = new System.Drawing.Size(112, 17);
+            this.cdistance.TabIndex = 19;
+            this.cdistance.Text = "Comment Speed";
+            // 
+            // default_button
+            // 
+            this.default_button.Location = new System.Drawing.Point(302, 460);
+            this.default_button.Name = "default_button";
+            this.default_button.Size = new System.Drawing.Size(52, 23);
+            this.default_button.TabIndex = 17;
+            this.default_button.Text = "Default";
+            this.default_button.UseVisualStyleBackColor = true;
+            // 
+            // Cancel
+            // 
+            this.Cancel.Location = new System.Drawing.Point(233, 460);
+            this.Cancel.Name = "Cancel";
+            this.Cancel.Size = new System.Drawing.Size(52, 23);
+            this.Cancel.TabIndex = 18;
+            this.Cancel.Text = "Cancel";
+            this.Cancel.UseVisualStyleBackColor = true;
+            // 
+            // confirm
+            // 
+            this.confirm.Location = new System.Drawing.Point(19, 460);
+            this.confirm.Name = "confirm";
+            this.confirm.Size = new System.Drawing.Size(52, 23);
+            this.confirm.TabIndex = 16;
+            this.confirm.Text = "Confirm";
+            this.confirm.UseVisualStyleBackColor = true;
+            // 
+            // offset_check
+            // 
+            this.offset_check.AutoSize = true;
+            this.offset_check.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.offset_check.Location = new System.Drawing.Point(15, 58);
+            this.offset_check.Name = "offset_check";
+            this.offset_check.Size = new System.Drawing.Size(56, 21);
+            this.offset_check.TabIndex = 15;
+            this.offset_check.Text = "Auto";
+            this.offset_check.UseVisualStyleBackColor = true;
+            // 
+            // offset_box
+            // 
+            this.offset_box.Location = new System.Drawing.Point(164, 57);
+            this.offset_box.Name = "offset_box";
+            this.offset_box.Size = new System.Drawing.Size(100, 20);
+            this.offset_box.TabIndex = 14;
+            // 
+            // offset_label1
+            // 
+            this.offset_label1.AutoSize = true;
+            this.offset_label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.offset_label1.Location = new System.Drawing.Point(77, 58);
+            this.offset_label1.Name = "offset_label1";
+            this.offset_label1.Size = new System.Drawing.Size(81, 17);
+            this.offset_label1.TabIndex = 13;
+            this.offset_label1.Text = "Time Offset";
+            // 
+            // audio_tab
+            // 
+            this.audio_tab.Location = new System.Drawing.Point(4, 22);
+            this.audio_tab.Name = "audio_tab";
+            this.audio_tab.Padding = new System.Windows.Forms.Padding(3);
+            this.audio_tab.Size = new System.Drawing.Size(367, 487);
+            this.audio_tab.TabIndex = 2;
+            this.audio_tab.Text = "Audio";
+            this.audio_tab.UseVisualStyleBackColor = true;
             // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(375, 513);
-            this.Controls.Add(this.total_audio);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.current_audio);
-            this.Controls.Add(this.audio_down);
-            this.Controls.Add(this.audio_up);
-            this.Controls.Add(this.apply_button);
-            this.Controls.Add(this.audio_info);
-            this.Controls.Add(this.audio_label);
-            this.Controls.Add(this.Comment_Limit_label);
-            this.Controls.Add(this.comment_end_label);
-            this.Controls.Add(this.comment_switch_box);
-            this.Controls.Add(this.comment_switch_label);
-            this.Controls.Add(this.commentLimit_box);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.comment_end_box);
-            this.Controls.Add(this.comment_speed_box);
-            this.Controls.Add(this.cdistance);
-            this.Controls.Add(this.default_button);
-            this.Controls.Add(this.Cancel);
-            this.Controls.Add(this.confirm);
-            this.Controls.Add(this.offset_check);
-            this.Controls.Add(this.offset_box);
-            this.Controls.Add(this.offset_label1);
+            this.Controls.Add(this.tabControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "Settings";
             this.Text = "Settings";
+            this.tabControl1.ResumeLayout(false);
+            this.Setting_tab.ResumeLayout(false);
+            this.Setting_tab.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Label offset_label1;
-        private System.Windows.Forms.TextBox offset_box;
-        private System.Windows.Forms.CheckBox offset_check;
-        private System.Windows.Forms.Button confirm;
-        private System.Windows.Forms.Button Cancel;
-        private System.Windows.Forms.Label cdistance;
-        private System.Windows.Forms.TextBox comment_speed_box;
-        private System.Windows.Forms.Label comment_switch_label;
-        private System.Windows.Forms.ComboBox comment_switch_box;
-        private System.Windows.Forms.Label comment_end_label;
-        private System.Windows.Forms.TextBox comment_end_box;
-        private System.Windows.Forms.Button apply_button;
-        private System.Windows.Forms.Button default_button;
-        private System.Windows.Forms.Label audio_label;
-        private System.Windows.Forms.Button audio_up;
-        private System.Windows.Forms.Button audio_down;
-        private System.Windows.Forms.Label current_audio;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage Setting_tab;
         private System.Windows.Forms.Label total_audio;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label current_audio;
+        private System.Windows.Forms.Button audio_down;
+        private System.Windows.Forms.Button audio_up;
+        private System.Windows.Forms.Button apply_button;
         private System.Windows.Forms.Label audio_info;
+        private System.Windows.Forms.Label audio_label;
         private System.Windows.Forms.Label Comment_Limit_label;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Label comment_end_label;
+        private System.Windows.Forms.ComboBox comment_switch_box;
+        private System.Windows.Forms.Label comment_switch_label;
         private System.Windows.Forms.TextBox commentLimit_box;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox comment_end_box;
+        private System.Windows.Forms.TextBox comment_speed_box;
+        private System.Windows.Forms.Label cdistance;
+        private System.Windows.Forms.Button default_button;
+        private System.Windows.Forms.Button Cancel;
+        private System.Windows.Forms.Button confirm;
+        private System.Windows.Forms.CheckBox offset_check;
+        private System.Windows.Forms.TextBox offset_box;
+        private System.Windows.Forms.Label offset_label1;
+        private System.Windows.Forms.TabPage video_tab;
+        private System.Windows.Forms.TabPage audio_tab;
+
     }
 }
