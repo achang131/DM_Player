@@ -250,8 +250,8 @@ namespace windowMediaPlayerDM
           cme2 = new comment_move_engine(move_distance);
 
           this.DoubleBuffered = true;
-          
 
+          DragDropSetup(this);
           CSettings();
 
           //commentWindowSetup();
@@ -840,6 +840,7 @@ namespace windowMediaPlayerDM
                             DM_List.Clear();
                             time_counter = 0;
                             playedcomment = 0;
+                            timerStop();
                             vlcPlayer.SetMedia(nv);
                             vlc_track_time = -2;
                             autoLoadByName(nv);
@@ -1910,9 +1911,9 @@ namespace windowMediaPlayerDM
 
                 if (!fullscreen)
                 {
-                    if (40 < fm3.ClientRectangle.Bottom - 80)
+                    if (40 < fm3.Size.Height - 80)
                     {
-                        ycurrent = ypos.Next(40, fm3.ClientRectangle.Bottom - 80);
+                        ycurrent = ypos.Next(40, fm3.Size.Height - 80);//fm3.ClientRectangle.Bottom
                     }
                     else
                     {
@@ -2368,6 +2369,7 @@ namespace windowMediaPlayerDM
             Media_status.Text = "Playlist Set";
 
             FileInfo temp = new FileInfo(medias.ElementAt(0)[0]);
+            timerStop();
             vlcPlayer.SetMedia(temp);
             vlc_track_time = -2;
             autoLoadByName(temp);
@@ -2546,7 +2548,7 @@ namespace windowMediaPlayerDM
             if (media_dir != null)
             {
                 FileInfo temp = new FileInfo(media_dir);
-
+                timerStop();
                 vlcPlayer.SetMedia(temp);
                 vlc_track_time = -2;
                 autoLoadByName(temp);
@@ -2859,7 +2861,9 @@ namespace windowMediaPlayerDM
 
             fm3.KeyUp += new KeyEventHandler(fm3_KeyUp);
             fm3.MouseWheel += new MouseEventHandler(Form1_MouseWheel);
+            DragDropSetup(fm3);
             
+
 
             fm3_1 = new Comment_window();
             fm3_2 = new Comment_window();
@@ -2912,7 +2916,91 @@ namespace windowMediaPlayerDM
 
                // ///////fm3.Owner = this;
         }
+        void DragDropSetup(Form f) {
 
+            f.AllowDrop = true;
+
+            f.MouseUp += new MouseEventHandler(f_MouseUp);
+            f.DragEnter += new DragEventHandler(f_DragEnter);
+        
+        
+        
+        
+        
+        }
+        bool mouseup = false;
+        void f_MouseUp(object sender, MouseEventArgs e)
+        {
+            //throw new NotImplementedException();
+            mouseup = true;
+            
+
+
+        }
+
+        void f_DragEnter(object sender, DragEventArgs e)
+        {
+            //throw new NotImplementedException();
+            //set up drag drop here
+            String[] files = e.Data.GetData(DataFormats.FileDrop, false) as String[];
+            e.Effect = DragDropEffects.Move;
+            
+
+                if (files != null) {
+
+                    for (int i = 0; i < files.Length; i++) {
+
+                        FileInfo file = new FileInfo(files[i]);
+                        String[] temp = { file.FullName, file.Name };
+                        if (!Media_List.Contains(temp))
+                        {
+                            Media_List.Add(temp);
+                        }
+                  //      printvlc(file.FullName);
+                    
+                    }
+
+
+                    comment2.Clear();
+                    comment.Clear();
+                    _duplicates = 0;
+
+                    FileInfo playfile = new FileInfo(files[0]);
+                    autoLoadByName(playfile);
+                    if (vlcPlayer.IsPlaying) {
+                        timerStop();
+                        time_counter = 0;
+                        
+                        
+                    }
+                    if (fm3 == null) {
+
+                        commentWindowSetup();
+                    }
+                    string[] tp = { playfile.FullName, playfile.Name };
+                    if (files.Length == 1) {
+
+                        autoLoadMlist(tp);
+                      
+                    
+                    }
+                    autoLoadDMlist(tp);
+                    vlcPlayer.SetMedia(playfile);
+
+                    vlcPlayer.Play();
+
+                
+                    
+
+
+
+
+
+
+                mouseup = false;
+            }
+
+        }
         void fm3_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             FullScreenSwitch();
@@ -3760,7 +3848,12 @@ namespace windowMediaPlayerDM
             if (result != "")
             {
                 FileInfo newMedia = new FileInfo(result);
-                String current = vlcPlayer.GetCurrentMedia().Mrl;
+                String current = null;
+                if (vlcPlayer.GetCurrentMedia() != null)
+                {
+                   current = vlcPlayer.GetCurrentMedia().Mrl;
+                }
+                timerStop();
                 vlcPlayer.SetMedia(newMedia);
                 vlc_track_time = -2;
 
@@ -3768,20 +3861,22 @@ namespace windowMediaPlayerDM
                 timerStart();
 
                 //unload the loaded dm files, to avoid using the wrong dm on different media files?
-
-                if (!current.Equals(vlcPlayer.GetCurrentMedia().Mrl))
+                if (current != null)
                 {
-                    comment2.Clear();
-                    comment.Clear();
-                    DM_List.Clear();
-                    _duplicates = 0;
-
-                    if (fm2 != null)
+                    if (!current.Equals(vlcPlayer.GetCurrentMedia().Mrl))
                     {
-                        fm2.setDMListBox.Items.Clear();
+                        comment2.Clear();
+                        comment.Clear();
+                        DM_List.Clear();
+                        _duplicates = 0;
+
+                        if (fm2 != null)
+                        {
+                            fm2.setDMListBox.Items.Clear();
+
+                        }
 
                     }
-
                 }
 
                 autoLoadByName(newMedia);
@@ -4294,7 +4389,7 @@ namespace windowMediaPlayerDM
                 }
 
                 FileInfo nfile2 = new FileInfo(Media_List.ElementAt(currentindex)[0]);
-
+                timerStop();
                 vlcPlayer.SetMedia(nfile2);
                 vlc_track_time = -2;
              
@@ -4406,7 +4501,7 @@ namespace windowMediaPlayerDM
                 }
 
                 FileInfo nfile2 = new FileInfo(Media_List.ElementAt(currentindex)[0]);
-
+                timerStop();
                 vlcPlayer.SetMedia(nfile2);
                 vlc_track_time = -2;
            
@@ -5087,6 +5182,7 @@ namespace windowMediaPlayerDM
                 {
                     long temptime = vlcPlayer.Time;
                  //   vlcPlayer.Stop();
+                    timerStop();
                     vlcPlayer.SetMedia(temp);
                     vlcPlayer.Play();
                     timerStart();
@@ -5123,7 +5219,7 @@ namespace windowMediaPlayerDM
                         }
 
                     }
-
+                    timerStop();
                     vlcPlayer.SetMedia(temp);
                     vlc_track_time = -2;
                     autoLoadByName(temp);
