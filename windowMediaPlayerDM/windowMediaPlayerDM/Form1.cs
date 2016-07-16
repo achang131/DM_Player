@@ -503,25 +503,15 @@ namespace windowMediaPlayerDM
 
                 if (fm3 != null) {
 
-                    fm3.Size = vlcPlayer.Size;
-                    fm3.Location = vlcPlayer.Location;
+                    setCommentWS(fm3, new Size(1920, 1080), new Point(0, 0));
+                    setCommentWS(fm3_1, new Size(1920, 1080), new Point(0, 0));
+                    setCommentWS(fm3_2, new Size(1920, 1080), new Point(0, 0));
+                    setCommentWS(fm3_3, new Size(1920, 1080), new Point(0, 0));
+                    setCommentWS(fm3_4, new Size(1920, 1080), new Point(0, 0));
+                    setCommentWS(fm3_5, new Size(1920, 1080), new Point(0, 0));
+                    setCommentWS(fm3_6, new Size(1920, 1080), new Point(0, 0));
+                    setCommentWS(fm3_7, new Size(1920, 1080), new Point(0, 0));
 
-                    fm3_1.Size = vlcPlayer.Size;
-                    fm3_2.Size = vlcPlayer.Size;
-                    fm3_3.Size = vlcPlayer.Size;
-                    fm3_4.Size = vlcPlayer.Size;
-                    fm3_5.Size = vlcPlayer.Size;
-                    fm3_6.Size = vlcPlayer.Size;
-                    fm3_7.Size = vlcPlayer.Size;
-
-                    fm3_1.setLocation = vlcPlayer.Location;
-                    fm3_2.setLocation = vlcPlayer.Location;
-                    fm3_3.setLocation = vlcPlayer.Location;
-                    fm3_4.setLocation = vlcPlayer.Location;
-                    fm3_5.setLocation = vlcPlayer.Location;
-                    fm3_6.setLocation = vlcPlayer.Location;
-                    fm3_7.setLocation = vlcPlayer.Location;
-                
                 }
 
                // this.MaximizedBounds = Screen.PrimaryScreen.Bounds;
@@ -529,6 +519,13 @@ namespace windowMediaPlayerDM
                 Cursor.Hide();
  
             }
+        void setCommentWS(Form form,Size s, Point t) {
+
+            form.Size = s;
+            form.Location = t;
+
+
+        }
 
             void Form1_FormClosing(object sender, FormClosingEventArgs e)
             {
@@ -889,8 +886,7 @@ namespace windowMediaPlayerDM
 
 
             else {
-                try
-                {
+             try{
                     VLC_track.Value = t;
                 }
                 catch (Exception) { };
@@ -901,6 +897,7 @@ namespace windowMediaPlayerDM
         }
         void vlcPlayer_MediaChanged(object sender, Vlc.DotNet.Core.VlcMediaPlayerMediaChangedEventArgs e)
         {
+            timerStop();
             test_label.Text = vlcPlayer.State.ToString();
             printvlc("media changed");
 
@@ -916,7 +913,7 @@ namespace windowMediaPlayerDM
 
 
 
-            timerStop();
+        
             DM_List.Clear();
             removeAllComments();
 
@@ -1142,7 +1139,7 @@ namespace windowMediaPlayerDM
 
             replacetimer1 = new BackgroundWorker();
             replacetimer1.DoWork += new DoWorkEventHandler(replacetimer1_DoWork);
-
+            replacetimer1.WorkerSupportsCancellation = true;
             replacetimer2 = new BackgroundWorker();
             replacetimer2.DoWork += new DoWorkEventHandler(replacetimer2_DoWork);
             replacetimer2.WorkerSupportsCancellation = true;
@@ -1250,11 +1247,9 @@ namespace windowMediaPlayerDM
 
         //    if (replacetimer3.IsBusy)
         //    {
-                try
-                {
+   
                     replacetimer3.CancelAsync();
-                }
-                catch (Exception) { }
+
 
           //  }
         }
@@ -1266,11 +1261,9 @@ namespace windowMediaPlayerDM
         void replacetimer2_stop() {
           //  if (replacetimer2.IsBusy)
           //  {
-                try
-                {
+
                     replacetimer2.CancelAsync();
-                }
-                catch (Exception) { }
+  
            // }
         }
 
@@ -1379,14 +1372,11 @@ namespace windowMediaPlayerDM
         
         }
         void replacetimer1_stop() {
-            if (replacetimer1.IsBusy)
-            {
-                try
-                {
+
+    
                     replacetimer1.CancelAsync();
-                }
-                catch (InvalidOperationException) { };
-            }
+
+            
         
         }
         private void replacetimer1_DoWork(object sender, DoWorkEventArgs e) {
@@ -1509,8 +1499,7 @@ namespace windowMediaPlayerDM
         // form1 ends
         void autoTimesetup()
         {
-            try
-            {
+   
                 if (choose_player == 1)
                 {
                     var tconsol = ((WMPLib.IWMPControls3)Media_Player.Ctlcontrols);
@@ -1544,8 +1533,7 @@ namespace windowMediaPlayerDM
             
 
               
-            }
-            catch (NullReferenceException) { Console.WriteLine("in autoTimeSetup"); }
+    
         }
 
 
@@ -1692,12 +1680,12 @@ namespace windowMediaPlayerDM
             
                 replacetimer3_start();
 
-                try
+                if (cme1 != null && cme2 != null)
                 {
                     cme1.Start();
                     cme2.Start();
                 }
-                catch (NullReferenceException) { };
+   
             
             
         }
@@ -1903,7 +1891,7 @@ namespace windowMediaPlayerDM
                 else {
 
 
-                    ycurrent = ypos.Next(fm3.ClientRectangle.Top, fm3.ClientRectangle.Bottom - dm.Size.Height);
+                    ycurrent = ypos.Next(fm3.ClientRectangle.Top, fm3.ClientRectangle.Bottom - dm.Size.Height-80);
                 
                 }
                 dm.Location = new Point(ClientRectangle.Right, ycurrent);
@@ -2127,14 +2115,10 @@ namespace windowMediaPlayerDM
               
             
             case "Right":
-                    try
-                    {
+           
                         Label temp = (Label)sender;
                         temp.BringToFront();
-                    }
-                    catch (Exception) { 
-                    
-                    }
+    
             break;
 
             default:
@@ -2728,14 +2712,9 @@ namespace windowMediaPlayerDM
             }
             if (fm3 != null)
             {
-                try
-                {
+
                     this.Owner = fm3;
-                    /////////fm3.Owner = this;
-                }
-                catch (Exception) { }
-
-
+ 
             }
 
 
@@ -3070,15 +3049,12 @@ namespace windowMediaPlayerDM
             if (choose_player != 1)
             {
 
-                try
-                {
                     if (vlcPlayer.IsPlaying)
                     {
                         //checks if the video reaches the end of the video
                         manual_checkend((int)vlcPlayer.Length / 10, time_counter);
                     }
-                }
-                catch (NullReferenceException) { Console.WriteLine("in make comment"); }
+               
             }
 
            
@@ -4575,6 +4551,7 @@ namespace windowMediaPlayerDM
         
         
         }
+        bool renamed = false;
         void renametoXML() {
             //throw new NotImplementedException();
             //rename the shattered xml file to the current file name
@@ -4587,22 +4564,44 @@ namespace windowMediaPlayerDM
             
             }
             FileInfo[] files = chk.GetFiles("*xml");
+            var newfile = (from news in files
+                            orderby
+                                news.LastWriteTime descending
+                            select news).First();
 
-            //only do this if there's only 1 file that suits the condition 
-            if (files.Count() == 1)
-            {
+            FileInfo newest= null;
 
-                FileInfo xml = files.ElementAt(0);
+            for (int i = 0; i < files.Count(); i++) {
 
-                byte[] tempbytes = Encoding.Default.GetBytes(gb.getCurrentTitle);
-                string transtemp = Encoding.GetEncoding("shift-jis").GetString(tempbytes);
 
-                xml.CopyTo(dif.FullName + "\\" + transtemp + ".xml", true);
+                if (newest == null || newest.LastWriteTime.Ticks < files.ElementAt(i).LastWriteTime.Ticks) {
 
-                xml.Delete();
-
-                fm7.getDownloadstatus1.Text = "xml file renamed to : " + transtemp + ".xml";
+                    newest = files.ElementAt(i);
+                
+                }
+            //get the smallest creation time which means the newest file 
+            
             }
+
+
+
+                //only do this if there's only 1 file that suits the condition 
+                if (newest!=null && renamed==false)
+                {
+
+                 //   FileInfo xml = files.ElementAt(0);
+
+                    byte[] tempbytes = Encoding.Default.GetBytes(gb.getCurrentTitle);
+                    string transtemp = Encoding.GetEncoding("shift-jis").GetString(tempbytes);
+
+                    newest.CopyTo(dif.FullName + "\\" + transtemp + ".xml", true);
+
+                    newest.Delete();
+
+                    fm7.getDownloadstatus1.Text = "xml file renamed to : " + transtemp + ".xml";
+
+                    renamed = true;
+                }
         
         }
         void getTitle_DoubleClick(object sender, EventArgs e)
@@ -4694,7 +4693,7 @@ namespace windowMediaPlayerDM
 
                 if (e.Error != null)
                 {
-                    throw e.Error;
+                  //  throw e.Error;
                 }
 
                 try
@@ -5315,6 +5314,7 @@ namespace windowMediaPlayerDM
                 }
            
             wb.Dispose();
+            renamed = false;
         }
 
         void wb_Navigated(object sender, WebBrowserNavigatedEventArgs e)
