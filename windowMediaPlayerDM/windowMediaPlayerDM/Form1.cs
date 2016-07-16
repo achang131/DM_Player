@@ -38,7 +38,7 @@ namespace windowMediaPlayerDM
         List<String[]> Media_List = new List<String[]>();
         List<String[]> DM_List = new List<String[]>();
         List<String[]> FullDM_List = new List<String[]>();
-
+        FileInfo currentfile;
         int _duplicates;
 
         bool _first_load;
@@ -660,27 +660,15 @@ namespace windowMediaPlayerDM
 
 
             }
-
+        
             void vlcPlayer_Opening(object sender, Vlc.DotNet.Core.VlcMediaPlayerOpeningEventArgs e)
             {
-               // throw new NotImplementedException();
-                /*
-                onLoadUp();
-                if (_first_load == false)
-                {
-                    vlc_videoSetup();
-                }
-                test_label.Text = vlcPlayer.State.ToString();
 
+            //    if (currentfile != null)
+            //    {
+            //        setVLCname(currentfile);
 
-
-                timerStart();
-                 */
-                vlcPlayer.Audio.Volume = vVolume;
-            Uri nuri = new Uri(vlcPlayer.GetCurrentMedia().Mrl);
-            FileInfo nfile = new FileInfo(nuri.LocalPath);
-            selectPlaying_box(nfile.Name);
-            setVLCname(nfile);
+           //     }
         }
         bool mousemoving;
         Point mouseLocation;
@@ -809,7 +797,8 @@ namespace windowMediaPlayerDM
                             int currentinx = -2;
                             try
                             {
-                                Uri nuri = new Uri(vlcPlayer.GetCurrentMedia().Mrl);
+                              //  Uri nuri = new Uri(vlcPlayer.GetCurrentMedia().Mrl);
+                                Uri nuri = new Uri(currentfile.FullName);
                                 FileInfo nfile = new FileInfo(nuri.LocalPath);
                                 String currentv = nfile.Name;
 
@@ -835,16 +824,9 @@ namespace windowMediaPlayerDM
                             }//werid stopping problem happens here probably because it can't get media form current video in vlc ?
                             FileInfo nv = new FileInfo(Media_List.ElementAt(currentinx)[0]);
            
-                            comment.Clear();
-                            comment2.Clear();
-                            DM_List.Clear();
-                            time_counter = 0;
-                            playedcomment = 0;
-                            timerStop();
-                            vlcPlayer.SetMedia(nv);
-                            vlc_track_time = -2;
-                            autoLoadByName(nv);
-                            //vlcPlayer.Play();
+
+                            vlcSetMedia(nv);
+
                             vlcPlayer.Play();
                             timerStart();
 
@@ -920,6 +902,7 @@ namespace windowMediaPlayerDM
         void vlcPlayer_MediaChanged(object sender, Vlc.DotNet.Core.VlcMediaPlayerMediaChangedEventArgs e)
         {
             test_label.Text = vlcPlayer.State.ToString();
+            printvlc("media changed");
 
             _first_load = false;
 
@@ -931,10 +914,17 @@ namespace windowMediaPlayerDM
 
             VLC_track.Value = 0;
 
+
+
             timerStop();
-
-
+            DM_List.Clear();
             removeAllComments();
+
+            setVLCname(currentfile);
+            autoLoadByName(currentfile);
+            string[] tp = { currentfile.FullName, currentfile.Name };
+            autoLoadDMlist(tp);
+           
         }
 
         void vlcPlayer_Stopped(object sender, Vlc.DotNet.Core.VlcMediaPlayerStoppedEventArgs e)
@@ -1735,21 +1725,10 @@ namespace windowMediaPlayerDM
         void removeAllComments() {
 
 
-            if (fm3 != null)
-            {
+            comment.Clear();
+            comment2.Clear();
+            _duplicates = 0;
 
-
-      
-                for (int i = 0; i < fm3.Controls.OfType<Label>().Count(); i++)
-                {
-
-                    fm3.Controls.OfType<Label>().ElementAt(i).Dispose();
-
-                    
-
-                }
-                fm3.Refresh();
-            }
 
         
         }
@@ -1911,9 +1890,9 @@ namespace windowMediaPlayerDM
 
                 if (!fullscreen)
                 {
-                    if (40 < fm3.Size.Height - 80)
+                    if (40 < fm3.Size.Height - (80+dm.Size.Height))
                     {
-                        ycurrent = ypos.Next(40, fm3.Size.Height - 80);//fm3.ClientRectangle.Bottom
+                        ycurrent = ypos.Next(40, fm3.Size.Height - (80+dm.Size.Height));//fm3.ClientRectangle.Bottom
                     }
                     else
                     {
@@ -2118,8 +2097,8 @@ namespace windowMediaPlayerDM
                        break;
 
                    default:
-                       if (vlcPlayer.GetCurrentMedia() != null) {
-
+                      // if (vlcPlayer.GetCurrentMedia() != null) {
+                       if(currentfile !=null){
                            vlcPlay_button.BackgroundImage = Properties.Resources.pause;
                            vlcPlayer.Play();
                            vlcPlayer.Audio.Volume = 50;
@@ -2369,11 +2348,9 @@ namespace windowMediaPlayerDM
             Media_status.Text = "Playlist Set";
 
             FileInfo temp = new FileInfo(medias.ElementAt(0)[0]);
-            timerStop();
-            vlcPlayer.SetMedia(temp);
-            vlc_track_time = -2;
-            autoLoadByName(temp);
-            
+
+            vlcSetMedia(temp);
+
             vlcPlayer.Play();
             timerStart();
             //onLoadUp();
@@ -2548,10 +2525,8 @@ namespace windowMediaPlayerDM
             if (media_dir != null)
             {
                 FileInfo temp = new FileInfo(media_dir);
-                timerStop();
-                vlcPlayer.SetMedia(temp);
-                vlc_track_time = -2;
-                autoLoadByName(temp);
+
+                vlcSetMedia(temp);
                 vlcPlayer.Play();
                 timerStart();
             }
@@ -2984,9 +2959,8 @@ namespace windowMediaPlayerDM
                       
                     
                     }
-                    autoLoadDMlist(tp);
-                    vlcPlayer.SetMedia(playfile);
 
+                    vlcSetMedia(playfile);
                     vlcPlayer.Play();
 
                 
@@ -3587,10 +3561,10 @@ namespace windowMediaPlayerDM
             fm2.setFullDMBox.KeyUp += new KeyEventHandler(setFullDMBox_KeyUp);
 
 
-             if (vlcPlayer.GetCurrentMedia() != null) {
-                Uri nuri = new Uri(vlcPlayer.GetCurrentMedia().Mrl);
-                FileInfo nfile = new FileInfo(nuri.LocalPath);
-                selectPlaying_box(nfile.Name);
+            // if (vlcPlayer.GetCurrentMedia() != null) {
+            if(currentfile !=null){  
+
+                selectPlaying_box(currentfile.Name);
             }
 
             fm2.Show();
@@ -3849,21 +3823,19 @@ namespace windowMediaPlayerDM
             {
                 FileInfo newMedia = new FileInfo(result);
                 String current = null;
-                if (vlcPlayer.GetCurrentMedia() != null)
+                if (currentfile!=null)
                 {
-                   current = vlcPlayer.GetCurrentMedia().Mrl;
+                   current = currentfile.FullName;
                 }
-                timerStop();
-                vlcPlayer.SetMedia(newMedia);
-                vlc_track_time = -2;
 
+                vlcSetMedia(newMedia);
                 vlcPlayer.Play();
                 timerStart();
 
                 //unload the loaded dm files, to avoid using the wrong dm on different media files?
                 if (current != null)
                 {
-                    if (!current.Equals(vlcPlayer.GetCurrentMedia().Mrl))
+                    if (!current.Equals(currentfile.FullName))
                     {
                         comment2.Clear();
                         comment.Clear();
@@ -4243,9 +4215,8 @@ namespace windowMediaPlayerDM
                     }
                     else
                     {
-                        Uri nuri = new Uri(vlcPlayer.GetCurrentMedia().Mrl);
-                        FileInfo nfile = new FileInfo(nuri.LocalPath);
-                        setDMtitle(nfile.Name);
+        
+                        setDMtitle(currentfile.Name);
                         _first_load = true;
                     }
 
@@ -4358,13 +4329,18 @@ namespace windowMediaPlayerDM
         {
             Media_Player_ClickAction();
         }
+        private void vlcSetMedia(FileInfo file) {
 
+
+            currentfile = file;
+            vlcPlayer.SetMedia(file);
+        
+        }
         private void next_track_Click(object sender, EventArgs e)
         {
             if (Media_List.Count > 1) {
-                Uri nuri = new Uri(vlcPlayer.GetCurrentMedia().Mrl);
-                FileInfo nfile = new FileInfo(nuri.LocalPath);
-                String current = nfile.Name;
+
+                String current = currentfile.Name;
                 int currentindex = -2;
 
                 for (int i = 0; i < Media_List.Count; i++) {
@@ -4389,19 +4365,9 @@ namespace windowMediaPlayerDM
                 }
 
                 FileInfo nfile2 = new FileInfo(Media_List.ElementAt(currentindex)[0]);
-                timerStop();
-                vlcPlayer.SetMedia(nfile2);
-                vlc_track_time = -2;
-             
-                comment2.Clear();
-                comment.Clear();
-                DM_List.Clear();
-                playedcomment = 0;
-                _duplicates = 0;
-                time_counter = 0;
-                setVLCname(nfile2);
-                autoLoadByName(nfile2);
-                //timerStop();
+
+                vlcSetMedia(nfile2);
+
                 vlcPlayer.Play();
                 timerStart();
    
@@ -4471,9 +4437,8 @@ namespace windowMediaPlayerDM
         {
             if (Media_List.Count > 1)
             {
-                Uri nuri = new Uri(vlcPlayer.GetCurrentMedia().Mrl);
-                FileInfo nfile = new FileInfo(nuri.LocalPath);
-                String current = nfile.Name;
+
+                String current = currentfile.Name;
                 int currentindex = -2;
 
                 for (int i = 0; i < Media_List.Count; i++)
@@ -4501,18 +4466,9 @@ namespace windowMediaPlayerDM
                 }
 
                 FileInfo nfile2 = new FileInfo(Media_List.ElementAt(currentindex)[0]);
-                timerStop();
-                vlcPlayer.SetMedia(nfile2);
-                vlc_track_time = -2;
-           
-                comment2.Clear();
-                comment.Clear();
-                DM_List.Clear();
-                playedcomment = 0;
-                _duplicates = 0;
-                time_counter = 0;
-                autoLoadByName(nfile2);
-                setVLCname(nfile2);
+
+                vlcSetMedia(nfile2);
+
                 //timerStop();
                 vlcPlayer.Play();
                 timerStart();
@@ -4683,14 +4639,14 @@ namespace windowMediaPlayerDM
             else {
                 if (!vlcPlayer.IsPlaying)
                 {
-                    if (vlcPlayer.GetCurrentMedia()==null || vlcPlayer.GetCurrentMedia().Title != file.Name)
+                    if (currentfile==null || currentfile.Name != file.Name)
                     {
                         string[] temp = { file.FullName, file.Name };
                         Media_List.Add(temp);
                         autoLoadMlist(temp);
                         autoLoadDMlist(temp);
 
-                        // vlcPlayer.SetMedia(file);
+                        // vlcSetMedia(file);
                         vlc_track_time = -2;
                         autoLoadByName(file);
                         //this should return 1 or 2 files 
@@ -4801,7 +4757,7 @@ namespace windowMediaPlayerDM
                 //add the used link as a key for getting the title of the current file
                 MultiDownloadLinks.Add((Uri)box.SelectedItem, fm7.getTitle.SelectedItem.ToString());
 
-              //vlcPlayer.SetMedia(gb.playDownlist);
+              //vlcSetMedia(gb.playDownlist);
                 vlc_track_time = -2;
                 //autoLoadByName(gb.playDownlist);
 
@@ -5097,7 +5053,7 @@ namespace windowMediaPlayerDM
 
                     String[] m = { temp.FullName, temp.Name };
                     Media_List.Add(m);
-                  //  vlcPlayer.SetMedia(temp);
+                  //  vlcSetMedia(temp);
                   //  autoLoadByName(temp);
                     //           vlcPlayer.Play();
 
@@ -5182,12 +5138,10 @@ namespace windowMediaPlayerDM
                 {
                     long temptime = vlcPlayer.Time;
                  //   vlcPlayer.Stop();
-                    timerStop();
-                    vlcPlayer.SetMedia(temp);
+
+                    vlcSetMedia(temp);
                     vlcPlayer.Play();
                     timerStart();
-                    vlc_track_time = -2;
-                    autoLoadByName(temp);
                     vlcPlayer.Time = temptime;
 
                 }
@@ -5220,9 +5174,9 @@ namespace windowMediaPlayerDM
 
                     }
                     timerStop();
-                    vlcPlayer.SetMedia(temp);
-                    vlc_track_time = -2;
-                    autoLoadByName(temp);
+
+                    vlcSetMedia(temp);
+
                     vlcPlayer.Play();
                     timerStart();
          //           vlcPlayer.Play();
