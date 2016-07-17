@@ -4513,6 +4513,7 @@ namespace windowMediaPlayerDM
 
                 fm7 = new Url_menu();
                 fm7.setLinkbox.Text = linkaddress.AbsoluteUri;
+                
 
                 //load the list with the urls if exists
                 if (Links.Count > 0)
@@ -4564,10 +4565,7 @@ namespace windowMediaPlayerDM
             
             }
             FileInfo[] files = chk.GetFiles("*xml");
-            var newfile = (from news in files
-                            orderby
-                                news.LastWriteTime descending
-                            select news).First();
+
 
             FileInfo newest= null;
 
@@ -4684,15 +4682,78 @@ namespace windowMediaPlayerDM
 
 
         }
+        public DownloadProgressChangedEventHandler DownloadProgessChange(ProgressBar pbar,Label percent,String title) {
 
-        public AsyncCompletedEventHandler DownloadFileCompleted(Uri filename)
+            Action<object, DownloadProgressChangedEventArgs> action = (sender, e) =>
+            {
+
+                var _pbar = pbar;
+
+                //throw new NotImplementedException();
+                //show dl progress
+                String currentbyte = e.BytesReceived.ToString();
+                String totalbyte = e.TotalBytesToReceive.ToString();
+                int progress = e.ProgressPercentage;
+                if (fm7 != null)
+                {
+                    if (pbar.IsDisposed) {
+                        ProgressBar npbar = new ProgressBar();
+                        Label status = new Label();
+                        downloadstatusSetup(npbar, status);
+
+                        pbar = npbar;
+                        percent = status;
+
+                    
+                    
+                    }
+
+                    pbar.Value = progress;
+                    percent.Text = title+" Downloading: " + progress + "% completed " + currentbyte + "/" + totalbyte;
+                    
+
+                }
+           
+            
+
+
+
+
+
+
+
+
+            };
+            return new DownloadProgressChangedEventHandler(action);
+        
+        
+        
+        }
+
+        public AsyncCompletedEventHandler DownloadFileCompleted(Uri filename,ProgressBar pbar,Label status)
         {
             Action<object, AsyncCompletedEventArgs> action = (sender, e) =>
             {
+
+
+                pbar.Dispose();
+                status.Dispose();
+
+
                 var _filename = filename;
 
                 if (e.Error != null)
                 {
+                    fm7.getDownloadstatus2.Text = "server error";
+
+                    if (fm7 != null)
+                    {
+
+                        fm7.Size = new Size(fm7.Width, fm7.Height - pbar.Height);
+                        pbar.Dispose();
+                        status.Dispose();
+
+                    }
                   //  throw e.Error;
                 }
 
@@ -4723,7 +4784,7 @@ namespace windowMediaPlayerDM
 
                 try
                 {
-                    wb_DownloadFileCompleted(filename);
+                    wb_DownloadFileCompleted(filename,pbar,status);
                 }
                 catch (Exception) { fm7.getDownloadstatus2.Text = "server error"; }
 
@@ -4741,6 +4802,25 @@ namespace windowMediaPlayerDM
 
         Dictionary<Uri, String> MultiDownloadLinks = new Dictionary<Uri, string>();
 
+        void downloadstatusSetup(ProgressBar pbar, Label status) {
+
+
+
+            fm7.Size = new Size(fm7.Width, fm7.Height + pbar.Height + 20);
+            pbar.Maximum = 100;
+            pbar.Minimum = 0;
+            pbar.Size = new Size(fm7.Width / 2 - 30, 23);
+            pbar.Location = new Point(fm7.Width / 2, fm7.Height - 120 + pbar.Height);
+            status.Location = new Point(0, fm7.Height - 120 + pbar.Height);
+            status.AutoSize = true;
+
+            fm7.Controls.Add(pbar);
+            fm7.Controls.Add(status);
+            pbar.Show();
+            status.Show();
+
+        }
+
         void downloadFile(object sender) {
             ListBox box = (ListBox)sender;
             using (WebClient wb = new WebClient())
@@ -4748,9 +4828,18 @@ namespace windowMediaPlayerDM
                 wb.Encoding = Encoding.UTF8;
 
                 Uri filename = (Uri)box.SelectedItem;
+
+                //download status related items here
+                ProgressBar pbar = new ProgressBar();
+                Label status = new Label();
+                downloadstatusSetup(pbar,status);
+                String title = fm7.getTitle.SelectedItem.ToString();
+
                // wb.DownloadFileCompleted += new AsyncCompletedEventHandler(wb_DownloadFileCompleted);
-                wb.DownloadFileCompleted += DownloadFileCompleted(filename);
-                wb.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wb_DownloadProgressChanged);
+                wb.DownloadFileCompleted += DownloadFileCompleted(filename,pbar,status);
+              //  wb.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wb_DownloadProgressChanged);
+                wb.DownloadProgressChanged += DownloadProgessChange(pbar,status,title);
+                
                 gb.downlaodFile((Uri)box.SelectedItem, wb);
 
                 //add the used link as a key for getting the title of the current file
@@ -4790,7 +4879,7 @@ namespace windowMediaPlayerDM
 
                 }
 
-
+               
 
 
 
@@ -4976,8 +5065,18 @@ namespace windowMediaPlayerDM
 
         }
 
-        void wb_DownloadFileCompleted(Uri ufilename)
+        void wb_DownloadFileCompleted(Uri ufilename,ProgressBar pbar, Label status)
         {
+
+            if (fm7 != null)
+            {
+
+                fm7.Size = new Size(fm7.Width, fm7.Height - pbar.Height);
+                pbar.Dispose();
+                status.Dispose();
+
+            }
+
             //throw new NotImplementedException();
             //remove urls from url list
             //change dled file name
