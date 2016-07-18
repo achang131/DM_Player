@@ -24,12 +24,12 @@ namespace windowMediaPlayerDM
         add_link_form fm6;
         Dictionary<Uri, Uri> UrlDictionary;
 
-
+        
         public Url_menu()
         {
             InitializeComponent();
 
-
+            download_bar.Hide();
 
         }
 

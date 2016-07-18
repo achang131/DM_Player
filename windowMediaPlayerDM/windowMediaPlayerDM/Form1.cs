@@ -201,7 +201,7 @@ namespace windowMediaPlayerDM
             
             
             vlcPlayer.AllowDrop = true;
-            vlcPlayer.DragEnter += new DragEventHandler(vlcPlayer_DragEnter);
+            vlcPlayer.DragEnter += new DragEventHandler(f_DragEnter);
             
             
 
@@ -4591,7 +4591,8 @@ namespace windowMediaPlayerDM
 
                     byte[] tempbytes = Encoding.Default.GetBytes(gb.getCurrentTitle);
                     string transtemp = Encoding.GetEncoding("shift-jis").GetString(tempbytes);
-
+                    transtemp = transtemp.Replace("?", " ");
+                    
                     newest.CopyTo(dif.FullName + "\\" + transtemp + ".xml", true);
 
                     newest.Delete();
@@ -4680,7 +4681,10 @@ namespace windowMediaPlayerDM
             downloadFile(sender);
             }
 
+            if (fm7 != null) {
 
+                fm7.Focus();
+            }
         }
         public DownloadProgressChangedEventHandler DownloadProgessChange(ProgressBar pbar,Label percent,String title) {
 
@@ -4811,7 +4815,7 @@ namespace windowMediaPlayerDM
             pbar.Minimum = 0;
             pbar.Size = new Size(fm7.Width / 2 - 30, 23);
             pbar.Location = new Point(fm7.Width / 2, fm7.Height - 120 + pbar.Height);
-            status.Location = new Point(0, fm7.Height - 120 + pbar.Height);
+            status.Location = new Point(0, fm7.Height - 120 - (pbar.Height/3));
             status.AutoSize = true;
 
             fm7.Controls.Add(pbar);
@@ -5475,28 +5479,29 @@ namespace windowMediaPlayerDM
             fm7.getTitle.SelectedIndex = selected;
 
             //if the link has been read before add if not in else area read the links and load it on dictionary
-
-            if (UrlDictionary.ContainsKey(Links.ElementAt(selected)))
+            if (selected >= 0 && selected < temp.Items.Count)
             {
-                for (int i = 0; i < UrlDictionary[Links.ElementAt(selected)].Count(); i++)
+                if (UrlDictionary.ContainsKey(Links.ElementAt(selected)))
                 {
+                    for (int i = 0; i < UrlDictionary[Links.ElementAt(selected)].Count(); i++)
+                    {
 
-                    fm7.getFileUrl.Items.Add(UrlDictionary[Links.ElementAt(selected)].ElementAt(i));
+                        fm7.getFileUrl.Items.Add(UrlDictionary[Links.ElementAt(selected)].ElementAt(i));
+
+                    }
+
+                }
+                else
+                {
+                    // not doing anything here for now since it might conflict with later code
+                    // since everything in the links are supposed to be loaded and add into dictionary
+                    // so here is just to prevent the unexcepted error
+
 
                 }
 
-            }
-            else
-            {
-                // not doing anything here for now since it might conflict with later code
-                // since everything in the links are supposed to be loaded and add into dictionary
-                // so here is just to prevent the unexcepted error
-
 
             }
-
-
-
         }
 
         void getTitle_Click(object sender, EventArgs e)
