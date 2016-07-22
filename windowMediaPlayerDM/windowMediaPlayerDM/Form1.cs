@@ -221,7 +221,7 @@ namespace windowMediaPlayerDM
             vlcPlayer.KeyUp += new KeyEventHandler(vlcPlayer_KeyUp);
             vlcPlayer.MouseDoubleClick += new MouseEventHandler(vlcPlayer_MouseDoubleClick);
             this.MouseDoubleClick += new MouseEventHandler(Form1_MouseDoubleClick);
-
+            statusStrip1.DragEnter += new DragEventHandler(f_DragEnter);
 
             fullscreen = false;
 
@@ -4540,6 +4540,10 @@ namespace windowMediaPlayerDM
                 fm7.getLinks.Click += new EventHandler(getLinks_Click);
                 fm7.getloadURLbutton.Click += new EventHandler(getloadURLbutton_Click);
                 fm7.getFileUrl.DoubleClick += new EventHandler(getFileUrl_DoubleClick);
+                fm7.getFileUrl.MouseHover += new EventHandler(setLinkbox_MouseHover);
+                fm7.getFileUrl.MouseMove += new MouseEventHandler(setLinkbox_MouseMove);
+                fm7.getFileUrl.MouseLeave += new EventHandler(getFileUrl_MouseLeave);
+                fm7.reload.Click += new EventHandler(reload_Click);
                 fm7.Disposed += new EventHandler(fm7_Disposed);
                 fm7.Show();
             }
@@ -4551,6 +4555,88 @@ namespace windowMediaPlayerDM
             }
         
         
+        }
+
+        void reload_Click(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
+            //implement reload the whole page remove the link from the list first then do original load page
+            string temp = fm7.setLinkbox.Text;
+            Uri url = new Uri(temp);
+            if (url != null) {
+
+                if (fm7.getLinks.Items.Contains(url))
+                {
+                    int place = fm7.getLinks.Items.IndexOf(url);
+                    fm7.getLinks.Items.RemoveAt(place);
+                    fm7.getTitle.Items.RemoveAt(place);
+                    UrlDictionary.Remove(url);
+                    Links.Remove(url);
+
+                    load_Url_from(url);
+                }
+                else {
+
+                    load_Url_from(url);
+                
+                }
+            }
+
+
+
+        }
+
+        void getFileUrl_MouseLeave(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
+            tipMouseHover = false;
+        }
+        ToolTip tip = new ToolTip();
+        int mousex = 0;
+        int mousey = 0;
+        bool tooltip = false;
+        void setLinkbox_MouseMove(object sender, MouseEventArgs e)
+        {
+            //throw new NotImplementedException();
+
+            
+            if (tipMouseHover == true&& fm7.getFileUrl.SelectedItem!=null&&tooltip==false) {
+
+            
+                 mousex = e.X;
+                 mousey = e.Y;
+                String fullurl = fm7.getFileUrl.SelectedItem.ToString();
+
+                tip.Show(fullurl,fm7,new Point(e.X+fm7.getFileUrl.Location.X,e.Y+fm7.getFileUrl.Location.Y));
+
+                
+
+                tooltip=true;
+
+                //tipMouseHover = false;
+            
+            }
+            if (mousex != e.X || mousey != e.Y|| tipMouseHover ==false) {
+
+                tip.Hide(fm7);
+            
+            
+            tooltip=false;
+            }
+
+
+        }
+        bool tipMouseHover = false;
+        void setLinkbox_MouseHover(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
+            //when mouse hover over a link have a pop up show the full link to the hover item
+
+            tipMouseHover = true;
+           
+
+
+
         }
         bool renamed = false;
         void renametoXML() {
@@ -4740,10 +4826,6 @@ namespace windowMediaPlayerDM
             {
 
 
-                pbar.Dispose();
-                status.Dispose();
-
-
                 var _filename = filename;
 
                 if (e.Error != null)
@@ -4790,7 +4872,7 @@ namespace windowMediaPlayerDM
                 {
                     wb_DownloadFileCompleted(filename,pbar,status);
                 }
-                catch (Exception) { fm7.getDownloadstatus2.Text = "server error"; }
+                catch (Exception) { if (fm7 != null) { fm7.getDownloadstatus2.Text = "server error"; } }
 
             };
             return new AsyncCompletedEventHandler(action);
@@ -4815,7 +4897,7 @@ namespace windowMediaPlayerDM
             pbar.Minimum = 0;
             pbar.Size = new Size(fm7.Width / 2 - 30, 23);
             pbar.Location = new Point(fm7.Width / 2, fm7.Height - 120 + pbar.Height);
-            status.Location = new Point(0, fm7.Height - 120 - (pbar.Height/3));
+            status.Location = new Point(0, fm7.Height - 120+5);
             status.AutoSize = true;
 
             fm7.Controls.Add(pbar);
@@ -4827,86 +4909,88 @@ namespace windowMediaPlayerDM
 
         void downloadFile(object sender) {
             ListBox box = (ListBox)sender;
-            using (WebClient wb = new WebClient())
+            if (box.SelectedItem != null)
             {
-                wb.Encoding = Encoding.UTF8;
-
-                Uri filename = (Uri)box.SelectedItem;
-
-                //download status related items here
-                ProgressBar pbar = new ProgressBar();
-                Label status = new Label();
-                downloadstatusSetup(pbar,status);
-                String title = fm7.getTitle.SelectedItem.ToString();
-
-               // wb.DownloadFileCompleted += new AsyncCompletedEventHandler(wb_DownloadFileCompleted);
-                wb.DownloadFileCompleted += DownloadFileCompleted(filename,pbar,status);
-              //  wb.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wb_DownloadProgressChanged);
-                wb.DownloadProgressChanged += DownloadProgessChange(pbar,status,title);
-                
-                gb.downlaodFile((Uri)box.SelectedItem, wb);
-
-                //add the used link as a key for getting the title of the current file
-                MultiDownloadLinks.Add((Uri)box.SelectedItem, fm7.getTitle.SelectedItem.ToString());
-
-              //vlcSetMedia(gb.playDownlist);
-                vlc_track_time = -2;
-                //autoLoadByName(gb.playDownlist);
-
-                FileInfo file2 = new FileInfo(gb.playDownlist.OriginalString);
-
-                FileInfo[] findDM = file2.Directory.GetFiles(fm7.getTitle.SelectedItem.ToString());
-
-                for (int i = 0; i < findDM.Count(); i++)
+                using (WebClient wb = new WebClient())
                 {
-                    if (findDM[i].Name.Contains("*.xml"))
+                    wb.Encoding = Encoding.UTF8;
+
+                    Uri filename = (Uri)box.SelectedItem;
+
+                    //download status related items here
+                    ProgressBar pbar = new ProgressBar();
+                    Label status = new Label();
+                    downloadstatusSetup(pbar, status);
+                    String title = fm7.getTitle.SelectedItem.ToString();
+
+                    // wb.DownloadFileCompleted += new AsyncCompletedEventHandler(wb_DownloadFileCompleted);
+                    wb.DownloadFileCompleted += DownloadFileCompleted(filename, pbar, status);
+                    //  wb.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wb_DownloadProgressChanged);
+                    wb.DownloadProgressChanged += DownloadProgessChange(pbar, status, title);
+
+                    gb.downlaodFile((Uri)box.SelectedItem, wb);
+
+                    //add the used link as a key for getting the title of the current file
+                    MultiDownloadLinks.Add((Uri)box.SelectedItem, fm7.getTitle.SelectedItem.ToString());
+
+                    //vlcSetMedia(gb.playDownlist);
+                    vlc_track_time = -2;
+                    //autoLoadByName(gb.playDownlist);
+
+                    FileInfo file2 = new FileInfo(gb.playDownlist.OriginalString);
+
+                    FileInfo[] findDM = file2.Directory.GetFiles(fm7.getTitle.SelectedItem.ToString());
+
+                    for (int i = 0; i < findDM.Count(); i++)
                     {
-                        string[] tdm = { findDM[i].FullName, findDM[i].Name };
-                        DM_List.Add(tdm);
-                        readXML(tdm[0]);
+                        if (findDM[i].Name.Contains("*.xml"))
+                        {
+                            string[] tdm = { findDM[i].FullName, findDM[i].Name };
+                            DM_List.Add(tdm);
+                            readXML(tdm[0]);
 
-                        Danmoku_status.Text = "DM set";
+                            Danmoku_status.Text = "DM set";
 
-                       
+
                         }
 
 
                     }
-                if (fm3 == null)
-                {
-                    commentWindowSetup();
+                    if (fm3 == null)
+                    {
+                        commentWindowSetup();
+                    }
+                    else
+                    {
+                        ///////fm3.Owner = this;
+
+
+                    }
+
+
+
+
+
+                    //set the media in vlc player
+                    urls.Remove((Uri)box.SelectedItem);
+                    FileInfo file = new FileInfo(gb.playDownlist.OriginalString);
+                    String[] temp = { file.FullName, file.Name };
+                    Media_List.Add(temp);
+                    autoLoadMlist(temp);
+                    autoLoadDMlist(temp);
+
+                    UrlDictionary[(Uri)fm7.getLinks.SelectedItem].Remove((Uri)box.SelectedItem);
+                    box.Items.Remove((Uri)box.SelectedItem);
+
+
+
+
+
+
+                    wb.Dispose();
+
                 }
-                else
-                {
-                    ///////fm3.Owner = this;
-
-
-                }
-
-               
-
-
-
-                //set the media in vlc player
-                urls.Remove((Uri)box.SelectedItem);
-                FileInfo file = new FileInfo(gb.playDownlist.OriginalString);
-                String[] temp = {file.FullName,file.Name };
-                Media_List.Add(temp);
-                autoLoadMlist(temp);
-                autoLoadDMlist(temp);
-
-                UrlDictionary[(Uri)fm7.getLinks.SelectedItem].Remove((Uri)box.SelectedItem);
-                box.Items.Remove((Uri)box.SelectedItem);
-
-
-
-
-
-
-                wb.Dispose();
-
             }
-        
         }
         void autoLoadByName(FileInfo file)
         {
@@ -5075,10 +5159,15 @@ namespace windowMediaPlayerDM
             if (fm7 != null)
             {
 
-                fm7.Size = new Size(fm7.Width, fm7.Height - pbar.Height);
+                //fm7.Size = new Size(fm7.Width, fm7.Height - pbar.Height);
+                
                 pbar.Dispose();
                 status.Dispose();
-
+                //only changes the size back to normal if there's no task is downloading
+                if (fm7.Controls.OfType<ProgressBar>().Count() == 0)
+                {
+                    fm7.Size = new Size(fm7.Width, 475);
+                }
             }
 
             //throw new NotImplementedException();
@@ -5477,6 +5566,7 @@ namespace windowMediaPlayerDM
 
             int selected = temp.SelectedIndex;
             fm7.getTitle.SelectedIndex = selected;
+            setTextasTitle();
 
             //if the link has been read before add if not in else area read the links and load it on dictionary
             if (selected >= 0 && selected < temp.Items.Count)
@@ -5503,7 +5593,19 @@ namespace windowMediaPlayerDM
 
             }
         }
+        void setTextasTitle() {
 
+
+            if (fm7 != null) {
+
+                
+                String title = fm7.getLinks.SelectedItem.ToString();
+                fm7.setLinkbox.Text = title;
+            
+            }
+        
+        
+        }
         void getTitle_Click(object sender, EventArgs e)
         {
             //throw new NotImplementedException();
@@ -5516,6 +5618,7 @@ namespace windowMediaPlayerDM
 
             int selected = temp.SelectedIndex;
             fm7.getLinks.SelectedIndex = selected;
+            setTextasTitle();
 
             //if the link has been read before add if not in else area read the links and load it on dictionary
             if (selected >= 0)

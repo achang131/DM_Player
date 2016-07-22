@@ -33,14 +33,15 @@
             this.Link_listbox = new System.Windows.Forms.ListBox();
             this.url_listbox = new System.Windows.Forms.ListBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.downlaod_label1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.download_label2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.download_bar = new System.Windows.Forms.ProgressBar();
             this.Links_added_label = new System.Windows.Forms.Label();
             this.select_file_url = new System.Windows.Forms.Label();
             this.set_link_button = new System.Windows.Forms.Button();
-            this.downlaod_label1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.download_label2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.Title_listbox = new System.Windows.Forms.ListBox();
             this.title_label = new System.Windows.Forms.Label();
+            this.reload_button = new System.Windows.Forms.Button();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -88,6 +89,16 @@
             this.statusStrip1.TabIndex = 3;
             this.statusStrip1.Text = "statusStrip1";
             // 
+            // downlaod_label1
+            // 
+            this.downlaod_label1.Name = "downlaod_label1";
+            this.downlaod_label1.Size = new System.Drawing.Size(0, 17);
+            // 
+            // download_label2
+            // 
+            this.download_label2.Name = "download_label2";
+            this.download_label2.Size = new System.Drawing.Size(0, 17);
+            // 
             // download_bar
             // 
             this.download_bar.Location = new System.Drawing.Point(183, 389);
@@ -124,16 +135,6 @@
             this.set_link_button.Text = "Load Link";
             this.set_link_button.UseVisualStyleBackColor = true;
             // 
-            // downlaod_label1
-            // 
-            this.downlaod_label1.Name = "downlaod_label1";
-            this.downlaod_label1.Size = new System.Drawing.Size(0, 17);
-            // 
-            // download_label2
-            // 
-            this.download_label2.Name = "download_label2";
-            this.download_label2.Size = new System.Drawing.Size(0, 17);
-            // 
             // Title_listbox
             // 
             this.Title_listbox.FormattingEnabled = true;
@@ -152,12 +153,23 @@
             this.title_label.TabIndex = 0;
             this.title_label.Text = "Media Title";
             // 
+            // reload_button
+            // 
+            this.reload_button.Location = new System.Drawing.Point(794, 5);
+            this.reload_button.Name = "reload_button";
+            this.reload_button.Size = new System.Drawing.Size(77, 20);
+            this.reload_button.TabIndex = 5;
+            this.reload_button.Text = "ReLoad Link";
+            this.reload_button.UseVisualStyleBackColor = true;
+            // 
             // Url_menu
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(889, 437);
             this.Controls.Add(this.Title_listbox);
+            this.Controls.Add(this.reload_button);
             this.Controls.Add(this.set_link_button);
             this.Controls.Add(this.download_bar);
             this.Controls.Add(this.statusStrip1);
@@ -192,5 +204,6 @@
         private System.Windows.Forms.ToolStripStatusLabel download_label2;
         private System.Windows.Forms.ListBox Title_listbox;
         private System.Windows.Forms.Label title_label;
+        private System.Windows.Forms.Button reload_button;
     }
 }

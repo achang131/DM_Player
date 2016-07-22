@@ -29,7 +29,7 @@ namespace windowMediaPlayerDM
         {
             InitializeComponent();
 
-            download_bar.Hide();
+            download_bar.Dispose();
 
         }
 
@@ -80,6 +80,11 @@ namespace windowMediaPlayerDM
             get { return download_label2; }
         
         }
+        public Button reload {
 
+            set { reload_button = value; }
+            get { return reload_button; }
+        
+        }
     }
 }
