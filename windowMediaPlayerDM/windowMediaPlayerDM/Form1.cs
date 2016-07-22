@@ -4570,7 +4570,8 @@ namespace windowMediaPlayerDM
                     int place = fm7.getLinks.Items.IndexOf(url);
                     fm7.getLinks.Items.RemoveAt(place);
                     fm7.getTitle.Items.RemoveAt(place);
-                    UrlDictionary.Remove(url);
+               //     UrlDictionary.Remove(url);
+                    //no longer needed since already updated the part to adapt update links
                     Links.Remove(url);
 
                     load_Url_from(url);
@@ -5412,7 +5413,29 @@ namespace windowMediaPlayerDM
 
                 urlTitles.Add(gb.getCurrentTitle);
                 urls = gb.getAllfiles;
-                UrlDictionary.Add(address, gb.getAllfiles);
+                if (UrlDictionary.ContainsKey(address)) {
+                    if (gb.getAllfiles.Count > 0)
+                    {
+                        //if the updated page contains at least 1 links then update otherwise do nothing
+
+                        UrlDictionary.Remove(address);
+                        UrlDictionary.Add(address, gb.getAllfiles);
+
+
+                    }
+                    else { 
+                    // do nothing if the new updated links are all dead or removed 
+                        //maybe can change this part to  add new links only ?
+                    
+                    
+                    }
+                
+                
+                }
+                else
+                {
+                    UrlDictionary.Add(address, gb.getAllfiles);
+                }
 
                 //load all the info onto the box
                 fm7.getLinks.Items.Add(address);
