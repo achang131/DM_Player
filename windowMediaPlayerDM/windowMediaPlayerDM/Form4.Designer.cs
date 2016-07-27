@@ -30,7 +30,6 @@
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.Setting_tab = new System.Windows.Forms.TabPage();
-            this.video_tab = new System.Windows.Forms.TabPage();
             this.total_audio = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.current_audio = new System.Windows.Forms.Label();
@@ -55,8 +54,25 @@
             this.offset_box = new System.Windows.Forms.TextBox();
             this.offset_label1 = new System.Windows.Forms.Label();
             this.audio_tab = new System.Windows.Forms.TabPage();
+            this.video_tab = new System.Windows.Forms.TabPage();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.Brightness_bar = new System.Windows.Forms.TrackBar();
+            this.Contrast_bar = new System.Windows.Forms.TrackBar();
+            this.Gamma_bar = new System.Windows.Forms.TrackBar();
+            this.Hue_bar = new System.Windows.Forms.TrackBar();
+            this.Saturation_bar = new System.Windows.Forms.TrackBar();
             this.tabControl1.SuspendLayout();
             this.Setting_tab.SuspendLayout();
+            this.video_tab.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Brightness_bar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Contrast_bar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Gamma_bar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Hue_bar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Saturation_bar)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -103,16 +119,6 @@
             this.Setting_tab.TabIndex = 0;
             this.Setting_tab.Text = "Settings";
             this.Setting_tab.UseVisualStyleBackColor = true;
-            // 
-            // video_tab
-            // 
-            this.video_tab.Location = new System.Drawing.Point(4, 22);
-            this.video_tab.Name = "video_tab";
-            this.video_tab.Padding = new System.Windows.Forms.Padding(3);
-            this.video_tab.Size = new System.Drawing.Size(367, 487);
-            this.video_tab.TabIndex = 1;
-            this.video_tab.Text = "Video";
-            this.video_tab.UseVisualStyleBackColor = true;
             // 
             // total_audio
             // 
@@ -332,6 +338,116 @@
             this.audio_tab.Text = "Audio";
             this.audio_tab.UseVisualStyleBackColor = true;
             // 
+            // video_tab
+            // 
+            this.video_tab.Controls.Add(this.Saturation_bar);
+            this.video_tab.Controls.Add(this.Hue_bar);
+            this.video_tab.Controls.Add(this.Gamma_bar);
+            this.video_tab.Controls.Add(this.Contrast_bar);
+            this.video_tab.Controls.Add(this.Brightness_bar);
+            this.video_tab.Controls.Add(this.label6);
+            this.video_tab.Controls.Add(this.label5);
+            this.video_tab.Controls.Add(this.label4);
+            this.video_tab.Controls.Add(this.label3);
+            this.video_tab.Controls.Add(this.label2);
+            this.video_tab.Location = new System.Drawing.Point(4, 22);
+            this.video_tab.Name = "video_tab";
+            this.video_tab.Padding = new System.Windows.Forms.Padding(3);
+            this.video_tab.Size = new System.Drawing.Size(367, 487);
+            this.video_tab.TabIndex = 1;
+            this.video_tab.Text = "Video";
+            this.video_tab.UseVisualStyleBackColor = true;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 3);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(56, 13);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "Brightness";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 73);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(46, 13);
+            this.label3.TabIndex = 0;
+            this.label3.Text = "Contrast";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 137);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(43, 13);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "Gamma";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 211);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(27, 13);
+            this.label5.TabIndex = 0;
+            this.label5.Text = "Hue";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 290);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(55, 13);
+            this.label6.TabIndex = 0;
+            this.label6.Text = "Saturation";
+            // 
+            // Brightness_bar
+            // 
+            this.Brightness_bar.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.Brightness_bar.Location = new System.Drawing.Point(6, 19);
+            this.Brightness_bar.Name = "Brightness_bar";
+            this.Brightness_bar.Size = new System.Drawing.Size(353, 45);
+            this.Brightness_bar.TabIndex = 1;
+            this.Brightness_bar.TickStyle = System.Windows.Forms.TickStyle.Both;
+            // 
+            // Contrast_bar
+            // 
+            this.Contrast_bar.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.Contrast_bar.Location = new System.Drawing.Point(6, 89);
+            this.Contrast_bar.Name = "Contrast_bar";
+            this.Contrast_bar.Size = new System.Drawing.Size(353, 45);
+            this.Contrast_bar.TabIndex = 1;
+            this.Contrast_bar.TickStyle = System.Windows.Forms.TickStyle.Both;
+            // 
+            // Gamma_bar
+            // 
+            this.Gamma_bar.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.Gamma_bar.Location = new System.Drawing.Point(6, 153);
+            this.Gamma_bar.Name = "Gamma_bar";
+            this.Gamma_bar.Size = new System.Drawing.Size(353, 45);
+            this.Gamma_bar.TabIndex = 1;
+            this.Gamma_bar.TickStyle = System.Windows.Forms.TickStyle.Both;
+            // 
+            // Hue_bar
+            // 
+            this.Hue_bar.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.Hue_bar.Location = new System.Drawing.Point(6, 227);
+            this.Hue_bar.Name = "Hue_bar";
+            this.Hue_bar.Size = new System.Drawing.Size(353, 45);
+            this.Hue_bar.TabIndex = 1;
+            this.Hue_bar.TickStyle = System.Windows.Forms.TickStyle.Both;
+            // 
+            // Saturation_bar
+            // 
+            this.Saturation_bar.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.Saturation_bar.Location = new System.Drawing.Point(6, 306);
+            this.Saturation_bar.Name = "Saturation_bar";
+            this.Saturation_bar.Size = new System.Drawing.Size(353, 45);
+            this.Saturation_bar.TabIndex = 1;
+            this.Saturation_bar.TickStyle = System.Windows.Forms.TickStyle.Both;
+            // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -344,6 +460,13 @@
             this.tabControl1.ResumeLayout(false);
             this.Setting_tab.ResumeLayout(false);
             this.Setting_tab.PerformLayout();
+            this.video_tab.ResumeLayout(false);
+            this.video_tab.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Brightness_bar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Contrast_bar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Gamma_bar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Hue_bar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Saturation_bar)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -375,8 +498,18 @@
         private System.Windows.Forms.CheckBox offset_check;
         private System.Windows.Forms.TextBox offset_box;
         private System.Windows.Forms.Label offset_label1;
-        private System.Windows.Forms.TabPage video_tab;
         private System.Windows.Forms.TabPage audio_tab;
+        private System.Windows.Forms.TabPage video_tab;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TrackBar Saturation_bar;
+        private System.Windows.Forms.TrackBar Hue_bar;
+        private System.Windows.Forms.TrackBar Gamma_bar;
+        private System.Windows.Forms.TrackBar Contrast_bar;
+        private System.Windows.Forms.TrackBar Brightness_bar;
 
     }
 }

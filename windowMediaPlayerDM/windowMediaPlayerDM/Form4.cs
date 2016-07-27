@@ -137,6 +137,35 @@ namespace windowMediaPlayerDM
         
         
         }
+        public TrackBar setBrightness {
+            set { this.Brightness_bar = value; }
+            get { return this.Brightness_bar; }
+        
+        }
+        public TrackBar setContrast
+        {
+            set { this.Contrast_bar = value; }
+            get { return this.Contrast_bar; }
+
+        }
+        public TrackBar setGamma
+        {
+            set { this.Gamma_bar = value; }
+            get { return this.Gamma_bar; }
+
+        }
+        public TrackBar setHue
+        {
+            set { this.Hue_bar = value; }
+            get { return this.Hue_bar; }
+
+        }
+        public TrackBar setSaturation
+        {
+            set { this.Saturation_bar = value; }
+            get { return this.Saturation_bar; }
+
+        }
         public TextBox Cend
         {
 

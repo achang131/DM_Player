@@ -16,6 +16,7 @@ using System.Net;
 using ShockwaveFlashObjects;
 
 
+
 namespace windowMediaPlayerDM
 {
     public partial class Form1 : Form{
@@ -235,17 +236,17 @@ namespace windowMediaPlayerDM
                 Media_Player.Dispose();
             }
 
-         
+            
 
           //  this.Disposed += new EventHandler(Form1_Disposed);
 
             this.FormClosing += new FormClosingEventHandler(Form1_FormClosing);
 
-
             //CommentEngineSetup(cme1, comment_storage3, move_distance);
             //CommentEngineSetup(cme2, comment_storage4, move_distance);
-            
 
+            
+          
           cme1 = new comment_move_engine(move_distance);
           cme2 = new comment_move_engine(move_distance);
 
@@ -2115,9 +2116,12 @@ namespace windowMediaPlayerDM
               
             
             case "Right":
-           
+                    //turn off for now, since it's now multilayer and need anothing method to work
+
+                    /*
                         Label temp = (Label)sender;
                         temp.BringToFront();
+                     */
     
             break;
 
@@ -3931,7 +3935,27 @@ namespace windowMediaPlayerDM
 
 
                     lcount = vlcPlayer.Audio.Tracks.Count-1;
+                   /*
+                    int countup = 0;
+                    
+                    foreach (object c in vlcPlayer.Audio.Tracks.All) {
+                      
+                        var b = (Vlc.DotNet.Core.TrackDescription)c;
+                        if (b.ID == vlcPlayer.Audio.Tracks.Current.ID)
+                        {
 
+                            currentLanguage = countup;
+
+
+                        }
+                        else {
+                            countup++;
+                        }
+                        
+
+                    }
+                    */
+                  
                     for (int i = 0; i < lcount; i++) {
 
                         if (vlcPlayer.Audio.Tracks.Current.ID.Equals(vlcPlayer.Audio.Tracks.All.ElementAt(i))) {
@@ -3942,6 +3966,7 @@ namespace windowMediaPlayerDM
                     
                     
                     }
+                     
                     try
                     {
                         audioinfo = vlcPlayer.Audio.Tracks.Current.Name;
@@ -3960,6 +3985,12 @@ namespace windowMediaPlayerDM
                 fm4.getAudio_down.Click += new EventHandler(getAudio_down_Click);
                 fm4.getAudio_up.Click += new EventHandler(getAudio_up_Click);
                 fm4.auto_mode_check.CheckStateChanged += new EventHandler(auto_mode_check_CheckStateChanged);
+                VideoAdjuestAction(fm4.setBrightness);
+                VideoAdjuestAction(fm4.setContrast);
+                VideoAdjuestAction(fm4.setGamma);
+                VideoAdjuestAction(fm4.setHue);
+                VideoAdjuestAction(fm4.setSaturation);
+
                 this.loadAll();
                 if (fm3 != null)
                 {
@@ -3970,7 +4001,57 @@ namespace windowMediaPlayerDM
             }
         
         }
+        void VideoAdjuestAction(TrackBar a) {
 
+            a.ValueChanged += new EventHandler(a_ValueChanged);
+            a.MouseDown += new MouseEventHandler(a_MouseDown);
+        }
+        bool VideoMouse = false;
+        void a_MouseDown(object sender, MouseEventArgs e)
+        {
+            //throw new NotImplementedException();
+            VideoMouse = true;
+        }
+
+        void a_ValueChanged(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
+            TrackBar a = (TrackBar)sender;
+            if (VideoMouse == true)
+            {
+                switch (a.Name)
+                {
+
+                    case "Brightness_bar":
+
+                        vlcPlayer.Video.Adjustments.Brightness = ((float)a.Value) / 10;
+
+                        break;
+
+                    case "Contrast_bar":
+                        vlcPlayer.Video.Adjustments.Contrast = ((float)a.Value) / 10;
+                        break;
+
+                    case "Gamma_bar":
+                        vlcPlayer.Video.Adjustments.Gamma = ((float)a.Value) / 10;
+                        break;
+
+                    case "Hue_bar":
+                        vlcPlayer.Video.Adjustments.Hue = ((float)a.Value) / 10;
+                        break;
+
+                    case "Saturation_bar":
+                        vlcPlayer.Video.Adjustments.Saturation = ((float)a.Value) / 10;
+                        break;
+
+
+
+
+                };
+
+            }
+            VideoMouse = false;
+        }
         void auto_mode_check_CheckStateChanged(object sender, EventArgs e)
         {
             auto_TimeMatch = fm4.auto_mode_check.Checked;
@@ -4052,6 +4133,12 @@ namespace windowMediaPlayerDM
 
 
         }
+        void VideoSetup(TrackBar a, int value) {
+
+            a.Minimum = 0;
+            a.Maximum = 30;
+            a.Value = value;
+        }
         void loadAll() {
             if (fm4 != null) {
                 switch (this.sommentswitch) { 
@@ -4075,7 +4162,11 @@ namespace windowMediaPlayerDM
                 fm4.Cend.Text = this.commentdestroy.ToString();
                 fm4.setCommentLimit.Text = commentLimit.ToString();
                 loadAudio();
-                
+                VideoSetup(fm4.setBrightness, (int)vlcPlayer.Video.Adjustments.Brightness*10);
+                VideoSetup(fm4.setContrast, (int)vlcPlayer.Video.Adjustments.Contrast*10);
+                VideoSetup(fm4.setGamma, (int)vlcPlayer.Video.Adjustments.Gamma*10);
+                VideoSetup(fm4.setHue, (int)vlcPlayer.Video.Adjustments.Hue*10);
+                VideoSetup(fm4.setSaturation, (int)vlcPlayer.Video.Adjustments.Saturation*10);
             
             }
         

@@ -37,3 +37,4 @@ C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM
 C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\windowMediaPlayerDM.add_link_form.resources
 C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\windowMediaPlayerDM.Url_menu.resources
 C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\Interop.ShockwaveFlashObjects.dll
+C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM\bin\Debug\Vlc.DotNet.Wpf.dll
