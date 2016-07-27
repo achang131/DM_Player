@@ -228,7 +228,10 @@ namespace windowMediaPlayerDM
 
         private void test_button_Click(object sender, EventArgs e)
         {
-            
+            gb = new getWebVideo(new Uri("http://say-move.org/comeplay.php?comeid=1620354"),"A:\\video\\hima test video");
+
+            print.Text=gb.saymoveAP2();
+            // print.Text = "done";
         }
         
 

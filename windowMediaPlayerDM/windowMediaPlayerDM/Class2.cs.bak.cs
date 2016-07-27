@@ -45,7 +45,11 @@ namespace windowMediaPlayerDM
             getAllUrls();
         
         }
-
+        public getWebVideo(String url) {
+            websiteLink = new Uri(url);
+            Alter_loadInfo(new Uri(url));
+        
+        }
          public getWebVideo(Uri url , String dirpath) {
 
             websiteLink = url;
@@ -294,6 +298,7 @@ namespace windowMediaPlayerDM
 
              filestorage_dir = dir;
          }
+        CookieCollection cookie;
         void loadInfo(Uri url) {
           
             
@@ -302,7 +307,7 @@ namespace windowMediaPlayerDM
 
             //if you get response from the http site
             if (wresponse.StatusCode == HttpStatusCode.OK) {
-
+                
                 Stream recives = wresponse.GetResponseStream();
                 StreamReader readers = null;
 
@@ -321,7 +326,7 @@ namespace windowMediaPlayerDM
                 }
                 //could use read line to get an array of results?
                 fullcontent = readers.ReadToEnd();
-
+                cookie = wresponse.Cookies;
                 wresponse.Close();
                 readers.Close();
 
@@ -331,6 +336,57 @@ namespace windowMediaPlayerDM
             }
 
         }
+        void Alter_loadInfo(Uri url)
+        {
+
+
+            HttpWebRequest wrequest = (HttpWebRequest)WebRequest.Create(url);
+            HttpWebResponse wresponse = (HttpWebResponse)wrequest.GetResponse();
+
+            //if you get response from the http site
+            if (wresponse.StatusCode == HttpStatusCode.OK)
+            {
+
+                Stream recives = wresponse.GetResponseStream();
+                StreamReader readers = null;
+
+                //see if the page is unicoded
+                if (wresponse.CharacterSet == null)
+                {
+
+                    readers = new StreamReader(recives);
+                }
+                else
+                {
+                    //if unicoded
+
+                    readers = new StreamReader(recives, Encoding.GetEncoding(wresponse.CharacterSet));
+
+                    code = Encoding.GetEncoding(wresponse.CharacterSet);
+                }
+                //could use read line to get an array of results?
+                fullcontent = readers.ReadToEnd();
+                cookie = wresponse.Cookies;
+               
+                alter = saymove();
+
+
+                wresponse.Close();
+                readers.Close();
+
+
+
+
+            }
+
+        }
+        public String saymoveAlter { 
+        get{return alter;}
+            set { alter = value; }
+        
+        
+        }
+        String alter;
         String getTitle() {
 
             string result="";
@@ -419,63 +475,140 @@ namespace windowMediaPlayerDM
          }
 
          private string saymoveKey(string key, string id) {
-             string result = "http://say-move.org/fc2/api/fc2flvPath.php?gk=&up%5Fid=";
+             string result = "http://say-move.org/fc2/api/fc2flvPath.php?gk=&up_id=";
+             //string result = "http://say-move.org/fc2/api/fc2flvPath.php?gk=&up%5Fid=";
+            // string result = "http://say-move.org/fc2/api/fc2flvPath.php?gk=&up5Fid=";
+             
              result = result.Replace("gk=", "gk=" + key);
              result = result.Replace("id=","id="+id);
              return result;
          
          }
+//GET /fc2/api/fc2flvPath.php?gk=CyszM5LQbASGxNWL&up%5Fid=20160723NH71111q HTTP/1.1
+//Host: say-move.org
+//Connection: keep-alive
+//Cache-Control: max-age=0
+//Upgrade-Insecure-Requests: 1
+//User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36
+//Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+//DNT: 1
+//Accept-Encoding: gzip, deflate, sdch
+//Accept-Language: en-US,en;q=0.8,ja;q=0.6,zh-TW;q=0.4,zh;q=0.2
+//Cookie: open_category_menu=1; fc2cnt_862=1-1468124524; _pk_ref.4.c1cd=%5B%22%22%2C%22%22%2C1469435800%2C%22http%3A%2F%2Fhimado.in%2F%3Fsort%3Dmovie_id%26mode%3Dsearch%22%5D; __utma=64400813.163552657.1468117240.1468817630.1469435800.3; __utmc=64400813; __utmz=64400813.1469435800.3.2.utmcsr=himado.in|utmccn=(referral)|utmcmd=referral|utmcct=/; globalmode=0; fc2cnt_984716=1-1469435799; fc2_analyzer_697394=1-872535462-1468117281-1469436460-18-4-1469435815; FC2ANASESSION697394=46071979; fc2cnt_861=1-1469435844; _ga=GA1.2.163552657.1468117240; _pk_id.4.c1cd=bb583a982d36ded4.1468117240.4.1469436462.1469435800.; _pk_ses.4.c1cd=*; lang=ja
+
+        public string saymoveAP2(){
+
+            String truelink = fullcontent;
+
+            int start = fullcontent.IndexOf("og:image");
+            truelink = truelink.Substring(start, truelink.Length - start);
+            start = truelink.IndexOf("http");
+            truelink = truelink.Substring(start, truelink.Length - start);
+            int end = truelink.IndexOf("\"");
+            truelink = truelink.Substring(0, end);
+
+            String exchange = truelink.Replace("thumb", "flv");
+            exchange = exchange.Replace(".jpg", ".flv");
+            string test = "";
+
+            using (WebClient wb = new WebClient()) {
+                //http://vip.video45000.fc2.com/up/flv/201607/23/N/20160723NH71111q.flv?mid=fbe6f6e49cde6e1ba13e68efe3b07e94
+                //mid=fbe6f6e49cde6e1ba13e68efe3b07e94
+
+                test = wb.DownloadString(exchange);
+
+
+
+                
+            
+            
+            }
+
+
+
+
+            return test;
+        
+        
+        }
+
          public  string saymovefc2(string url,string gk ,string id) {
 
-
+             
              HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
              //responese=wb.ResponseHeaders.ToString();
              WebHeaderCollection wa = new WebHeaderCollection();
          //    wa.Add(HttpRequestHeader.Host, "say-move.org");
-             wa.Add("Host", "say-move.org");
+             String temp = "/fc2/api/fc2flvPath.php?gk=&up%5Fid=";
+             temp = temp.Replace("gk=", "gk=" + gk);
+             temp = temp.Replace("id=", "id=" + id);
+          //   wa.Add("GET", temp);
+        //     wa.Add("Host", "say-move.org");
+          
              wa.Add("X-Request-With", "ShockwaveFlash/22.0.0.209");
-
-             wa.Add(HttpRequestHeader.Connection, "keep-alive");
+             wa.Add("Upgrade-Insecure-Requests", "1");
+             wa.Add("Cache-Control", "max-age=0");
+             wa.Add("DNT", "1");
+            // wa.Add("Accept-Encoding", "gzip, deflate, sdch");
+        //     wa.Add("Accept-Language", "en-US,en;q=0.8,ja;q=0.6,zh-TW;q=0.4,zh;q=0.2");
+           //  wa.Add("Referer", this.websiteLink.AbsolutePath);
+         //    wa.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36");
+             wa.Add("Cookie", " open_category_menu=1; fc2cnt_862=1-1468124524; _pk_ref.4.c1cd=%5B%22%22%2C%22%22%2C1469435800%2C%22http%3A%2F%2Fhimado.in%2F%3Fsort%3Dmovie_id%26mode%3Dsearch%22%5D; __utma=64400813.163552657.1468117240.1468817630.1469435800.3; __utmc=64400813; __utmz=64400813.1469435800.3.2.utmcsr=himado.in|utmccn=(referral)|utmcmd=referral|utmcct=/; globalmode=0; fc2cnt_984716=1-1469435799; fc2_analyzer_697394=1-872535462-1468117281-1469436460-18-4-1469435815; FC2ANASESSION697394=46071979; fc2cnt_861=1-1469435844; _ga=GA1.2.163552657.1468117240; _pk_id.4.c1cd=bb583a982d36ded4.1468117240.4.1469436462.1469435800.; _pk_ses.4.c1cd=*; lang=ja");
+            wa.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+             //  wa.Add(HttpRequestHeader.Connection, "keep-alive");
              wa.Add(HttpRequestHeader.Referer, this.websiteLink.OriginalString);
-             wa.Add(HttpRequestHeader.UserAgent, "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36");
+            wa.Add(HttpRequestHeader.UserAgent, "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36");
              wa.Add(HttpRequestHeader.Accept, "*/*");
-             //  wa.Add(HttpRequestHeader.Cookie, "open_category_menu=1; fc2cnt_862=1-1468124524; __utma=64400813.163552657.1468117240.1468817630.1469435800.3; __utmc=64400813; __utmz=64400813.1469435800.3.2.utmcsr=himado.in|utmccn=(referral)|utmcmd=referral|utmcct=/; globalmode=0; lang=ja; zHADmJDY=ewtM1aRpc5KcQ31H; fc2cnt_984716=1-1469525214; fc2_analyzer_697394=1-872535462-1468117281-1469547263-21-4-1469435815; FC2ANASESSION697394=49161928; fc2cnt_861=1-1469547264; _pk_ref.4.c1cd=%5B%22%22%2C%22%22%2C1469547283%2C%22http%3A%2F%2Fhimado.in%2F%3Fsort%3Dmovie_id%26mode%3Dsearch%22%5D; _pk_id.4.c1cd=bb583a982d36ded4.1468117240.7.1469547283.1469547283.; _pk_ses.4.c1cd=*; _gat=1; _gat_generalPC=1; _ga=GA1.2.163552657.1468117240");
+            //  wa.Add(HttpRequestHeader.Cookie, "open_category_menu=1; fc2cnt_862=1-1468124524; __utma=64400813.163552657.1468117240.1468817630.1469435800.3; __utmc=64400813; __utmz=64400813.1469435800.3.2.utmcsr=himado.in|utmccn=(referral)|utmcmd=referral|utmcct=/; globalmode=0; lang=ja; zHADmJDY=ewtM1aRpc5KcQ31H; fc2cnt_984716=1-1469525214; fc2_analyzer_697394=1-872535462-1468117281-1469547263-21-4-1469435815; FC2ANASESSION697394=49161928; fc2cnt_861=1-1469547264; _pk_ref.4.c1cd=%5B%22%22%2C%22%22%2C1469547283%2C%22http%3A%2F%2Fhimado.in%2F%3Fsort%3Dmovie_id%26mode%3Dsearch%22%5D; _pk_id.4.c1cd=bb583a982d36ded4.1468117240.7.1469547283.1469547283.; _pk_ses.4.c1cd=*; _gat=1; _gat_generalPC=1; _ga=GA1.2.163552657.1468117240");
 
-             wa.Add(HttpRequestHeader.AcceptEncoding, "gzip, deflate, sdch");
-             wa.Add(HttpRequestHeader.AcceptLanguage, "en-US,en;q=0.8,ja;q=0.6,zh-TW;q=0.4,zh;q=0.2");
+             wa.Add(HttpRequestHeader.AcceptEncoding, "gzip");
+             wa.Add(HttpRequestHeader.AcceptLanguage, "ja;q=0.6");
              System.Collections.Specialized.NameValueCollection qstring = new System.Collections.Specialized.NameValueCollection();
              qstring.Add("gk", gk);
              qstring.Add("up_id", id);
-           //  request.Headers = wa;
+
+             CookieCollection ck = new CookieCollection();
+             Cookie a = new Cookie("opencategory_menu", "1");
+             ck.Add(a);
+             a=new Cookie("fc2cnt_862","1-1468124524");
+             //request.Headers = wa;
+             
+             
              using (WebClient wb = new WebClient()) {
                  wb.Headers = wa;
+                 ICredentials ic = new NetworkCredential();
+                 wb.Encoding = ASCIIEncoding.UTF8;
                  wb.QueryString = qstring;
-                 wb.DownloadFile(url, "testfile");
-             
-             
+                 String response = "";
+                 
+                 wb.BaseAddress=(this.websiteLink.OriginalString);
+              response=   wb.DownloadString(temp);
+
+                     return response;
+     
              
              }
              
              request.Method = "GET";
-
+             request.UserAgent = "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36";
              request.Host = "say-move.org";
              request.KeepAlive = true;
             // request.Connection = "keep-alive";
              //request.Referer = "http://say-move.org/comeplay.php?comeid=1620354";
              request.Referer = this.websiteLink.OriginalString;
-             request.Accept = "*/*";
+             request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
              request.MaximumResponseHeadersLength = 300;
              byte[] _byte = Encoding.ASCII.GetBytes(string.Concat("content=", url));
              //in case if content length need to be filled
-            
+             //request.GetResponse();
              String fullc = "";
           
              //  Stream response = request.GetRequestStream();
-          
-             try
+             if (request.HaveResponse)
              {
+
                  HttpWebResponse wrespones = (HttpWebResponse)request.GetResponse();
-                 
+
                  using (StreamReader reader = new StreamReader(wrespones.GetResponseStream()))
                  {
 
@@ -483,17 +616,18 @@ namespace windowMediaPlayerDM
 
                      reader.Close();
                  }
+
+
              }
-             catch (WebException) {
-                 fullc = "404 not found";
+             else {
+
+                 return "not found 404";
              
              }
-             return fullc;
-
              //if everything went well then fullc will have the text that contains the true video address
              //for the video  call dl from here
              //
-
+             return fullc;
 
          }
 

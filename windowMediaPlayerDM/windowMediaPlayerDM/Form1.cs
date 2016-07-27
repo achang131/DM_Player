@@ -13,7 +13,7 @@ using System.Windows.Threading;
 using System.IO;
 using System.Net.Http;
 using System.Net;
-
+using ShockwaveFlashObjects;
 
 
 namespace windowMediaPlayerDM
@@ -235,7 +235,7 @@ namespace windowMediaPlayerDM
                 Media_Player.Dispose();
             }
 
-        
+         
 
           //  this.Disposed += new EventHandler(Form1_Disposed);
 
@@ -4572,6 +4572,7 @@ namespace windowMediaPlayerDM
                     fm7.getTitle.Items.RemoveAt(place);
                //     UrlDictionary.Remove(url);
                     //no longer needed since already updated the part to adapt update links
+                    
                     Links.Remove(url);
 
                     load_Url_from(url);
@@ -5410,8 +5411,16 @@ namespace windowMediaPlayerDM
                 gb.getCurrentTitle = gb.getCurrentTitle.Replace(">", " ");
                 gb.getCurrentTitle = gb.getCurrentTitle.Replace("*", " ");
                 gb.getCurrentTitle = gb.getCurrentTitle.Replace("|", " ");
-
-                urlTitles.Add(gb.getCurrentTitle);
+                if (!urlTitles.Contains(gb.getCurrentTitle))
+                {
+                    urlTitles.Add(gb.getCurrentTitle);
+                }
+                else {
+                    //the reason for doing this is to regulate the order in the list, with out this step all the titles in the list will mess up
+                    urlTitles.Remove(gb.getCurrentTitle);
+                    urlTitles.Add(gb.getCurrentTitle);
+                
+                }
                 urls = gb.getAllfiles;
                 if (UrlDictionary.ContainsKey(address)) {
                     if (gb.getAllfiles.Count > 0)
@@ -5496,13 +5505,14 @@ namespace windowMediaPlayerDM
 
        //     List<String> viewer = new List<string>();
       //      List<String> viewer2 = new List<string>();
-
+            if (wb.Document.GetElementsByTagName("select").GetElementsByName("limit").Count>0)
+            {
             for (int i = 0; i < wb.Document.GetElementsByTagName("select").GetElementsByName("limit")[0].GetElementsByTagName("option").Count; i++) {
 
                
               //  viewer.Add(wb.Document.GetElementsByTagName("select").GetElementsByName("limit")[0].GetElementsByTagName("option")[i].GetAttribute("value"));
 
-                wb.Document.GetElementsByTagName("select").GetElementsByName("limit")[0].GetElementsByTagName("option")[i].SetAttribute("value","20000");
+                wb.Document.GetElementsByTagName("select").GetElementsByName("limit")[0].GetElementsByTagName("option")[i].SetAttribute("value","200000");
              //   viewer2.Add(wb.Document.GetElementsByTagName("select").GetElementsByName("limit")[0].GetElementsByTagName("option")[i].GetAttribute("value"));
 
             
@@ -5527,7 +5537,7 @@ namespace windowMediaPlayerDM
 
                     }
                 }
-           
+            }
             wb.Dispose();
             renamed = false;
         }
