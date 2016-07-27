@@ -3988,6 +3988,7 @@ namespace windowMediaPlayerDM
                 fm4.getAudio_down.Click += new EventHandler(getAudio_down_Click);
                 fm4.getAudio_up.Click += new EventHandler(getAudio_up_Click);
                 fm4.auto_mode_check.CheckStateChanged += new EventHandler(auto_mode_check_CheckStateChanged);
+                fm4.select_commentswitch.SelectedValueChanged += new EventHandler(select_commentswitch_SelectedValueChanged);
                 VideoAdjuestAction(fm4.setBrightness);
                 VideoAdjuestAction(fm4.setContrast);
                 VideoAdjuestAction(fm4.setGamma);
@@ -4005,6 +4006,23 @@ namespace windowMediaPlayerDM
 
             }
        
+        }
+
+        void select_commentswitch_SelectedValueChanged(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
+            ComboBox a = sender as ComboBox;
+            switch (a.SelectedItem.ToString())
+            {
+
+                case "ON":
+                    this.sommentswitch = true;
+                    break;
+
+                case "OFF":
+                    this.sommentswitch = false;
+                    break;
+            }
         }
 
         void subTittlebuttons(Button b) {
@@ -4057,7 +4075,10 @@ namespace windowMediaPlayerDM
 
                 fm4.currentSubtitleText.Text = Subttile_index.ToString();
                 fm4.totalSubtitleText.Text = totalsubtitles.ToString();
-                fm4.SubtitleText.Text = vlcPlayer.SubTitles.Current.Name;
+                if (vlcPlayer.SubTitles.Current != null)
+                {
+                    fm4.SubtitleText.Text = vlcPlayer.SubTitles.Current.Name;
+                }
             }
         
         
