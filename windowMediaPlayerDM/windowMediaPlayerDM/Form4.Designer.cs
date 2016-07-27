@@ -65,6 +65,13 @@
             this.Gamma_bar = new System.Windows.Forms.TrackBar();
             this.Hue_bar = new System.Windows.Forms.TrackBar();
             this.Saturation_bar = new System.Windows.Forms.TrackBar();
+            this.label7 = new System.Windows.Forms.Label();
+            this.Subtitle_text = new System.Windows.Forms.Label();
+            this.subtitle_button_u = new System.Windows.Forms.Button();
+            this.subtitle_button_d = new System.Windows.Forms.Button();
+            this.currentSubtitle_text = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.totalSubtitle_text = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.Setting_tab.SuspendLayout();
             this.video_tab.SuspendLayout();
@@ -89,13 +96,20 @@
             // 
             // Setting_tab
             // 
+            this.Setting_tab.Controls.Add(this.totalSubtitle_text);
             this.Setting_tab.Controls.Add(this.total_audio);
+            this.Setting_tab.Controls.Add(this.label10);
             this.Setting_tab.Controls.Add(this.label1);
+            this.Setting_tab.Controls.Add(this.currentSubtitle_text);
             this.Setting_tab.Controls.Add(this.current_audio);
+            this.Setting_tab.Controls.Add(this.subtitle_button_d);
             this.Setting_tab.Controls.Add(this.audio_down);
+            this.Setting_tab.Controls.Add(this.subtitle_button_u);
             this.Setting_tab.Controls.Add(this.audio_up);
             this.Setting_tab.Controls.Add(this.apply_button);
+            this.Setting_tab.Controls.Add(this.Subtitle_text);
             this.Setting_tab.Controls.Add(this.audio_info);
+            this.Setting_tab.Controls.Add(this.label7);
             this.Setting_tab.Controls.Add(this.audio_label);
             this.Setting_tab.Controls.Add(this.Comment_Limit_label);
             this.Setting_tab.Controls.Add(this.comment_end_label);
@@ -448,6 +462,71 @@
             this.Saturation_bar.TabIndex = 1;
             this.Saturation_bar.TickStyle = System.Windows.Forms.TickStyle.Both;
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.label7.Location = new System.Drawing.Point(12, 311);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(106, 17);
+            this.label7.TabIndex = 26;
+            this.label7.Text = "Current Subtitle";
+            // 
+            // Subtitle_text
+            // 
+            this.Subtitle_text.AutoSize = true;
+            this.Subtitle_text.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.Subtitle_text.Location = new System.Drawing.Point(146, 354);
+            this.Subtitle_text.Name = "Subtitle_text";
+            this.Subtitle_text.Size = new System.Drawing.Size(129, 17);
+            this.Subtitle_text.TabIndex = 27;
+            this.Subtitle_text.Text = "Current SubtitleInfo";
+            // 
+            // subtitle_button_u
+            // 
+            this.subtitle_button_u.Location = new System.Drawing.Point(265, 305);
+            this.subtitle_button_u.Name = "subtitle_button_u";
+            this.subtitle_button_u.Size = new System.Drawing.Size(29, 23);
+            this.subtitle_button_u.TabIndex = 32;
+            this.subtitle_button_u.Text = "↑";
+            this.subtitle_button_u.UseVisualStyleBackColor = true;
+            // 
+            // subtitle_button_d
+            // 
+            this.subtitle_button_d.Location = new System.Drawing.Point(164, 305);
+            this.subtitle_button_d.Name = "subtitle_button_d";
+            this.subtitle_button_d.Size = new System.Drawing.Size(29, 23);
+            this.subtitle_button_d.TabIndex = 31;
+            this.subtitle_button_d.Text = "↓";
+            this.subtitle_button_d.UseVisualStyleBackColor = true;
+            // 
+            // currentSubtitle_text
+            // 
+            this.currentSubtitle_text.AutoSize = true;
+            this.currentSubtitle_text.Location = new System.Drawing.Point(199, 311);
+            this.currentSubtitle_text.Name = "currentSubtitle_text";
+            this.currentSubtitle_text.Size = new System.Drawing.Size(16, 13);
+            this.currentSubtitle_text.TabIndex = 35;
+            this.currentSubtitle_text.Text = "-1";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(221, 311);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(12, 13);
+            this.label10.TabIndex = 34;
+            this.label10.Text = "/";
+            // 
+            // totalSubtitle_text
+            // 
+            this.totalSubtitle_text.AutoSize = true;
+            this.totalSubtitle_text.Location = new System.Drawing.Point(243, 311);
+            this.totalSubtitle_text.Name = "totalSubtitle_text";
+            this.totalSubtitle_text.Size = new System.Drawing.Size(16, 13);
+            this.totalSubtitle_text.TabIndex = 33;
+            this.totalSubtitle_text.Text = "-1";
+            // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -510,6 +589,13 @@
         private System.Windows.Forms.TrackBar Gamma_bar;
         private System.Windows.Forms.TrackBar Contrast_bar;
         private System.Windows.Forms.TrackBar Brightness_bar;
+        private System.Windows.Forms.Label totalSubtitle_text;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label currentSubtitle_text;
+        private System.Windows.Forms.Button subtitle_button_d;
+        private System.Windows.Forms.Button subtitle_button_u;
+        private System.Windows.Forms.Label Subtitle_text;
+        private System.Windows.Forms.Label label7;
 
     }
 }

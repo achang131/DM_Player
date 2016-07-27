@@ -150,6 +150,9 @@ namespace windowMediaPlayerDM
         {
             InitializeComponent();
 
+            Vlc.DotNet.Core.VlcMediaPlayer vlc = new Vlc.DotNet.Core.VlcMediaPlayer(new DirectoryInfo("C:\\Users\\Alan\\Documents\\GitHub\\DM_Player\\lib\\x86"));
+
+
             media = new OpenFileDialog();
             danmoku = new OpenFileDialog();
             danmoku.Filter = "xml |*.xml";
@@ -2373,7 +2376,7 @@ namespace windowMediaPlayerDM
                 String[] ml = { file[i].FullName, file[i].Name };
 
                 //only load if it's not xml file do this to avoid reading xml in wrong place
-                if(!file[i].Name.Contains(".xml")){
+                if(!file[i].Name.Contains(".xml") && !file[i].Name.Contains(".ass")){
                 Media_List.Add(ml);
                 }
 
@@ -3990,6 +3993,8 @@ namespace windowMediaPlayerDM
                 VideoAdjuestAction(fm4.setGamma);
                 VideoAdjuestAction(fm4.setHue);
                 VideoAdjuestAction(fm4.setSaturation);
+                subTittlebuttons(fm4.setSubtitleUP);
+                subTittlebuttons(fm4.setSubtitleDown);
 
                 this.loadAll();
                 if (fm3 != null)
@@ -3999,6 +4004,62 @@ namespace windowMediaPlayerDM
                 fm4.Show();
 
             }
+       
+        }
+
+        void subTittlebuttons(Button b) {
+
+            b.Click += new EventHandler(b_Click);
+        
+        }
+
+        void b_Click(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
+            Button b = sender as Button;
+            switch (b.Text)
+            {
+
+                case "↑":
+                    if (Subttile_index != -1 && Subttile_index < vlcPlayer.SubTitles.Count - 1)
+                    {
+                        Subttile_index++;
+                        vlcPlayer.SubTitles.Current = vlcPlayer.SubTitles.All.ElementAt(Subttile_index);
+
+                        fm4.currentSubtitleText.Text = Subttile_index.ToString();
+                        fm4.SubtitleText.Text = vlcPlayer.SubTitles.Current.Name;
+                    }
+                    break; ;
+                case "↓":
+                    if (Subttile_index != -1 && Subttile_index > 0)
+                    {
+                        Subttile_index--;
+                        vlcPlayer.SubTitles.Current = vlcPlayer.SubTitles.All.ElementAt(Subttile_index);
+                        fm4.currentSubtitleText.Text = Subttile_index.ToString();
+                        fm4.SubtitleText.Text = vlcPlayer.SubTitles.Current.Name;
+                    }
+                    break;
+
+            }
+        }
+        int Subttile_index=-1;
+        void findSubtitleIndex() {
+            if (currentfile != null) {
+                int totalsubtitles = vlcPlayer.SubTitles.Count-1; // probably need to -1
+                for (int i = 0; i < vlcPlayer.SubTitles.Count; i++) {
+                    if (vlcPlayer.SubTitles.Current.ID == vlcPlayer.SubTitles.All.ElementAt(i).ID) {
+
+                        Subttile_index = i;
+                    
+                    }
+
+                }
+
+                fm4.currentSubtitleText.Text = Subttile_index.ToString();
+                fm4.totalSubtitleText.Text = totalsubtitles.ToString();
+                fm4.SubtitleText.Text = vlcPlayer.SubTitles.Current.Name;
+            }
+        
         
         }
         void VideoAdjuestAction(TrackBar a) {
@@ -4026,6 +4087,7 @@ namespace windowMediaPlayerDM
 
                         vlcPlayer.Video.Adjustments.Brightness = ((float)a.Value) / 10;
 
+                      
                         break;
 
                     case "Contrast_bar":
@@ -4167,7 +4229,7 @@ namespace windowMediaPlayerDM
                 VideoSetup(fm4.setGamma, (int)vlcPlayer.Video.Adjustments.Gamma*10);
                 VideoSetup(fm4.setHue, (int)vlcPlayer.Video.Adjustments.Hue*10);
                 VideoSetup(fm4.setSaturation, (int)vlcPlayer.Video.Adjustments.Saturation*10);
-            
+                findSubtitleIndex();
             }
         
         
@@ -5102,9 +5164,8 @@ namespace windowMediaPlayerDM
             FileInfo[] files = file.Directory.GetFiles("*.xml");
 
             //get all xml files in the directory
-
-           // throw new Exception("just to see");
-            if (!file.Name.Contains("."))
+            // if the file doesn't contain a extension
+            if (!file.Name.Contains(".")|| file.Name.IndexOf(".")<file.Name.Length*2/3)
             {
                 //if the file has extension
                 for (int i = 0; i < files.Length; i++)

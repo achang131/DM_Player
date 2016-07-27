@@ -160,6 +160,35 @@ namespace windowMediaPlayerDM
             get { return this.Hue_bar; }
 
         }
+        public Button setSubtitleUP {
+            set { this.subtitle_button_u = value; }
+            get{return this.subtitle_button_u;}
+        
+        }
+        public Button setSubtitleDown
+        {
+            set { this.subtitle_button_d = value; }
+            get { return this.subtitle_button_d; }
+
+        }
+
+        public Label currentSubtitleText {
+            set { this.currentSubtitle_text = value; }
+            get { return this.currentSubtitle_text; }
+        
+        
+        }
+        public Label totalSubtitleText {
+            set { this.totalSubtitle_text = value; }
+            get { return this.totalSubtitle_text; }
+        
+        }
+        public Label SubtitleText
+        {
+            set { this.Subtitle_text = value; }
+            get { return this.Subtitle_text; }
+
+        }
         public TrackBar setSaturation
         {
             set { this.Saturation_bar = value; }
