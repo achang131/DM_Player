@@ -1454,6 +1454,12 @@ namespace windowMediaPlayerDM
                 fm3_6.movecomment = move_distance;
                 fm3_7.movecomment = move_distance;
 
+
+                fm3_2.movecomment = move_distance;
+                fm3_3.movecomment = move_distance;
+                fm3_4.movecomment = move_distance;
+                fm3_5.movecomment = move_distance;
+
               //  System.Threading.Thread.Sleep(replacetimer1_interval);
                 System.Threading.Thread.Sleep(TimeSpan.FromMilliseconds(replacetimer1_interval));
             }
@@ -1742,7 +1748,7 @@ namespace windowMediaPlayerDM
 
                 replacetimer2_start();
             
-                replacetimer3_start();
+              //  replacetimer3_start();
 
                 /*
                 if (cme1 != null && cme2 != null)
@@ -1782,7 +1788,7 @@ namespace windowMediaPlayerDM
             
             replacetimer2_stop();
 
-            replacetimer3_stop();
+//            replacetimer3_stop();
             /*
             if (cme1 != null)
             {
