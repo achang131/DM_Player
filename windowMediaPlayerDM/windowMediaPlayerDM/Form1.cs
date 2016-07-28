@@ -1160,13 +1160,24 @@ namespace windowMediaPlayerDM
             if (fm3 != null)
             {
                 int lnumber = comment_storage.Count + comment_storage2.Count + cme1.setStorage.Count + cme2.setStorage.Count;
-                if (lnumber > 80) {
+                if(lnumber >200){
+
+                    move_distance = (int)(_distance * 10);
+
+                }else if(lnumber > 120){
+
+                    move_distance = (int)(_distance * 4);
+                
+                }else if(lnumber >90){
+
+                    move_distance = (int)(_distance * 2.8);
+                }else if(lnumber > 80) {
 
                     move_distance = (int)(_distance * 2.5);
                 }
                 else if (lnumber > 70)
                 {
-                    move_distance = (int)(_distance * 2);
+                    move_distance = (int)(_distance * 2.1);
                 }
                 else if (lnumber > 60)
                 {
