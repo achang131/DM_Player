@@ -25,7 +25,11 @@ namespace windowMediaPlayerDM
         BackgroundWorker bk201;
         bool playing;
         int move_distance;
-        int _distance;
+        int _distance; 
+        int playedcomment;
+        Dictionary<int, String> comments;
+        int currenttime;
+        int commentLimit;
         public Neo_Comment_window()
         {
             InitializeComponent();
@@ -45,14 +49,125 @@ namespace windowMediaPlayerDM
             this.ShowInTaskbar = false;
             comment_storage = new List<Label>();
             userColor = Color.DarkGray;
+            comments = new Dictionary<int, string>();
             fullscreen = false;
             interval = 60;
             bk201 = new BackgroundWorker();
             bk201.WorkerSupportsCancellation = true;
             bk201.DoWork += new DoWorkEventHandler(bk201_DoWork);
-            
+            currenttime = 0;
+            commentLimit = 20;
+            playedcomment = 0;
+        }
+        public int getplayedComment {
+            get { return playedcomment; }
+            set {  playedcomment=value; }
+        }
+        public int setCommentLimit {
+            get { return commentLimit; }
+            set { commentLimit = value; }
+        
+        }
+        public Dictionary<int,String> setDictionary {
+
+            get { return this.comments; }
+            set { this.comments = value; }
+        
+        
+        }
+        String makeCCompactComponet(String comment)
+        {
+            String result = "";
+
+            if (comment.Length / commentLimit > 0)
+            {
+
+                for (int j = 0; j < comment.Length / commentLimit; j++)
+                {
+                    //use commentLimit-1 instead commentLimit to avoid overflow
+                    comment = comment.Insert((commentLimit - 1) * (j + 1), Environment.NewLine);
+
+
+                }
+            }
+
+            result = comment;
+
+            return result;
+
+
+        }
+        void makeCCompact(String comment)
+        {
+
+
+            if (comment.Length > commentLimit)
+            {
+
+                //if the comment is longer than limit and it contains newline
+                if (comment.Contains(Environment.NewLine))
+                {
+
+                    string[] comments = comment.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
+                    // now all the comments originally in newlines are now seperate
+
+                    for (int i = 0; i < comments.Length; i++)
+                    {
+
+                        //iterate  through each strings
+
+                        comments[i] = makeCCompactComponet(comments[i]);
+                        createLabel=(comments[i]);
+
+
+
+                    }
+
+
+
+                }
+                else
+                {
+
+                    comment = makeCCompactComponet(comment);
+                    createLabel=(comment);
+
+                }
+
+
+
+
+            }
+            else
+            {
+
+
+                createLabel=(comment);
+
+            }
+
+
+
+
+
         }
 
+        public int createLabel_extra {
+            get { return currenttime; }
+
+            set{
+            
+            if(comments.ContainsKey(value)){
+
+
+                makeCCompact(comments[value]);
+                currenttime = value;
+            }
+            }
+        
+        
+        }
         void changeingSpeed() {
             int lnumber = this.comment_storage.Count * 8;
             if (lnumber > 180)
@@ -230,7 +345,7 @@ namespace windowMediaPlayerDM
             // returns the newest comment ( latest set comment if read
             set
             {
-
+                playedcomment++;
                 Label dm = new Label();
 
                 //

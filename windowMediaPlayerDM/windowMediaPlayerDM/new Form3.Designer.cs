@@ -30,14 +30,15 @@
         {
             this.SuspendLayout();
             // 
-            // Comment_window
+            // Neo_Comment_window
             // 
+            this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 262);
             this.ControlBox = false;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Name = "Comment_window";
+            this.Name = "Neo_Comment_window";
             this.Text = "Form3";
             this.TransparencyKey = System.Drawing.Color.White;
             this.ResumeLayout(false);

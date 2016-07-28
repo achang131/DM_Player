@@ -79,6 +79,8 @@ namespace windowMediaPlayerDM
 
         Dictionary<int, String> comment2 = new Dictionary<int, String>();
 
+        List<Neo_Comment_window> Comment_Windows;
+
         TaskFactory th1 = new TaskFactory();
 
         bool videoloop;
@@ -167,6 +169,7 @@ namespace windowMediaPlayerDM
             this.ClientSizeChanged += new EventHandler(Form1_ClientSizeChanged);
 
 
+            Comment_Windows = new List<Neo_Comment_window>();
 
             Media_Player.windowlessVideo = true;
 
@@ -228,15 +231,11 @@ namespace windowMediaPlayerDM
             statusStrip1.DragEnter += new DragEventHandler(f_DragEnter);
 
             fullscreen = false;
-            if (fm3 != null) {
-                fm3.setfullscreen = false;
-                fm3_1.setfullscreen = false;
-                fm3_2.setfullscreen = false;
-                fm3_3.setfullscreen = false;
-                fm3_4.setfullscreen = false;
-                fm3_5.setfullscreen = false;
-                fm3_6.setfullscreen = false;
-                fm3_7.setfullscreen = false;
+            if (Comment_Windows.Count>0) {
+                for (int i = 0; i < Comment_Windows.Count; i++) {
+
+                    Comment_Windows.ElementAt(i).setfullscreen = false;
+                }
             
             }
 
@@ -412,16 +411,13 @@ namespace windowMediaPlayerDM
          //   this.VLC_track.BringToFront();
             this.FormBorderStyle = FormBorderStyle.Sizable;
             fullscreen = false;
-            if (fm3 != null)
+            if (Comment_Windows.Count > 0)
             {
-                fm3.setfullscreen = false;
-                fm3_1.setfullscreen = false;
-                fm3_2.setfullscreen = false;
-                fm3_3.setfullscreen = false;
-                fm3_4.setfullscreen = false;
-                fm3_5.setfullscreen = false;
-                fm3_6.setfullscreen = false;
-                fm3_7.setfullscreen = false;
+                for (int i = 0; i < Comment_Windows.Count; i++)
+                {
+
+                    Comment_Windows.ElementAt(i).setfullscreen = false;
+                }
 
             }
 
@@ -430,10 +426,10 @@ namespace windowMediaPlayerDM
 
           //  this.TopMost = false;
 
-            if (fm3 != null) {
-
-                fm3.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
-                fm3.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
+            if (Comment_Windows.Count>0) {
+       
+               Comment_Windows.ElementAt(0).setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
+                Comment_Windows.ElementAt(0).Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
              //   fm3.TopMost = false;
 
              //   ///////fm3.Owner = this;
@@ -480,10 +476,10 @@ namespace windowMediaPlayerDM
             playersize = vlcPlayer.Size;
             playerlocation = vlcPlayer.Location;
 
-            if (fm3 != null)
+            if( Comment_Windows.Count>0)
             {
-                commentPanelsize = fm3.Size;
-                commentPanelLocation = fm3.Location;
+                commentPanelsize = Comment_Windows.ElementAt(0).Size;
+                commentPanelLocation = Comment_Windows.ElementAt(0).Location;
 
 
             }
@@ -508,16 +504,13 @@ namespace windowMediaPlayerDM
 
                 fullscreen = true;
 
-                if (fm3 != null)
+                if (Comment_Windows.Count > 0)
                 {
-                    fm3.setfullscreen = true;
-                    fm3_1.setfullscreen = true;
-                    fm3_2.setfullscreen = true;
-                    fm3_3.setfullscreen = true;
-                    fm3_4.setfullscreen = true;
-                    fm3_5.setfullscreen = true;
-                    fm3_6.setfullscreen = true;
-                    fm3_7.setfullscreen = true;
+                    for (int i = 0; i < Comment_Windows.Count; i++)
+                    {
+
+                        Comment_Windows.ElementAt(i).setfullscreen = true;
+                    }
 
                 }
 
@@ -542,16 +535,8 @@ namespace windowMediaPlayerDM
 
 
 
-                if (fm3 != null) {
-
-                    setCommentWS(fm3, new Size(1920, 1080), new Point(0, 0));
-                    setCommentWS(fm3_1, new Size(1920, 1080), new Point(0, 0));
-                    setCommentWS(fm3_2, new Size(1920, 1080), new Point(0, 0));
-                    setCommentWS(fm3_3, new Size(1920, 1080), new Point(0, 0));
-                    setCommentWS(fm3_4, new Size(1920, 1080), new Point(0, 0));
-                    setCommentWS(fm3_5, new Size(1920, 1080), new Point(0, 0));
-                    setCommentWS(fm3_6, new Size(1920, 1080), new Point(0, 0));
-                    setCommentWS(fm3_7, new Size(1920, 1080), new Point(0, 0));
+                if (Comment_Windows.Count>0) {
+                    setCommentWS(Comment_Windows, new Size(1920, 1080), new Point(0, 0));
 
                 }
 
@@ -560,10 +545,13 @@ namespace windowMediaPlayerDM
                 Cursor.Hide();
  
             }
-        void setCommentWS(Form form,Size s, Point t) {
+        void setCommentWS(List<Neo_Comment_window>l,Size s, Point t) {
 
-            form.Size = s;
-            form.Location = t;
+            for (int i = 0; i < l.Count; i++)
+            {
+                l.ElementAt(i).Size = s;
+                l.ElementAt(i).Location = t;
+            }
 
 
         }
@@ -878,6 +866,7 @@ namespace windowMediaPlayerDM
                             time_counter = 0;
                             vlc_track_time = 0;
                             playedcomment = 0;
+                            CWplayedcomments(Comment_Windows, 0);
 
 
                         }
@@ -945,7 +934,7 @@ namespace windowMediaPlayerDM
             _first_load = false;
 
             playedcomment = 0;
-
+            CWplayedcomments(Comment_Windows, 0);
             time_counter = 0;
 
             vlc_track_time = -2;
@@ -970,7 +959,7 @@ namespace windowMediaPlayerDM
             test_label.Text = vlcPlayer.State.ToString();
 
             playedcomment = 0;
-
+            CWplayedcomments(Comment_Windows, 0);
             time_counter = 0;
 
             vlc_track_time = -2;
@@ -1191,20 +1180,34 @@ namespace windowMediaPlayerDM
         
         
         }
+        int totalComments(List<Neo_Comment_window> l){
+            int result = 0;
 
-        void changingSpeedontime() {
+            for (int i = 0; i < l.Count; i++) {
 
-            if (fm3 != null)
+                result += l.ElementAt(i).setStorage.Count;
+            
+            }
+
+            return result;
+    
+    }
+        void changingSpeedontime()
+        {
+
+            if (Comment_Windows.Count>0)
             {
-                int lnumber = fm3.setStorage.Count + fm3_1.setStorage.Count + fm3_2.setStorage.Count + fm3_3.setStorage.Count + fm3_4.setStorage.Count + fm3_5.setStorage.Count + fm3_6.setStorage.Count + fm3_7.setStorage.Count;
-              //  int lnumber = comment_storage.Count + comment_storage2.Count + cme1.setStorage.Count + cme2.setStorage.Count;
+                // int lnumber = fm3.setStorage.Count + fm3_1.setStorage.Count + fm3_2.setStorage.Count + fm3_3.setStorage.Count + fm3_4.setStorage.Count + fm3_5.setStorage.Count + fm3_6.setStorage.Count + fm3_7.setStorage.Count;
+                int lnumber = totalComments(Comment_Windows);
+
+                //  int lnumber = comment_storage.Count + comment_storage2.Count + cme1.setStorage.Count + cme2.setStorage.Count;
                 if(lnumber >200){
 
-                    move_distance = (int)(_distance * 10);
+                    move_distance = (int)(_distance * 6);
 
                 }else if(lnumber > 120){
 
-                    move_distance = (int)(_distance * 4);
+                    move_distance = (int)(_distance * 3.3);
                 
                 }else if(lnumber >90){
 
@@ -1377,11 +1380,22 @@ namespace windowMediaPlayerDM
 
             }
         }
+        void setCWLoaction(List<Neo_Comment_window> l, Point t) {
 
+            for (int i = 0; i < l.Count; i++) {
+
+                l.ElementAt(i).setLocation = t;
+            }
+        
+        }
         void Form1_LocationChanged(object sender, EventArgs e)
         {
-            if (fm3 != null)
+            if (Comment_Windows.Count>0)
             {
+
+                setCWLoaction(Comment_Windows, new Point(this.Location.X + 8, this.Location.Y + 59));
+              
+                /*
                 fm3.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
                // fm3.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
 
@@ -1392,6 +1406,9 @@ namespace windowMediaPlayerDM
                 fm3_5.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
                 fm3_6.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
                 fm3_7.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
+            
+                 * 
+                 */
             }
         }
         public Size currentMediaWindowSize {
@@ -1437,7 +1454,16 @@ namespace windowMediaPlayerDM
             
         
         }
-        private void replacetimer1_DoWork(object sender, DoWorkEventArgs e) {
+        void CWmoveComment(List<Neo_Comment_window> l,int move) {
+
+            for (int i = 0; i < l.Count; i++) {
+
+                l.ElementAt(i).movecomment = move;
+            }
+        
+        }
+        private void replacetimer1_DoWork(object sender, DoWorkEventArgs e)
+        {
 
 
            // while (!replacetimer1.CancellationPending)
@@ -1449,6 +1475,7 @@ namespace windowMediaPlayerDM
   //               commentEngine_thread();
 
                // moveComment_thread();
+                /*
                 fm3.movecomment = move_distance;
                 fm3_1.movecomment = move_distance;
                 fm3_6.movecomment = move_distance;
@@ -1459,6 +1486,8 @@ namespace windowMediaPlayerDM
                 fm3_3.movecomment = move_distance;
                 fm3_4.movecomment = move_distance;
                 fm3_5.movecomment = move_distance;
+                 */
+                CWmoveComment(Comment_Windows, move_distance);
 
               //  System.Threading.Thread.Sleep(replacetimer1_interval);
                 System.Threading.Thread.Sleep(TimeSpan.FromMilliseconds(replacetimer1_interval));
@@ -1509,21 +1538,26 @@ namespace windowMediaPlayerDM
             }
         }
 
-        void comment_windowSLsetup(Neo_Comment_window l) {
-            l.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
-            l.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
-                   
-        
+        void comment_windowSLsetup(List<Neo_Comment_window> l) {
+
+            for (int i = 0; i < l.Count; i++)
+            {
+                l.ElementAt(i).Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
+                l.ElementAt(i).setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
+
+            }
         }
 
         void Form1_ClientSizeChanged(object sender, EventArgs e)
         {
             Media_Player.Size = new System.Drawing.Size(ClientRectangle.Width,ClientRectangle.Height-49);
 
-            if (fm3 != null)
+            if (Comment_Windows.Count>0)
             {
                 if (fullscreen == false)
                 {
+                    comment_windowSLsetup(Comment_Windows);
+                    /*
                     fm3.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
                     fm3.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
                     comment_windowSLsetup(fm3_1);
@@ -1533,7 +1567,7 @@ namespace windowMediaPlayerDM
                     comment_windowSLsetup(fm3_5);
                     comment_windowSLsetup(fm3_6);
                     comment_windowSLsetup(fm3_7);
-
+                    */
                 }
             
             }
@@ -1670,8 +1704,21 @@ namespace windowMediaPlayerDM
 
 
         }
+        int CWplayedcomments(List<Neo_Comment_window> l)
+        {
+            int result = 0;
+            for (int i = 0; i < l.Count; i++)
+            {
+               result += l.ElementAt(i).getplayedComment;
+            }
+            return result;
+        }
+        void CWplayedcomments(List<Neo_Comment_window> l,int value) {
 
-
+            for (int i = 0; i < l.Count; i++) {
+                l.ElementAt(i).getplayedComment = value;
+            }
+        }
 
         void Form1_StateChanged(object sender, Vlc.DotNet.Core.VlcMediaStateChangedEventArgs e)
         {
@@ -1680,6 +1727,9 @@ namespace windowMediaPlayerDM
               case "Stopped":
                   time_counter = 0;
                   playedcomment = 0;
+
+                  CWplayedcomments(Comment_Windows, 0);
+                  
                   resetComment();
 
                   timerStop();
@@ -1815,11 +1865,34 @@ namespace windowMediaPlayerDM
              */
 
         }
-        void removeAllComments() {
+        void srCommentWindow() {
+
+            for (int i = 0; i < Comment_Windows.Count; i++) {
+
+                Comment_Windows.ElementAt(i).setDictionary.Clear();
+            
+            }
+        
+        }
+        void srCommentWindow(Dictionary<int,String> dic)
+        {
+            
+            for (int i = 0; i < Comment_Windows.Count; i++)
+            {
+
+                Comment_Windows.ElementAt(i).setDictionary=dic;
+
+            }
+
+        }
+        void removeAllComments()
+        {
 
 
             comment.Clear();
             comment2.Clear();
+            srCommentWindow();
+           
             _duplicates = 0;
 
 
@@ -1844,6 +1917,7 @@ namespace windowMediaPlayerDM
 
                   
                     playedcomment = 0;
+                    CWplayedcomments(Comment_Windows, 0);
 
                     time_counter = 0;
 
@@ -1964,10 +2038,10 @@ namespace windowMediaPlayerDM
 
 
 
-                Label dm = new Label();
+             //   Label dm = new Label();
 
                 //
-
+            /*
                 dm.Text = comment;
                 dm.Name = comment;
                 dm.TabIndex = 3;
@@ -2001,7 +2075,7 @@ namespace windowMediaPlayerDM
                 }
                 dm.Location = new Point(ClientRectangle.Right, ycurrent);
 
-
+            
             
                 if (commentmethod == 1)
                 {
@@ -2093,10 +2167,29 @@ namespace windowMediaPlayerDM
                 }
                 dm.BringToFront();
                 dm.Show();
+             * 
+              
          //   }
+             */
+            if (Comment_Windows.Count > 0) {
+
+                if (seleter < Comment_Windows.Count - 1)
+                {
+                    Comment_Windows.ElementAt(seleter).createLabel = comment;
+
+                    seleter++;
+                }
+                else {
+                    Comment_Windows.ElementAt(seleter).createLabel = comment;
+
+                    seleter = 0;
+                
+                }
+
+            }
         
         }
-
+        int seleter = 0;
         void safecontrol(Label dm) {
 
             if (this.InvokeRequired)
@@ -2595,12 +2688,6 @@ namespace windowMediaPlayerDM
 
 
 
-                if (fm3 != null)
-                {
-
-                    ///////fm3.Owner = this;
-
-                }
 
                 if (autoMlist == true) {
 
@@ -2634,12 +2721,7 @@ namespace windowMediaPlayerDM
             break;
         }
 
-            if (fm3 != null)
-            {
 
-                ///////fm3.Owner = this;
-            }
-            
 
 
         }
@@ -2682,11 +2764,7 @@ namespace windowMediaPlayerDM
 
         void setMedia() {
 
-            if (fm3 != null)
-            {
-                ///////fm3.Owner = this;
 
-            }
 
 
             List<String[]> medias = setFile(media);
@@ -2696,6 +2774,9 @@ namespace windowMediaPlayerDM
                 if (vlcPlayer.IsPlaying) {
                     vlcPlayer.Stop();
                     comment2.Clear();
+                    
+                    srCommentWindow();
+                    
                     comment.Clear();
                     _duplicates = 0;
                 
@@ -2714,7 +2795,7 @@ namespace windowMediaPlayerDM
 
 
             this.Focus();
-            if (fm3 == null) {
+            if (Comment_Windows.Count==0) {
                 commentWindowSetup();
             
             }
@@ -2798,7 +2879,7 @@ namespace windowMediaPlayerDM
 
                 }
             }
-        
+            srCommentWindow(comment2);
         
             //every time xml loads
             
@@ -2820,18 +2901,23 @@ namespace windowMediaPlayerDM
             {
                 comment.Clear();
                 comment2.Clear();
+
+                srCommentWindow();
+
                 _duplicates = 0;
 
                 //clears all the dm that is current loaded
                 DM_List.Clear();
 
             }
-            if (fm3 != null)
+            /*
+            if (Comment_Windows.Count>0)
             {
-
+                this.Owner = Comment_Windows.ElementAt(0);
                     this.Owner = fm3;
  
             }
+             * */
 
 
             List<String[]> danmokus = setFile(danmoku);
@@ -2891,7 +2977,7 @@ namespace windowMediaPlayerDM
 
 
                 }
-                if (fm3 == null)
+                if (Comment_Windows.Count == 0)
                 {
                     commentWindowSetup();
                 }
@@ -2907,10 +2993,7 @@ namespace windowMediaPlayerDM
             else
             {
                 Danmoku_status.Text = "No DM";
-                if (fm3 != null)
-                {
-                    ///////fm3.Owner = this;
-                }
+
             }
         
         
@@ -2920,49 +3003,59 @@ namespace windowMediaPlayerDM
 
             setDM_Menu();
         }
-        void multicommentwindowsetup(Neo_Comment_window f) {
-           
-            
-            
-            f.Size = fm3.Size;
-            f.Location = fm3.Location;
-            
+        void multicommentwindowsetup() {
+
+
+           Neo_Comment_window f = new Neo_Comment_window();
+            f.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
+            f.Size = new Size(vlcPlayer.Size.Width, vlcPlayer.Size.Height); // - 45
+            f.MouseClick += new MouseEventHandler(dm_MouseClick);
+            f.MouseDoubleClick += new MouseEventHandler(fm3_MouseDoubleClick);
+
+            f.KeyUp += new KeyEventHandler(fm3_KeyUp);
+            f.MouseWheel += new MouseEventHandler(Form1_MouseWheel);
+            DragDropSetup(f);
+
             f.Show();
+      
             f.setInterval = winterval;
             f.setMoveDistance = move_distance;
+            f.setCommentLimit = commentLimit;
             winterval++;
-
+            Comment_Windows.Add(f);
         
         }
         int winterval = 57;
-        void commentWindowSetup() {
+        void cwSetOwner(List<Neo_Comment_window> l) {
 
-            fm3 = new Neo_Comment_window();
-            fm3.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
-            fm3.Size = new Size(vlcPlayer.Size.Width, vlcPlayer.Size.Height); // - 45
-            fm3.MouseClick += new MouseEventHandler(dm_MouseClick);
-            fm3.MouseDoubleClick += new MouseEventHandler(fm3_MouseDoubleClick);
+            for (int i = 0; i < l.Count; i++) {
+                if (i - 1 >= 0) {
+                    l.ElementAt(i).Owner = l.ElementAt(i - 1);
+                }
+                else
+                {
+                    l.ElementAt(i).Owner = this;
+                }
+            }
+        
+        
+        
+        }
+        void commentWindowSetup()
+        {
 
-            fm3.KeyUp += new KeyEventHandler(fm3_KeyUp);
-            fm3.MouseWheel += new MouseEventHandler(Form1_MouseWheel);
-            DragDropSetup(fm3);
+            for (int i = 0; i < 8; i++) {
+
+                multicommentwindowsetup();
+            }
+
+            
 
             // maybe will add this in a list to reduce lines
-            fm3_1 = new Neo_Comment_window();
-            fm3_2 = new Neo_Comment_window();
-            fm3_3 = new Neo_Comment_window();
-            fm3_4 = new Neo_Comment_window();
-            fm3_5 = new Neo_Comment_window();
-            fm3_6 = new Neo_Comment_window();
-            fm3_7 = new Neo_Comment_window();
-            multicommentwindowsetup(fm3_1);
-            multicommentwindowsetup(fm3_2);
-            multicommentwindowsetup(fm3_3);
-            multicommentwindowsetup(fm3_4);
-            multicommentwindowsetup(fm3_5);
-            multicommentwindowsetup(fm3_6);
-            multicommentwindowsetup(fm3_7);
 
+            cwSetOwner(Comment_Windows);
+
+            /*
                 fm3_1.Owner = this;
                 fm3_2.Owner = fm3_1;
                 fm3_3.Owner = fm3_2;
@@ -2971,10 +3064,14 @@ namespace windowMediaPlayerDM
                 fm3_6.Owner = fm3_5;
                 fm3_7.Owner = fm3_6;
                 fm3.Owner = fm3_7;
-
+            */
 
 
                // ///////fm3.Owner = this;
+            if (comment2.Count > 0) {
+
+                srCommentWindow(comment2);
+            }
         }
         void DragDropSetup(Form f) {
 
@@ -3020,7 +3117,7 @@ namespace windowMediaPlayerDM
                     
                     }
 
-
+                    srCommentWindow();
                     comment2.Clear();
                     comment.Clear();
                     _duplicates = 0;
@@ -3033,7 +3130,7 @@ namespace windowMediaPlayerDM
                         
                         
                     }
-                    if (fm3 == null) {
+                    if (Comment_Windows.Count == 0) {
 
                         commentWindowSetup();
                     }
@@ -3212,7 +3309,7 @@ namespace windowMediaPlayerDM
             print(showTime(((int)(vlcPlayer.Time)) ) + "/" + comment_time + "/" + time_counter);
 
 
-            if (fm3 != null)
+            if (Comment_Windows.Count>0)
             {
                 if (commentmethod != 1)
                 {
@@ -3224,13 +3321,9 @@ namespace windowMediaPlayerDM
               //      print2(showTime((int)vlcPlayer.Length) + "L: "+(fm3.Controls.OfType<Label>().Count())+ "  L1: " + (comment_storage.Count)+ " L2: "+comment_storage2.Count+" L3 "+cme1.setStorage.Count+" L4: "+cme2.setStorage.Count + " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
                   //  print2(showTime((int)vlcPlayer.Length) + "L: " + (cme1.setStorage.Count+cme2.setStorage.Count+comment_storage.Count+comment_storage2.Count) + "  L1: " + (comment_storage.Count) + " L2: " + comment_storage2.Count + " L3 " + cme1.setStorage.Count + " L4: " + cme2.setStorage.Count + " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
 
-                    print2(showTime((int)vlcPlayer.Length) + " L: " + (fm3.setStorage.Count + fm3_1.setStorage.Count + fm3_2.setStorage.Count + fm3_3.setStorage.Count + fm3_4.setStorage.Count + fm3_5.setStorage.Count + fm3_6.setStorage.Count + fm3_7.setStorage.Count) + 
-                        "  L1: " + (fm3_1.setStorage.Count + fm3.setStorage.Count) +
-                        " L2: " + (fm3_2.setStorage.Count + fm3_3.setStorage.Count) +
-                        " L3 " + (fm3_4.setStorage.Count + fm3_5.setStorage.Count) +
-                        " L4: " + (fm3_6.setStorage.Count + fm3_7.setStorage.Count) + " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
+                    print2(showTime((int)vlcPlayer.Length) + " L: " +totalComments(Comment_Windows) +showEachCount(Comment_Windows)+ " " + (CWplayedcomments(Comment_Windows) + _duplicates) + "/" + (comment.Count()));
 
-                   
+                
                 }
                 }
             else {
@@ -3240,16 +3333,49 @@ namespace windowMediaPlayerDM
             }
 
             //only runs if there's comments avaliable;
-            if (comment2.Count > 0)
+            if (comment2.Count > 0 && Comment_Windows.Count>0)
             {
-                addComment(comment_time, comment2);
+               // addComment(comment_time, comment2);
+                CWaddComment(Comment_Windows, comment_time);
 
             }
             //super important the main clock for the comment engine;
             time_counter++;
         
         }
+        int addcomment = 0;
+        int addctime = -9999;
+        void CWaddComment(List<Neo_Comment_window>l,int time) {
 
+            if (addctime != time)
+            {
+                if (addcomment < l.Count - 1)
+                {
+                    l.ElementAt(addcomment).createLabel_extra = time;
+                    addcomment++;
+                }
+                else
+                {
+                    l.ElementAt(addcomment).createLabel_extra = time;
+                    addcomment = 0;
+
+                }
+                addctime = time;
+            }
+        
+        
+        }
+        String showEachCount(List<Neo_Comment_window> l)
+        {
+            String result = "";
+
+            for (int i = 0; i < l.Count; i++) {
+               result+=" L"+i+": "+ l.ElementAt(i).setStorage.Count;
+            
+            }
+
+            return result;
+        }
         String showTime(int time) {
 
             String result="";
@@ -3599,6 +3725,8 @@ namespace windowMediaPlayerDM
     
                     if (readxml)
                     {
+
+                        srCommentWindow();
                         comment2.Clear();
                         comment.Clear();
                         _duplicates = 0;
@@ -3619,9 +3747,9 @@ namespace windowMediaPlayerDM
         void DMMlistsetup() {
             fm2 = new Form2();
 
-            if (fm3 != null)
+            if (Comment_Windows.Count>0)
             {
-                fm2.Owner = fm3;
+                fm2.Owner = Comment_Windows.ElementAt(0);
 
 
             }
@@ -3822,10 +3950,10 @@ namespace windowMediaPlayerDM
                 }
             
             }
-            if (fm3 == null) {
+            if (Comment_Windows.Count == 0) {
 
                 commentWindowSetup();
-                fm2.Owner = fm3;
+                fm2.Owner = Comment_Windows.ElementAt(0);
                 fm2.Dispose();
                 DMMlistsetup();
 
@@ -3842,7 +3970,7 @@ namespace windowMediaPlayerDM
 
             ListBox dmbox = (ListBox)sender;
 
-
+            srCommentWindow();
             comment2.Clear();
             comment.Clear();
             _duplicates = 0;
@@ -3926,6 +4054,7 @@ namespace windowMediaPlayerDM
                 {
                     if (!current.Equals(currentfile.FullName))
                     {
+                        srCommentWindow();
                         comment2.Clear();
                         comment.Clear();
                         DM_List.Clear();
@@ -3941,10 +4070,10 @@ namespace windowMediaPlayerDM
                 }
 
                 autoLoadByName(newMedia);
-                if (fm3 == null) {
+                if (Comment_Windows.Count == 0) {
 
                     commentWindowSetup();
-                    fm2.Owner = fm3;
+                    fm2.Owner = Comment_Windows.ElementAt(0);
                     fm2.Dispose();
                     DMMlistsetup();
                 }
@@ -3975,13 +4104,7 @@ namespace windowMediaPlayerDM
         }
         void fm2_Disposed(object sender, EventArgs e)
         {
-            if (fm3 != null)
-            {
 
-                ///////fm3.Owner = this;
-
-                
-            }
             fm2 = null;
         }
        
@@ -4104,9 +4227,9 @@ namespace windowMediaPlayerDM
                 subTittlebuttons(fm4.setSubtitleDown);
 
                 this.loadAll();
-                if (fm3 != null)
+                if (Comment_Windows.Count>0)
                 {
-                    fm4.Owner = fm3;
+                    fm4.Owner = Comment_Windows.ElementAt(0);
                 }
                 fm4.Show();
 
@@ -4424,6 +4547,14 @@ namespace windowMediaPlayerDM
 
                     this.commentdestroy = Int32.Parse(fm4.Cend.Text);
                     commentLimit = Int32.Parse(fm4.setCommentLimit.Text);
+                    if (Comment_Windows.Count > 0) {
+                        for (int i = 0; i < Comment_Windows.Count; i++) {
+
+                            Comment_Windows.ElementAt(i).setCommentLimit = Int32.Parse(fm4.setCommentLimit.Text);
+                        
+                        }
+                    
+                    }
                     
 
 
@@ -4459,7 +4590,7 @@ namespace windowMediaPlayerDM
                 if (_first_load == false)
                 {
                     playedcomment = 0;
-
+                    CWplayedcomments(Comment_Windows, 0);
                     time_counter = 0;
 
                     autoTimesetup();
@@ -5025,7 +5156,7 @@ namespace windowMediaPlayerDM
 
                             Danmoku_status.Text = "DM set";
 
-                            if (fm3 == null)
+                            if (Comment_Windows.Count == 0)
                             {
                                 commentWindowSetup();
                             }
@@ -5238,7 +5369,7 @@ namespace windowMediaPlayerDM
 
 
                     }
-                    if (fm3 == null)
+                    if (Comment_Windows.Count==0)
                     {
                         commentWindowSetup();
                     }
@@ -5277,9 +5408,11 @@ namespace windowMediaPlayerDM
         void autoLoadByName(FileInfo file)
         {
 
+            srCommentWindow();
             comment2.Clear();
             comment.Clear();
             playedcomment = 0;
+            CWplayedcomments(Comment_Windows, 0);
             _duplicates = 0;
             DM_List.Clear();
 
@@ -5336,7 +5469,7 @@ namespace windowMediaPlayerDM
             }
 
 
-            if (fm3 == null)
+            if (Comment_Windows.Count == 0)
             {
                 commentWindowSetup();
             }
@@ -5399,7 +5532,7 @@ namespace windowMediaPlayerDM
             }
 
 
-            if (fm3 == null)
+            if (Comment_Windows.Count == 0)
             {
                 commentWindowSetup();
             }
@@ -5631,7 +5764,7 @@ namespace windowMediaPlayerDM
 
                             Danmoku_status.Text = "DM set";
 
-                            if (fm3 == null)
+                            if (Comment_Windows.Count==0)
                             {
                                 commentWindowSetup();
                             }
