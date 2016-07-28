@@ -11,7 +11,12 @@ namespace windowMediaPlayerDM
 {
     public partial class Comment_window : Form
     {
-
+        //instead of creating the comment on the main thread
+        // do it here
+        // and move the comments here
+        // (that's if every frame runs on a differnt thread)
+        // if not then have to create a thread that moves comments here
+        // to fix the cross thread problem
         Form1 fm1 = new Form1();
         public Comment_window()
         {

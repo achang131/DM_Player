@@ -103,7 +103,7 @@ namespace windowMediaPlayerDM
 
         bool _isPlaying;
 
-        Comment_window fm3;
+        Neo_Comment_window fm3;
 
         bool multi_dm_mode;
 
@@ -228,6 +228,17 @@ namespace windowMediaPlayerDM
             statusStrip1.DragEnter += new DragEventHandler(f_DragEnter);
 
             fullscreen = false;
+            if (fm3 != null) {
+                fm3.setfullscreen = false;
+                fm3_1.setfullscreen = false;
+                fm3_2.setfullscreen = false;
+                fm3_3.setfullscreen = false;
+                fm3_4.setfullscreen = false;
+                fm3_5.setfullscreen = false;
+                fm3_6.setfullscreen = false;
+                fm3_7.setfullscreen = false;
+            
+            }
 
             if (choose_player == 1)
             {
@@ -261,7 +272,7 @@ namespace windowMediaPlayerDM
           //commentWindowSetup();
   
         }
-        Comment_window fm3_1, fm3_2, fm3_3,fm3_4,fm3_5,fm3_6,fm3_7;
+        Neo_Comment_window fm3_1, fm3_2, fm3_3,fm3_4,fm3_5,fm3_6,fm3_7;
         comment_move_engine cme1;
         comment_move_engine cme2;
         int threadNumber;
@@ -401,6 +412,18 @@ namespace windowMediaPlayerDM
          //   this.VLC_track.BringToFront();
             this.FormBorderStyle = FormBorderStyle.Sizable;
             fullscreen = false;
+            if (fm3 != null)
+            {
+                fm3.setfullscreen = false;
+                fm3_1.setfullscreen = false;
+                fm3_2.setfullscreen = false;
+                fm3_3.setfullscreen = false;
+                fm3_4.setfullscreen = false;
+                fm3_5.setfullscreen = false;
+                fm3_6.setfullscreen = false;
+                fm3_7.setfullscreen = false;
+
+            }
 
             vlcPlayer.Size = playersize;
             vlcPlayer.Location = playerlocation;
@@ -484,6 +507,20 @@ namespace windowMediaPlayerDM
 
 
                 fullscreen = true;
+
+                if (fm3 != null)
+                {
+                    fm3.setfullscreen = true;
+                    fm3_1.setfullscreen = true;
+                    fm3_2.setfullscreen = true;
+                    fm3_3.setfullscreen = true;
+                    fm3_4.setfullscreen = true;
+                    fm3_5.setfullscreen = true;
+                    fm3_6.setfullscreen = true;
+                    fm3_7.setfullscreen = true;
+
+                }
+
 
            //     if (this.ClientRectangle.Size.Height < 1028)
           //      {
@@ -1159,7 +1196,8 @@ namespace windowMediaPlayerDM
 
             if (fm3 != null)
             {
-                int lnumber = comment_storage.Count + comment_storage2.Count + cme1.setStorage.Count + cme2.setStorage.Count;
+                int lnumber = fm3.setStorage.Count + fm3_1.setStorage.Count + fm3_2.setStorage.Count + fm3_3.setStorage.Count + fm3_4.setStorage.Count + fm3_5.setStorage.Count + fm3_6.setStorage.Count + fm3_7.setStorage.Count;
+              //  int lnumber = comment_storage.Count + comment_storage2.Count + cme1.setStorage.Count + cme2.setStorage.Count;
                 if(lnumber >200){
 
                     move_distance = (int)(_distance * 10);
@@ -1224,9 +1262,14 @@ namespace windowMediaPlayerDM
             {
 
                 changingSpeedontime();
-                moveComment_thread2();
+
+                //moveComment_thread2();
 
                 //commentEngine_thread();
+                fm3_2.movecomment = move_distance;
+                fm3_3.movecomment = move_distance;
+                fm3_4.movecomment = move_distance;
+                fm3_5.movecomment = move_distance;
 
                 System.Threading.Thread.Sleep(TimeSpan.FromMilliseconds(replacetimer3_interval));
 
@@ -1405,7 +1448,11 @@ namespace windowMediaPlayerDM
 
   //               commentEngine_thread();
 
-                moveComment_thread();
+               // moveComment_thread();
+                fm3.movecomment = move_distance;
+                fm3_1.movecomment = move_distance;
+                fm3_6.movecomment = move_distance;
+                fm3_7.movecomment = move_distance;
 
               //  System.Threading.Thread.Sleep(replacetimer1_interval);
                 System.Threading.Thread.Sleep(TimeSpan.FromMilliseconds(replacetimer1_interval));
@@ -1456,7 +1503,12 @@ namespace windowMediaPlayerDM
             }
         }
 
-
+        void comment_windowSLsetup(Neo_Comment_window l) {
+            l.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
+            l.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
+                   
+        
+        }
 
         void Form1_ClientSizeChanged(object sender, EventArgs e)
         {
@@ -1468,21 +1520,14 @@ namespace windowMediaPlayerDM
                 {
                     fm3.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
                     fm3.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
-                    fm3_1.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
-                    fm3_2.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
-                    fm3_3.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
-                    fm3_4.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
-                    fm3_5.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
-                    fm3_6.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
-                    fm3_7.Size = new Size(Media_Player.ClientSize.Width, Media_Player.ClientSize.Height - 45);
+                    comment_windowSLsetup(fm3_1);
+                    comment_windowSLsetup(fm3_2);
+                    comment_windowSLsetup(fm3_3);
+                    comment_windowSLsetup(fm3_4);
+                    comment_windowSLsetup(fm3_5);
+                    comment_windowSLsetup(fm3_6);
+                    comment_windowSLsetup(fm3_7);
 
-                    fm3_1.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
-                    fm3_2.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
-                    fm3_3.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
-                    fm3_4.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
-                    fm3_5.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
-                    fm3_6.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
-                    fm3_7.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
                 }
             
             }
@@ -1685,9 +1730,13 @@ namespace windowMediaPlayerDM
 
         }
 
+        void fmStart(Neo_Comment_window f) {
 
+
+            f.work = true;
+        }
             void timerStart(){
-                
+          
                 _isPlaying = true;
                 replacetimer1_start();
 
@@ -1695,18 +1744,37 @@ namespace windowMediaPlayerDM
             
                 replacetimer3_start();
 
+                /*
                 if (cme1 != null && cme2 != null)
                 {
                     cme1.Start();
                     cme2.Start();
                 }
-   
+      
+                /*
+                replacetimer2_start();
+                if (fm3 != null)
+                {
+                    fmStart(fm3);
+                    fmStart(fm3_1);
+                    fmStart(fm3_2);
+                    fmStart(fm3_3);
+                    fmStart(fm3_4);
+                    fmStart(fm3_5);
+                    fmStart(fm3_6);
+                    fmStart(fm3_7);
+                }
+                 */
             
             
         }
+            void fmStop(Neo_Comment_window f) {
+
+                f.work = false;
+            }
         void timerStop(){
         
-                  
+             
             _isPlaying = false;
                 
             replacetimer1_stop();
@@ -1715,7 +1783,7 @@ namespace windowMediaPlayerDM
             replacetimer2_stop();
 
             replacetimer3_stop();
-
+            /*
             if (cme1 != null)
             {
                 cme1.Stop();
@@ -1724,6 +1792,22 @@ namespace windowMediaPlayerDM
             {
                 cme2.Stop();
             }
+                   * */
+            /*
+            replacetimer2_stop();
+            if (fm3 != null)
+            {
+                fmStop(fm3);
+                fmStop(fm3_1);
+                fmStop(fm3_2);
+                fmStop(fm3_3);
+                fmStop(fm3_4);
+                fmStop(fm3_5);
+                fmStop(fm3_6);
+                fmStop(fm3_7);
+            }
+             */
+
         }
         void removeAllComments() {
 
@@ -1925,14 +2009,16 @@ namespace windowMediaPlayerDM
                         case 1:
                             if (core3 == false)
                             {
-                                comment_storage2.Add(dm);
-                                fm3_1.Controls.Add(dm);
+                                fm3_1.createLabel = comment;
+                            //    comment_storage2.Add(dm);
+                            //    fm3_1.Controls.Add(dm);
                                 core3 = !core3;
                             }
                             else
                             {
-                                comment_storage2.Add(dm);
-                                fm3_7.Controls.Add(dm);
+                            //    comment_storage2.Add(dm);
+                            //    fm3_7.Controls.Add(dm);
+                                fm3_7.createLabel = comment;
                                 core3 = !core3;
                             }
 
@@ -1942,14 +2028,16 @@ namespace windowMediaPlayerDM
                             {
                                 if (core2 == false)
                                 {
-                                    cme1.setStorage.Add(dm);
-                                    fm3_2.Controls.Add(dm);
+                                    fm3_2.createLabel = comment;
+                                 //   cme1.setStorage.Add(dm);
+                                //    fm3_2.Controls.Add(dm);
                                     core2 = !core2;
                                 }
                                 else
                                 {
-                                    cme1.setStorage.Add(dm);
-                                    fm3_6.Controls.Add(dm);
+                                    fm3_6.createLabel = comment;
+                                   // cme1.setStorage.Add(dm);
+                                   // fm3_6.Controls.Add(dm);
                                     core2 = !core2;
                                 }
                             }
@@ -1959,14 +2047,16 @@ namespace windowMediaPlayerDM
                             {
                                 if (core1 == false)
                                 {
-                                    cme2.setStorage.Add(dm);
-                                    fm3_3.Controls.Add(dm);
+                                    fm3_3.createLabel = comment;
+                                 //   cme2.setStorage.Add(dm);
+                                  //  fm3_3.Controls.Add(dm);
                                     core1 = !core1;
                                 }
                                 else
                                 {
-                                    cme2.setStorage.Add(dm);
-                                    fm3_5.Controls.Add(dm);
+                                    fm3_5.createLabel = comment;
+                                    //cme2.setStorage.Add(dm);
+                                    //fm3_5.Controls.Add(dm);
                                     core1 = !core1;
                                 }
                                 break;
@@ -1976,13 +2066,15 @@ namespace windowMediaPlayerDM
                         default:
                             if (core0 == false)
                             {
-                                comment_storage.Add(dm);
-                                fm3.Controls.Add(dm);
+                                fm3.createLabel = comment;
+                                //comment_storage.Add(dm);
+                                //fm3.Controls.Add(dm);
                                 core0 = !core0;
                             }
                             else {
-                                comment_storage.Add(dm);
-                                fm3_4.Controls.Add(dm);
+                                fm3_4.createLabel = comment;
+                                //comment_storage.Add(dm);
+                                //fm3_4.Controls.Add(dm);
                                 core0 = !core0;
                             }
                             break;
@@ -2822,10 +2914,24 @@ namespace windowMediaPlayerDM
 
             setDM_Menu();
         }
+        void multicommentwindowsetup(Neo_Comment_window f) {
+           
+            
+            
+            f.Size = fm3.Size;
+            f.Location = fm3.Location;
+            
+            f.Show();
+            f.setInterval = winterval;
+            f.setMoveDistance = move_distance;
+            winterval++;
 
+        
+        }
+        int winterval = 57;
         void commentWindowSetup() {
 
-            fm3 = new Comment_window();
+            fm3 = new Neo_Comment_window();
             fm3.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
             fm3.Size = new Size(vlcPlayer.Size.Width, vlcPlayer.Size.Height); // - 45
             fm3.MouseClick += new MouseEventHandler(dm_MouseClick);
@@ -2834,46 +2940,22 @@ namespace windowMediaPlayerDM
             fm3.KeyUp += new KeyEventHandler(fm3_KeyUp);
             fm3.MouseWheel += new MouseEventHandler(Form1_MouseWheel);
             DragDropSetup(fm3);
-            
 
-
-            fm3_1 = new Comment_window();
-            fm3_2 = new Comment_window();
-            fm3_3 = new Comment_window();
-
-            fm3_4 = new Comment_window();
-            fm3_5 = new Comment_window();
-            fm3_6 = new Comment_window();
-
-            fm3_7 = new Comment_window();
-
-                fm3_1.Size = fm3.Size;
-                fm3_2.Size = fm3.Size;
-                fm3_3.Size = fm3.Size;
-                fm3_4.Size = fm3.Size;
-                fm3_5.Size = fm3.Size;
-                fm3_6.Size = fm3.Size;
-                fm3_7.Size = fm3.Size;
-
-                fm3_1.Location = fm3.Location;
-                fm3_2.Location = fm3.Location;
-                fm3_3.Location = fm3.Location;
-                fm3_4.Location = fm3.Location;
-                fm3_5.Location = fm3.Location;
-                fm3_6.Location = fm3.Location;
-                fm3_7.Location = fm3.Location;
-            
-            
-            
-                fm3_1.Show();
-                fm3_2.Show();
-                fm3_3.Show();
-                fm3_4.Show();
-                fm3_5.Show();
-                fm3_6.Show();
-                fm3_7.Show();
-
-
+            // maybe will add this in a list to reduce lines
+            fm3_1 = new Neo_Comment_window();
+            fm3_2 = new Neo_Comment_window();
+            fm3_3 = new Neo_Comment_window();
+            fm3_4 = new Neo_Comment_window();
+            fm3_5 = new Neo_Comment_window();
+            fm3_6 = new Neo_Comment_window();
+            fm3_7 = new Neo_Comment_window();
+            multicommentwindowsetup(fm3_1);
+            multicommentwindowsetup(fm3_2);
+            multicommentwindowsetup(fm3_3);
+            multicommentwindowsetup(fm3_4);
+            multicommentwindowsetup(fm3_5);
+            multicommentwindowsetup(fm3_6);
+            multicommentwindowsetup(fm3_7);
 
                 fm3_1.Owner = this;
                 fm3_2.Owner = fm3_1;
@@ -3134,8 +3216,15 @@ namespace windowMediaPlayerDM
        //             print2(showTime((int)vlcPlayer.Length) + "L: " + (comment_storage.Count+comment_storage2.Count) + "  L1: " + (comment_storage.Count) + " L2: " + comment_storage2.Count  + " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
       
               //      print2(showTime((int)vlcPlayer.Length) + "L: "+(fm3.Controls.OfType<Label>().Count())+ "  L1: " + (comment_storage.Count)+ " L2: "+comment_storage2.Count+" L3 "+cme1.setStorage.Count+" L4: "+cme2.setStorage.Count + " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
-                    print2(showTime((int)vlcPlayer.Length) + "L: " + (cme1.setStorage.Count+cme2.setStorage.Count+comment_storage.Count+comment_storage2.Count) + "  L1: " + (comment_storage.Count) + " L2: " + comment_storage2.Count + " L3 " + cme1.setStorage.Count + " L4: " + cme2.setStorage.Count + " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
-      
+                  //  print2(showTime((int)vlcPlayer.Length) + "L: " + (cme1.setStorage.Count+cme2.setStorage.Count+comment_storage.Count+comment_storage2.Count) + "  L1: " + (comment_storage.Count) + " L2: " + comment_storage2.Count + " L3 " + cme1.setStorage.Count + " L4: " + cme2.setStorage.Count + " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
+
+                    print2(showTime((int)vlcPlayer.Length) + " L: " + (fm3.setStorage.Count + fm3_1.setStorage.Count + fm3_2.setStorage.Count + fm3_3.setStorage.Count + fm3_4.setStorage.Count + fm3_5.setStorage.Count + fm3_6.setStorage.Count + fm3_7.setStorage.Count) + 
+                        "  L1: " + (fm3_1.setStorage.Count + fm3.setStorage.Count) +
+                        " L2: " + (fm3_2.setStorage.Count + fm3_3.setStorage.Count) +
+                        " L3 " + (fm3_4.setStorage.Count + fm3_5.setStorage.Count) +
+                        " L4: " + (fm3_6.setStorage.Count + fm3_7.setStorage.Count) + " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
+
+                   
                 }
                 }
             else {
