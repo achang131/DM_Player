@@ -295,7 +295,7 @@ namespace windowMediaPlayerDM
                             comment_storage.Remove(remove.ElementAt(i));
                         }
                     
-                    remove.Clear();
+                  //  remove.Clear();
 
             };
             }

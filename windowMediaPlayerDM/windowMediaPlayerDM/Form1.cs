@@ -60,6 +60,7 @@ namespace windowMediaPlayerDM
         bool threading_mode;
 
         int offset_auto;
+        int panel_numbers;
 
         delegate void tmovelabel(Label l,int x, int y);
 
@@ -1132,8 +1133,8 @@ namespace windowMediaPlayerDM
 
             form1_loadSetting_XML();
 
-            
 
+            panel_numbers = 8;
 
         
         }
@@ -3041,10 +3042,12 @@ namespace windowMediaPlayerDM
         
         
         }
+
         void commentWindowSetup()
         {
 
-            for (int i = 0; i < 8; i++) {
+
+            for (int i = 0; i < panel_numbers; i++) {
 
                 multicommentwindowsetup();
             }
@@ -3749,7 +3752,7 @@ namespace windowMediaPlayerDM
 
             if (Comment_Windows.Count>0)
             {
-                fm2.Owner = Comment_Windows.ElementAt(0);
+                fm2.Owner = Comment_Windows.ElementAt(Comment_Windows.Count-1);
 
 
             }
@@ -3953,7 +3956,7 @@ namespace windowMediaPlayerDM
             if (Comment_Windows.Count == 0) {
 
                 commentWindowSetup();
-                fm2.Owner = Comment_Windows.ElementAt(0);
+                fm2.Owner = Comment_Windows.ElementAt(Comment_Windows.Count - 1);
                 fm2.Dispose();
                 DMMlistsetup();
 
@@ -4073,7 +4076,7 @@ namespace windowMediaPlayerDM
                 if (Comment_Windows.Count == 0) {
 
                     commentWindowSetup();
-                    fm2.Owner = Comment_Windows.ElementAt(0);
+                    fm2.Owner = Comment_Windows.ElementAt(Comment_Windows.Count - 1);
                     fm2.Dispose();
                     DMMlistsetup();
                 }
@@ -4229,7 +4232,7 @@ namespace windowMediaPlayerDM
                 this.loadAll();
                 if (Comment_Windows.Count>0)
                 {
-                    fm4.Owner = Comment_Windows.ElementAt(0);
+                    fm4.Owner = Comment_Windows.ElementAt(Comment_Windows.Count - 1);
                 }
                 fm4.Show();
 
@@ -4891,8 +4894,10 @@ namespace windowMediaPlayerDM
                     
                     
                     }
-
-
+                    if (Comment_Windows.Count > 0)
+                    {
+                        fm6.Owner = Comment_Windows.ElementAt(Comment_Windows.Count - 1);
+                    }
                     fm6.Show();
 
 
@@ -4956,6 +4961,10 @@ namespace windowMediaPlayerDM
                 fm7.getFileUrl.MouseLeave += new EventHandler(getFileUrl_MouseLeave);
                 fm7.reload.Click += new EventHandler(reload_Click);
                 fm7.Disposed += new EventHandler(fm7_Disposed);
+                if (Comment_Windows.Count > 0)
+                {
+                    fm7.Owner = Comment_Windows.ElementAt(Comment_Windows.Count - 1);
+                }
                 fm7.Show();
             }
             else {
