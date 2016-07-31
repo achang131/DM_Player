@@ -36,6 +36,7 @@ namespace windowMediaPlayerDM
         int time_offset;
         int move_distance;
         int playedcomment;
+        int counter_check;
         List<String[]> Media_List = new List<String[]>();
         List<String[]> DM_List = new List<String[]>();
         List<String[]> FullDM_List = new List<String[]>();
@@ -203,7 +204,7 @@ namespace windowMediaPlayerDM
             vlcPlayer.Stopped += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerStoppedEventArgs>(vlcPlayer_Stopped);
             vlcPlayer.Paused += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerPausedEventArgs>(vlcPlayer_Paused);
             vlcPlayer.MediaChanged += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerMediaChangedEventArgs>(vlcPlayer_MediaChanged);
-            vlcPlayer.TimeChanged += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerTimeChangedEventArgs>(vlcPlayer_TimeChanged);
+           // vlcPlayer.TimeChanged += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerTimeChangedEventArgs>(vlcPlayer_TimeChanged);
             vlcPlayer.Opening += new EventHandler<Vlc.DotNet.Core.VlcMediaPlayerOpeningEventArgs>(vlcPlayer_Opening);
             
             
@@ -877,28 +878,66 @@ namespace windowMediaPlayerDM
                 }
             }
         }
-    
+
+        void adjust_interval() {
+
+
+            int ctime = (int)(vlcPlayer.Time) / 10;
+
+            if (ctime == 0)
+            {
+                missed = 0;
+                counter_check = -9999;
+
+            }
+            missed = (int)replacetimer2_interval;
+            //instead of inputting the value directly change the speed to catch up so won't miss
+            if (ctime + 5 < time_counter)
+            {
+                if (replacetimer2_interval > 10)
+                {
+                    replacetimer2_interval++;
+                }
+                else
+                {
+                    replacetimer2_interval = 11;
+                };
+
+            }
+            else if (ctime == time_counter)
+            {
+                replacetimer2_interval = 10;
+
+            }
+            else if (ctime - 5 > time_counter && replacetimer2_interval > 1)
+            {
+                if (replacetimer2_interval < 10)
+                {
+                    replacetimer2_interval--;
+                }
+                else
+                {
+                    replacetimer2_interval = 9;
+                }
+
+            }
+        }
         void vlcPlayer_TimeChanged(object sender, Vlc.DotNet.Core.VlcMediaPlayerTimeChangedEventArgs e)
         {
          //   time_counter =(int) e.NewTime;
          //   print2("time: "+e.ToString()+" / "+e.NewTime.ToString());
           //  vlcTime = (int)e.NewTime;
 
-            if (auto_TimeMatch==false)
+            /*
+            if (ctime + 10 < time_counter || ctime - 10 > time_counter)
             {
-
-                time_counter = ((int)(e.NewTime) / 10 );
-
-            }
-            else
-            {
-
                 time_counter = ((int)(e.NewTime) / 10);
-
             }
+             * */
 
 
-            setTime_track(time_counter);
+
+            
 
 
         }
@@ -1044,7 +1083,7 @@ namespace windowMediaPlayerDM
 
             replacetimer1_interval = 59;
             replacetimer3_interval = 60;
-            replacetimer2_interval = 9;
+            replacetimer2_interval = 10;
 
 
             
@@ -1136,6 +1175,7 @@ namespace windowMediaPlayerDM
 
             panel_numbers = 8;
 
+            counter_check = -9999;
         
         }
         void switchPlayer(int c) {
@@ -1286,11 +1326,12 @@ namespace windowMediaPlayerDM
 
                // moveComment_thread();
 
+                double temp = replacetimer2_interval;
                 commentEngine_thread();
 
                 changingSpeedontime();
 
-                System.Threading.Thread.Sleep(TimeSpan.FromMilliseconds(replacetimer2_interval));
+                System.Threading.Thread.Sleep(TimeSpan.FromMilliseconds(temp));
             
             }
         }
@@ -1471,25 +1512,16 @@ namespace windowMediaPlayerDM
             while (_isPlaying)
             {
 
-                changingSpeedontime();
-
-  //               commentEngine_thread();
-
-               // moveComment_thread();
-                /*
-                fm3.movecomment = move_distance;
-                fm3_1.movecomment = move_distance;
-                fm3_6.movecomment = move_distance;
-                fm3_7.movecomment = move_distance;
+                if (comment2.Count > 0)
+                {
+                    changingSpeedontime();
 
 
-                fm3_2.movecomment = move_distance;
-                fm3_3.movecomment = move_distance;
-                fm3_4.movecomment = move_distance;
-                fm3_5.movecomment = move_distance;
-                 */
-                CWmoveComment(Comment_Windows, move_distance);
+                    CWmoveComment(Comment_Windows, move_distance);
 
+
+
+                }
               //  System.Threading.Thread.Sleep(replacetimer1_interval);
                 System.Threading.Thread.Sleep(TimeSpan.FromMilliseconds(replacetimer1_interval));
             }
@@ -1700,7 +1732,7 @@ namespace windowMediaPlayerDM
             setTrackMax(vpos_video);
             VLC_track.Minimum = 0;
 
-            vlcPlayer.Audio.Volume = 50;
+           // vlcPlayer.Audio.Volume = 50;
 
 
 
@@ -3245,7 +3277,8 @@ namespace windowMediaPlayerDM
         int comment_time;
 
         void makeComment() {
-            
+
+            adjust_interval();
             //sets the player volume if it's not equal to the current user volume
             autoSetVolumn();
 
@@ -3309,14 +3342,14 @@ namespace windowMediaPlayerDM
             
 
             //comment_time is time_counter + the offset
-            print(showTime(((int)(vlcPlayer.Time)) ) + "/" + comment_time + "/" + time_counter);
+            print(showTime(((int)(vlcPlayer.Time)) )+" "+showTime(time_counter*10) + "/" + comment_time + "/" + time_counter + " missed: "+missed);
 
 
             if (Comment_Windows.Count>0)
             {
                 if (commentmethod != 1)
                 {
-                    print2(showTime((int)vlcPlayer.Length) + "  L: " +fm3.Controls.OfType<Label>().Count()+ " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
+                    print2(showTime((int)vlcPlayer.Length) + "  L: " +fm3.Controls.OfType<Label>().Count()+ " " + (playedcomment) + "/" + (comment.Count()));
                 }
                 else {
        //             print2(showTime((int)vlcPlayer.Length) + "L: " + (comment_storage.Count+comment_storage2.Count) + "  L1: " + (comment_storage.Count) + " L2: " + comment_storage2.Count  + " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
@@ -3324,7 +3357,7 @@ namespace windowMediaPlayerDM
               //      print2(showTime((int)vlcPlayer.Length) + "L: "+(fm3.Controls.OfType<Label>().Count())+ "  L1: " + (comment_storage.Count)+ " L2: "+comment_storage2.Count+" L3 "+cme1.setStorage.Count+" L4: "+cme2.setStorage.Count + " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
                   //  print2(showTime((int)vlcPlayer.Length) + "L: " + (cme1.setStorage.Count+cme2.setStorage.Count+comment_storage.Count+comment_storage2.Count) + "  L1: " + (comment_storage.Count) + " L2: " + comment_storage2.Count + " L3 " + cme1.setStorage.Count + " L4: " + cme2.setStorage.Count + " " + (playedcomment + _duplicates) + "/" + (comment.Count()));
 
-                    print2(showTime((int)vlcPlayer.Length) + " L: " +totalComments(Comment_Windows) +showEachCount(Comment_Windows)+ " " + (CWplayedcomments(Comment_Windows) + _duplicates) + "/" + (comment.Count()));
+                    print2(showTime((int)vlcPlayer.Length) + " L: " +totalComments(Comment_Windows) +showEachCount(Comment_Windows)+ " " + (CWplayedcomments(Comment_Windows)) + "/" + (comment.Count()));
 
                 
                 }
@@ -3336,16 +3369,33 @@ namespace windowMediaPlayerDM
             }
 
             //only runs if there's comments avaliable;
+            
             if (comment2.Count > 0 && Comment_Windows.Count>0)
             {
                // addComment(comment_time, comment2);
                 CWaddComment(Comment_Windows, comment_time);
 
             }
+            if (counter_check != -9999 && counter_check != time_counter - 1) {
+
+
+           //     missed++;
+            
+            }else if(time_counter ==0){
+                //reset missed and counter check if time_counter is zero;
+                missed = 0;
+                counter_check = -9999;
+            }
+
+            counter_check = time_counter;
+
             //super important the main clock for the comment engine;
+           
             time_counter++;
+            setTime_track(time_counter);
         
         }
+        int missed = 0;
         int addcomment = 0;
         int addctime = -9999;
         void CWaddComment(List<Neo_Comment_window>l,int time) {
@@ -3354,12 +3404,33 @@ namespace windowMediaPlayerDM
             {
                 if (addcomment < l.Count - 1)
                 {
+
                     l.ElementAt(addcomment).createLabel_extra = time;
+                   /*
+
+                    for (int i = 0; i < l.Count; i++) {
+                        if (i != addcomment) {
+
+                            l.ElementAt(i).movecommentOnCreate();
+                        
+                        }
+                    
+                    }*/
                     addcomment++;
                 }
                 else
                 {
                     l.ElementAt(addcomment).createLabel_extra = time;
+                 /*  for (int i = 0; i < l.Count; i++)
+                    {
+                        if (i != addcomment)
+                        {
+
+                            l.ElementAt(i).movecommentOnCreate();
+
+                        }
+
+                   }*/
                     addcomment = 0;
 
                 }

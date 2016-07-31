@@ -152,45 +152,75 @@ namespace windowMediaPlayerDM
 
 
         }
-
+        int count = 0;
         public int createLabel_extra {
             get { return currenttime; }
 
             set{
-            
-            if(comments.ContainsKey(value)){
+
+                if (comments.ContainsKey(value))
+                {
 
 
-                makeCCompact(comments[value]);
-                currenttime = value;
+                    makeCCompact(comments[value]);
+                    currenttime = value;
+        //            movecommentOnCreate();
+                }
+        //        else {
+
+           //         movecommentOnCreate();
+//
+         //       }
             }
+        
+        
+        }
+        public bool moveC {
+
+            set {
+                movecommentOnCreate();
+            }
+        
+        }
+       public void movecommentOnCreate() {
+            if (count == 5)
+            {
+                changeingSpeed();
+                movecomment = move_distance;
+                count = 0;
+
+            }
+            else
+            {
+
+                count++;
             }
         
         
         }
         void changeingSpeed() {
-            int lnumber = this.comment_storage.Count * 8;
+            int lnumber = this.comment_storage.Count * 7;
             if (lnumber > 180)
-            {
-
-                move_distance = (int)(_distance * 10);
-
-            }
-            else if (lnumber > 110)
             {
 
                 move_distance = (int)(_distance * 4);
 
             }
+            else if (lnumber > 110)
+            {
+
+                move_distance = (int)(_distance * 3);
+
+            }
             else if (lnumber > 80)
             {
 
-                move_distance = (int)(_distance * 2.8);
+                move_distance = (int)(_distance * 2.7);
             }
             else if (lnumber > 70)
             {
 
-                move_distance = (int)(_distance * 2.5);
+                move_distance = (int)(_distance * 2.3);
             }
             else if (lnumber > 60)
             {
@@ -279,6 +309,7 @@ namespace windowMediaPlayerDM
                 //move comments here
                 if(value != -1){
                     List<Label> remove = new List<Label>();
+                    //int offset = comment_storage.Count / 5;
                     for (int i = 0; i < comment_storage.Count; i++) {
 
                         moveLabel2(comment_storage.ElementAt(i), value);
@@ -307,7 +338,7 @@ namespace windowMediaPlayerDM
 
         void moveLabel2(Label l, int distance) {
 
-            if (this.InvokeRequired)
+            if (l.InvokeRequired)
             {
                 moveLabel_thread c = new moveLabel_thread(moveLabel2);
 
