@@ -394,6 +394,8 @@ namespace windowMediaPlayerDM
         }
         String ClipBoardText = "";
         bool clipstartup = false;
+        bool fm7_firsttime = true;
+
         void showClipboard() {
 
             String text="";
@@ -424,46 +426,20 @@ namespace windowMediaPlayerDM
             if (ClipBoardText != text &&clipstartup)
             {
 
-                if ( this.fm7 == null)
-                {
+               // if (!fm7_firsttime)
+                //{
 
-                    if (text.Contains("himado.in") || text.Contains("say-move.org"))
-                    {
-                        ClipBoardText = text;
-                        linkaddress = new Uri(ClipBoardText);
+                    clipaddlink(text);
 
-                        URL_menuloapup_clipboard();
+             //   }
+             //   else {
+             //       fm7_firsttime = false;
+             //       cliploadfm7(text);
+                 //   clipaddlink(text);
+                
+                
+              //  }
 
-
-
-                    }
-
-                }
-
-
-
-                   if (linkaddress != null && this.fm7 != null)
-                {
-
-
-
-                    if (text.Contains("himado.in") || text.Contains("say-move.org"))
-                    {
-                        ClipBoardText = text;
-                        loadFromClipboard(ClipBoardText);
-                        if (fm7.hide == true) {
-                            fm7.hide = false;
-                            fm7.Show();
-                        
-                        
-                        }
-
-
-                    }   
-         
-                    
-
-                }
 
 
             }
@@ -474,6 +450,54 @@ namespace windowMediaPlayerDM
             }
             ClipBoardText = text;
         
+        }
+        void clipaddlink(string text) {
+
+            if (linkaddress != null && this.fm7 != null)
+            {
+
+
+
+                if (text.Contains("himado.in") || text.Contains("say-move.org"))
+                {
+                    
+                   if (fm7.hide == true)
+                   {
+                        fm7.hide = false;
+                        fm7.Show();
+
+
+                    }
+                    
+
+                    ClipBoardText = text;
+                    loadFromClipboard(ClipBoardText);
+                  
+
+
+
+                }
+
+
+
+            }
+        }
+        void cliploadfm7(string text) {
+            if (this.fm7 == null&& linkaddress==null)
+            {
+
+                if (text.Contains("himado.in") || text.Contains("say-move.org"))
+                {
+                    ClipBoardText = text;
+                    linkaddress = new Uri(ClipBoardText);
+
+                    URL_menuloapup_clipboard();
+
+
+
+                }
+
+            }
         }
         void KeyUpActions(KeyEventArgs e) {
            
@@ -5185,7 +5209,7 @@ namespace windowMediaPlayerDM
         //   ・xml
         int fm7_number = 0;
         void URL_menuloapup_clipboard() {
-
+            fm7_firsttime = false;
             if (this.fm7 == null)
             {
 
@@ -5242,7 +5266,7 @@ namespace windowMediaPlayerDM
         }
       
         void URL_menuLoadup() {
-
+            fm7_firsttime = false;
             if (fm7 == null)
             {
 
@@ -5533,10 +5557,10 @@ namespace windowMediaPlayerDM
             downloadFile(sender);
             }
 
-            if (fm7 != null) {
+          //  if (fm7 != null) {
 
-                fm7.Focus();
-            }
+          //      fm7.Focus();
+          //  }
         }
         public DownloadProgressChangedEventHandler DownloadProgessChange(ProgressBar pbar,Label percent,String title) {
 
@@ -6282,15 +6306,19 @@ namespace windowMediaPlayerDM
                 BackgroundWorker bk = new BackgroundWorker();
                 bk.WorkerSupportsCancellation = true;
 
-                bk.DoWork += browserdowork(address);
+               bk.DoWork += browserdowork(address);
                 bk.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bk_RunWorkerCompleted);
                 //only do this if it's on himado.in since this only works on there
+
                 if (address.OriginalString.Contains("himado.in"))
                 {
+                    
                     if (!bk.IsBusy)
                     {
                         bk.RunWorkerAsync();
                     }
+                      
+                   // runbrowser(address);
                 }
 
 
