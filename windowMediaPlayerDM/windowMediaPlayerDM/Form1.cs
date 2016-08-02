@@ -14,8 +14,9 @@ using System.IO;
 using System.Net.Http;
 using System.Net;
 using ShockwaveFlashObjects;
-
-
+using System.Runtime.InteropServices;
+using System.Runtime;
+using System.Windows.Interop;
 
 namespace windowMediaPlayerDM
 {
@@ -147,15 +148,27 @@ namespace windowMediaPlayerDM
 
         int commentmethod;
 
+        DllImportAttribute dla;
+        [DllImport("User32.dll")]
+        protected static extern int SetClipboardViewer(int hWndNewViewer);
+        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        public static extern bool ChangeClipboardChain(IntPtr hWndRemove, IntPtr hWndNewNext);
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern int SendMessage(IntPtr hwnd, int wMsg, IntPtr wParam, IntPtr lParam);
 
-
+        IntPtr nextClipboardViewer;
+        
 
         public Form1()
         {
             InitializeComponent();
+            nextClipboardViewer = (IntPtr)SetClipboardViewer((int)this.Handle);
+
+            
+            
 
             Vlc.DotNet.Core.VlcMediaPlayer vlc = new Vlc.DotNet.Core.VlcMediaPlayer(new DirectoryInfo("C:\\Users\\Alan\\Documents\\GitHub\\DM_Player\\lib\\x86"));
-
+            
 
             media = new OpenFileDialog();
             danmoku = new OpenFileDialog();
@@ -344,7 +357,124 @@ namespace windowMediaPlayerDM
         
         
         }
+        protected override void WndProc(ref Message m)
+        {
+            //base.WndProc(ref m);
+            const int WM_DRAWCLIPBOARD = 0x308;
+            const int WM_CHANGECBCHAIN = 0x030D;
+            switch (m.Msg) {
+                case WM_DRAWCLIPBOARD:
 
+                    showClipboard();
+                    
+                   SendMessage(nextClipboardViewer, m.Msg, m.WParam,
+                                m.LParam);
+                    break;
+
+                case WM_CHANGECBCHAIN:
+                  
+
+                    if (m.WParam == nextClipboardViewer)
+                        nextClipboardViewer = m.LParam;
+                    else
+                        SendMessage(nextClipboardViewer, m.Msg, m.WParam,
+                                    m.LParam);
+                    break;
+
+                default:
+                    base.WndProc(ref m);
+                    break;
+            
+            
+            
+            
+            
+            
+            }
+        }
+        String ClipBoardText = "";
+        bool clipstartup = false;
+        void showClipboard() {
+
+            String text="";
+            try{
+            IDataObject data = new DataObject();
+            data = Clipboard.GetDataObject();
+            
+            if (data.GetDataPresent(DataFormats.Rtf)) {
+
+                RichTextBox tb = new RichTextBox();
+                tb.Rtf = (String)data.GetData(DataFormats.Text);
+                clipboard_label.Text = tb.Text;
+                text = tb.Text;  
+            
+            } else if (data.GetDataPresent(DataFormats.Text)){
+            
+            clipboard_label.Text = data.GetData(DataFormats.Text) as string;
+            text = data.GetData(DataFormats.Text) as string;
+            
+            }else{
+            clipboard_label.Text="clipbaord data is not rtf or ascii";
+            }
+            }catch(Exception e){
+           // MessageBox.Show(e.ToString());
+            
+            }
+  //the startup is to prevent the player run the get link from start up 
+            if (ClipBoardText != text &&clipstartup)
+            {
+
+                if ( this.fm7 == null)
+                {
+
+                    if (text.Contains("himado.in") || text.Contains("say-move.org"))
+                    {
+                        ClipBoardText = text;
+                        linkaddress = new Uri(ClipBoardText);
+
+                        URL_menuloapup_clipboard();
+
+
+
+                    }
+
+                }
+
+
+
+                   if (linkaddress != null && this.fm7 != null)
+                {
+
+
+
+                    if (text.Contains("himado.in") || text.Contains("say-move.org"))
+                    {
+                        ClipBoardText = text;
+                        loadFromClipboard(ClipBoardText);
+                        if (fm7.hide == true) {
+                            fm7.hide = false;
+                            fm7.Show();
+                        
+                        
+                        }
+
+
+                    }   
+         
+                    
+
+                }
+
+
+            }
+            if (!clipstartup)
+            {
+
+                clipstartup = true;
+            }
+            ClipBoardText = text;
+        
+        }
         void KeyUpActions(KeyEventArgs e) {
            
             //Danmoku_status.Text = e.KeyValue.ToString();
@@ -4675,8 +4805,11 @@ namespace windowMediaPlayerDM
                     this._distance = Int32.Parse(fm4.Cspeed.Text);
                     this.move_distance = Int32.Parse(fm4.Cspeed.Text);
 
-                    this.panel_numbers = Int32.Parse(fm4.Cend.Text);
-                    changeCommentWindowsNumber();
+                    if (this.panel_numbers != Int32.Parse(fm4.Cend.Text))
+                    {
+                        this.panel_numbers = Int32.Parse(fm4.Cend.Text);
+                        changeCommentWindowsNumber();
+                    }
 
                     commentLimit = Int32.Parse(fm4.setCommentLimit.Text);
                     if (Comment_Windows.Count > 0) {
@@ -5050,12 +5183,70 @@ namespace windowMediaPlayerDM
 
 
         //   ・xml
+        int fm7_number = 0;
+        void URL_menuloapup_clipboard() {
+
+            if (this.fm7 == null)
+            {
+
+             
+                this.fm7 = new Url_menu();
+                this.fm7.setLinkbox.Text = linkaddress.AbsoluteUri;
+
+
+                //load the list with the urls if exists
+                if (Links.Count > 0)
+                {
+                    for (int i = 0; i < Links.Count; i++)
+                    {
+                        fm7.getTitle.Items.Add(urlTitles.ElementAt(i));
+                        fm7.getLinks.Items.Add(Links.ElementAt(i));
+                        //the url list only displays when an items is selected in title or links
+                    }
+                }
+                else
+                {
+                    //if links is empty that means it's first time run
+
+
+
+
+
+                }
+                fm7.getTitle.Click += new EventHandler(getTitle_Click);
+                fm7.getTitle.DoubleClick += new EventHandler(getTitle_DoubleClick);
+                fm7.getLinks.Click += new EventHandler(getLinks_Click);
+                fm7.getloadURLbutton.Click += new EventHandler(getloadURLbutton_Click);
+                fm7.getFileUrl.DoubleClick += new EventHandler(getFileUrl_DoubleClick);
+                fm7.getFileUrl.MouseHover += new EventHandler(setLinkbox_MouseHover);
+                fm7.getFileUrl.MouseMove += new MouseEventHandler(setLinkbox_MouseMove);
+                fm7.getFileUrl.MouseLeave += new EventHandler(getFileUrl_MouseLeave);
+                fm7.reload.Click += new EventHandler(reload_Click);
+                fm7.Disposed += new EventHandler(fm7_Disposed);
+                if (Comment_Windows.Count > 0)
+                {
+                    fm7.Owner = Comment_Windows.ElementAt(Comment_Windows.Count - 1);
+                }
+                fm7.Show();
+
+            }
+            else
+            {
+
+                    fm7.hide = false;
+                    fm7.Show();
+
+
+
+            }
+        }
+      
         void URL_menuLoadup() {
 
             if (fm7 == null)
             {
 
-
+              
                 fm7 = new Url_menu();
                 fm7.setLinkbox.Text = linkaddress.AbsoluteUri;
                 
@@ -5090,6 +5281,7 @@ namespace windowMediaPlayerDM
                 fm7.getFileUrl.MouseLeave += new EventHandler(getFileUrl_MouseLeave);
                 fm7.reload.Click += new EventHandler(reload_Click);
                 fm7.Disposed += new EventHandler(fm7_Disposed);
+                 
                 if (Comment_Windows.Count > 0)
                 {
                     fm7.Owner = Comment_Windows.ElementAt(Comment_Windows.Count - 1);
@@ -5098,14 +5290,56 @@ namespace windowMediaPlayerDM
             }
             else {
 
-                fm7.Dispose();
+                if (fm7.hide == false)
+                {
+                    fm7.Hide();
+                    fm7.hide = true;
+                }
+                else {
+                    fm7.hide = false;
+                    fm7.Show();
+                
+                }
 
             
             }
         
         
         }
+        void loadFromClipboard(String urlt) {
 
+           
+            Uri url = new Uri(urlt);
+
+            if (url != null)
+            {
+
+                if (fm7.getLinks.Items.Contains(url))
+                {
+                    
+                    int place = fm7.getLinks.Items.IndexOf(url);
+                    fm7.getLinks.Items.RemoveAt(place);
+                    fm7.getTitle.Items.RemoveAt(place);
+                    //     UrlDictionary.Remove(url);
+                    //no longer needed since already updated the part to adapt update links
+
+                    Links.Remove(url);
+
+                    load_Url_from(url);
+                     
+                   // MessageBox.Show("The link is already in the list");
+                }
+                else
+                {
+
+                    load_Url_from(url);
+
+                }
+            }
+
+            linkaddress = url;
+        
+        }
         void reload_Click(object sender, EventArgs e)
         {
             //throw new NotImplementedException();
@@ -5248,7 +5482,12 @@ namespace windowMediaPlayerDM
         void fm7_Disposed(object sender, EventArgs e)
         {
             //throw new NotImplementedException();
-            fm7 = null;
+            if (fm7_number != 0)
+            {
+                fm7_number=0;
+            }
+            fm7.Hide();
+            fm7.hide = true;
         }
 
         void getFileUrl_DoubleClick(object sender, EventArgs e)
@@ -5266,7 +5505,9 @@ namespace windowMediaPlayerDM
             FileInfo file = new FileInfo(current_dir_url+"\\" + fm7.getTitle.SelectedItem.ToString());
 
             if (file.Exists)
-            {DialogResult dg = MessageBox.Show("Already file existed in the directory are you sure you want to dl the file?","Alert",MessageBoxButtons.YesNo);
+            {
+            
+            DialogResult dg = MessageBox.Show("Already file existed in the directory are you sure you want to dl the file?","Alert",MessageBoxButtons.YesNo);
             if (dg == DialogResult.Yes)
             {
                 downloadFile(sender);
@@ -5284,32 +5525,6 @@ namespace windowMediaPlayerDM
                         // vlcSetMedia(file);
                         vlc_track_time = -2;
                         autoLoadByName(file);
-                        //this should return 1 or 2 files 
-                        FileInfo[] findDM = dif.GetFiles(file.Name);
-                        for (int i = 0; i < findDM.Count(); i++) { 
-                        if(findDM[i].Name.Contains(".xml")){
-                            string[] tdm = {findDM[i].FullName,findDM[i].Name};
-                            DM_List.Add(tdm);
-                            readXML(tdm[0]);
-
-                            Danmoku_status.Text = "DM set";
-
-                            if (Comment_Windows.Count == 0)
-                            {
-                                commentWindowSetup();
-                            }
-                            else
-                            {
-                                ///////fm3.Owner = this;
-
-                            }
-                        
-                        
-                        }
-                        
-                        }
-
-                            Media_status.Text = "Media Set";
                     }
                 }
             }
@@ -5417,13 +5632,21 @@ namespace windowMediaPlayerDM
             //        complited = true;
             //    }
             //    downloadFile(sender);
-
-
-                try
-                {
-                    wb_DownloadFileCompleted(filename,pbar,status);
+                try{
+                    if (fm7 != null) {
+                        pbar.Dispose();
+                        status.Dispose();
+                    
+                    }
+                BackgroundWorker bk = new BackgroundWorker();
+                bk.DoWork += DownloadDoWork(filename,pbar,status);
+                if (!bk.IsBusy) {
+                    bk.RunWorkerAsync();
+                
                 }
-                catch (Exception) { if (fm7 != null) { fm7.getDownloadstatus2.Text = "server error"; } }
+                   // wb_DownloadFileCompleted(filename,pbar,status);
+                }
+                catch (WebException) { if (fm7 != null) { fm7.getDownloadstatus2.Text = "server error"; } }
 
             };
             return new AsyncCompletedEventHandler(action);
@@ -5432,6 +5655,28 @@ namespace windowMediaPlayerDM
 
 
 
+        }
+        public DoWorkEventHandler DownloadDoWork(Uri filename, ProgressBar pbar, Label status) {
+
+
+            Action<object, DoWorkEventArgs> action = (sender, e) =>
+            {
+                BackgroundWorker bk = sender as BackgroundWorker;
+                if (e.Cancel)
+                {
+
+                    bk.CancelAsync();
+                }
+
+
+
+                downloadfileCompleted_thread(filename, pbar, status);
+
+            };
+        return new DoWorkEventHandler(action);
+        
+
+        
         }
 
 
@@ -5704,7 +5949,40 @@ namespace windowMediaPlayerDM
 
 
         }
+        delegate void downlaod_complete_thread(Uri filename, ProgressBar pbar, Label status);
 
+        void downloadfileCompleted_thread(Uri ufilename, ProgressBar pbar, Label status){
+
+            if (fm7 != null) {
+
+                if (fm7.InvokeRequired)
+                {
+
+                    downlaod_complete_thread dl = new downlaod_complete_thread(downloadfileCompleted_thread);
+
+
+                    fm7.Invoke(dl, new object[] { ufilename, pbar, status });
+
+
+
+
+                }
+                else {
+
+                    wb_DownloadFileCompleted(ufilename, pbar, status);
+                
+                }
+            
+            
+            
+            
+            
+            }
+        
+        
+        
+        
+        }
         void wb_DownloadFileCompleted(Uri ufilename,ProgressBar pbar, Label status)
         {
 
@@ -5712,7 +5990,6 @@ namespace windowMediaPlayerDM
             {
 
                 //fm7.Size = new Size(fm7.Width, fm7.Height - pbar.Height);
-                
                 pbar.Dispose();
                 status.Dispose();
                 //only changes the size back to normal if there's no task is downloading
@@ -5761,7 +6038,7 @@ namespace windowMediaPlayerDM
                 title = title.Replace("/", " ");
 
 
-                //パス 'A:\video\hima test video\Fate/kaleid liner プリズマ☆イリヤ ドライ！ 第01話 吸収さん高画質「銀色に沈む街」 - ひまわり動画' の一部が見つかりませんでした。
+                //パス 'A:\video\hima test video\F
                 FileInfo temp = new FileInfo(file.Directory + "\\" + title);
 
 
@@ -6002,42 +6279,108 @@ namespace windowMediaPlayerDM
                 //load url itembox with all the links
 
 
+                BackgroundWorker bk = new BackgroundWorker();
+                bk.WorkerSupportsCancellation = true;
+
+                bk.DoWork += browserdowork(address);
+
                 //only do this if it's on himado.in since this only works on there
                 if (address.OriginalString.Contains("himado.in"))
                 {
-                WebBrowser wb = new WebBrowser();
-
-              //  wb.TopLevelControl.Visible = false;
-                wb.Visible = false;
-                //wb.Document.Encoding = "UTF-8";
-                wb.ScriptErrorsSuppressed = true;
-               // printvlc(wb.Version.ToString());
-                
-                wb.Url = address;
-
-
-               
-               // wb.Navigate(address);
-                
-               
-
-               // wb.Navigated +=new WebBrowserNavigatedEventHandler(wb_Navigated);
-
-                wb.DocumentCompleted += new WebBrowserDocumentCompletedEventHandler(wb_DocumentCompleted);
+                    bk.RunWorkerAsync();
                 }
 
-                for (int i = 0; i < urls.Count; i++)
-                {
-                    fm7.getFileUrl.Items.Add(urls.ElementAt(i));
 
-                     
-                }
-                
-                fm7.getLinks.SelectedIndex = fm7.getLinks.Items.Count-1;
-                fm7.getTitle.SelectedIndex = fm7.getTitle.Items.Count-1;
             }
         
         }
+        delegate void browser_thread(Uri address);
+        void runbrowser_thread(Uri address){
+
+            if (fm7.InvokeRequired)
+            {
+
+                browser_thread bt = new browser_thread(runbrowser_thread);
+
+                fm7.Invoke(bt, new object[] { address });
+
+
+
+
+            }
+            else {
+
+                runbrowser(address);
+            }
+    
+    
+    
+        }
+        void runbrowser(Uri address) {
+            WebBrowser wb = new WebBrowser();
+
+            //  wb.TopLevelControl.Visible = false;
+            wb.Visible = false;
+            //wb.Document.Encoding = "UTF-8";
+            wb.ScriptErrorsSuppressed = true;
+            // printvlc(wb.Version.ToString());
+
+            wb.Url = address;
+
+
+
+            // wb.Navigate(address);
+
+
+
+            // wb.Navigated +=new WebBrowserNavigatedEventHandler(wb_Navigated);
+
+            wb.DocumentCompleted += new WebBrowserDocumentCompletedEventHandler(wb_DocumentCompleted);
+
+
+            for (int i = 0; i < urls.Count; i++)
+            {
+                fm7.getFileUrl.Items.Add(urls.ElementAt(i));
+
+
+            }
+
+            fm7.getLinks.SelectedIndex = fm7.getLinks.Items.Count - 1;
+            fm7.getTitle.SelectedIndex = fm7.getTitle.Items.Count - 1;
+        
+        }
+        public DoWorkEventHandler browserdowork(Uri address) { 
+        
+        
+        Action<object,DoWorkEventArgs> action =(sender,e) =>{
+        BackgroundWorker bk = sender as BackgroundWorker;
+
+            if(e.Cancel){
+            
+            bk.CancelAsync();
+            
+            
+            }
+
+
+
+            runbrowser_thread(address);
+         
+        };
+        
+      
+        
+         return  new DoWorkEventHandler (action);
+        
+        }
+        /*
+        void bk_DoWork(object sender, DoWorkEventArgs e)
+        {
+            //throw new NotImplementedException();
+
+
+        }
+         * */
 
         void wb_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {

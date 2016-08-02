@@ -76,6 +76,7 @@
     </Compile>
     <Compile Include="Class2.cs.bak.cs" />
     <Compile Include="Class3.cs" />
+    <Compile Include="clipboard.cs" />
     <Compile Include="comment_move_engine.cs" />
     <Compile Include="new Form3.cs">
       <SubType>Form</SubType>

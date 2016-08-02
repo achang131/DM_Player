@@ -23,14 +23,29 @@ namespace windowMediaPlayerDM
         Uri linkaddress;
         add_link_form fm6;
         Dictionary<Uri, Uri> UrlDictionary;
-
+        bool close = false;
         
+        private void MyForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                e.Cancel = true;
+                Hide();
+                close = true;
+            }
+        }
+        public bool hide{
+            get { return close; }
+            set { close = value; }
+    
+    }
         public Url_menu()
         {
             InitializeComponent();
 
             download_bar.Dispose();
 
+            this.FormClosing += new FormClosingEventHandler(MyForm_FormClosing);
         }
 
         public TextBox setLinkbox{

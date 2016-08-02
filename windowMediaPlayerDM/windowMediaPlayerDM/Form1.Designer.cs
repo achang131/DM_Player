@@ -13,6 +13,7 @@
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
+            ChangeClipboardChain(this.Handle, nextClipboardViewer);
             if (disposing && (components != null))
             {
                 components.Dispose();
@@ -62,6 +63,7 @@
             this.vlcStop_button = new System.Windows.Forms.Button();
             this.vlcPlay_button = new System.Windows.Forms.Button();
             this.sound_trackbar = new System.Windows.Forms.TrackBar();
+            this.clipboard_label = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Media_Player)).BeginInit();
@@ -168,7 +170,8 @@
             this.Video_comment,
             this.vlc_display,
             this.downlaod_status,
-            this.download_status2});
+            this.download_status2,
+            this.clipboard_label});
             this.statusStrip1.Location = new System.Drawing.Point(0, 559);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(996, 23);
@@ -346,6 +349,11 @@
             this.sound_trackbar.TabStop = false;
             this.sound_trackbar.TickStyle = System.Windows.Forms.TickStyle.None;
             // 
+            // clipboard_label
+            // 
+            this.clipboard_label.Name = "clipboard_label";
+            this.clipboard_label.Size = new System.Drawing.Size(0, 18);
+            // 
             // Form1
             // 
             this.AllowDrop = true;
@@ -415,6 +423,7 @@
         private System.Windows.Forms.ToolStripStatusLabel downlaod_status;
         private System.Windows.Forms.ToolStripStatusLabel download_status2;
         private System.Windows.Forms.TrackBar sound_trackbar;
+        private System.Windows.Forms.ToolStripStatusLabel clipboard_label;
     }
 }
 
