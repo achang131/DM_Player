@@ -337,20 +337,23 @@ namespace windowMediaPlayerDM
         delegate void moveLabel_thread(Label l, int distance);
 
         void moveLabel2(Label l, int distance) {
-
-            if (l.InvokeRequired)
+            try
             {
-                moveLabel_thread c = new moveLabel_thread(moveLabel2);
+                if (l.InvokeRequired)
+                {
+                    moveLabel_thread c = new moveLabel_thread(moveLabel2);
 
-                this.Invoke(c, new object[] {l,distance });
+                    this.Invoke(c, new object[] { l, distance });
 
 
+                }
+                else
+                {
+
+                    moveLabel(l, distance);
+                }
             }
-            else {
-
-                moveLabel(l, distance);
-            }
-        
+            catch (ObjectDisposedException) { }
         
         }
 

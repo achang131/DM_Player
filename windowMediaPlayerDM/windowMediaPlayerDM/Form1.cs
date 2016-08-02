@@ -618,6 +618,9 @@ namespace windowMediaPlayerDM
                                         commentLimit = Int32.Parse(reader.Value);
 
                                         break;
+                                    case "Panel_number":
+                                        panel_numbers = Int32.Parse(reader.Value);
+                                        break;
                             
                                 }
 
@@ -670,6 +673,7 @@ namespace windowMediaPlayerDM
                     writer.WriteElementString("Comment_Speed", _distance.ToString());
                     writer.WriteElementString("volume", vVolume.ToString());
                     writer.WriteElementString("CommentLimit", commentLimit.ToString());
+                    writer.WriteElementString("Panel_number", panel_numbers.ToString());
                     writer.WriteEndElement();
                     writer.WriteEndDocument();
 
@@ -1169,11 +1173,11 @@ namespace windowMediaPlayerDM
             //set the comment method  0 = default 1 = using list to move labels
             commentmethod = 1;
 
-
+            panel_numbers = 8;
             form1_loadSetting_XML();
 
 
-            panel_numbers = 8;
+       
 
             counter_check = -9999;
         
@@ -3059,10 +3063,13 @@ namespace windowMediaPlayerDM
         
         }
         int winterval = 57;
-        void cwSetOwner(List<Neo_Comment_window> l) {
+        void cwSetOwner(List<Neo_Comment_window> l)
+        {
 
-            for (int i = 0; i < l.Count; i++) {
-                if (i - 1 >= 0) {
+            for (int i = 0; i < l.Count; i++)
+            {
+                if (i - 1 >= 0)
+                {
                     l.ElementAt(i).Owner = l.ElementAt(i - 1);
                 }
                 else
@@ -3070,11 +3077,58 @@ namespace windowMediaPlayerDM
                     l.ElementAt(i).Owner = this;
                 }
             }
+        }
+        void ChangeCWnumber(){
+
+
+
+          for (int i = 0; i < Comment_Windows.Count; i++) {
+                Comment_Windows.ElementAt(i).Dispose();
+            
+            
+            }
+
+            Comment_Windows.Clear();
+            addcomment = 0;
+            commentWindowSetup();
         
         
         
         }
+        void changeCommentWindowsNumber() {
+            int number = panel_numbers;
 
+            if (currentfile!=null) {
+
+                DialogResult dr = MessageBox.Show("Doing this will pause the current playing media, are you sure ","alert",MessageBoxButtons.YesNo);
+                
+               
+               if(dr ==DialogResult.Yes ){
+               
+               vlcPlayer.Pause();
+
+               ChangeCWnumber();
+
+
+              
+
+               }  
+                
+            
+            }else{
+            
+            ChangeCWnumber();
+            
+            }
+
+
+
+
+
+      
+        
+        
+        }
         void commentWindowSetup()
         {
 
@@ -4513,9 +4567,11 @@ namespace windowMediaPlayerDM
         void getconfirm_Click(object sender, EventArgs e)
         {
             applyAll();
-
-            fm4.Dispose();
-            fm4 = null;
+            if (fm4 != null)
+            {
+                fm4.Dispose();
+                fm4 = null;
+            }
 
 
         }
@@ -4545,7 +4601,7 @@ namespace windowMediaPlayerDM
 
                 loadCheck();
                 fm4.Cspeed.Text = this._distance.ToString();
-                fm4.Cend.Text = this.commentdestroy.ToString();
+                fm4.Cend.Text = this.panel_numbers.ToString();
                 fm4.setCommentLimit.Text = commentLimit.ToString();
                 loadAudio();
                 VideoSetup(fm4.setBrightness, (int)vlcPlayer.Video.Adjustments.Brightness*10);
@@ -4619,7 +4675,9 @@ namespace windowMediaPlayerDM
                     this._distance = Int32.Parse(fm4.Cspeed.Text);
                     this.move_distance = Int32.Parse(fm4.Cspeed.Text);
 
-                    this.commentdestroy = Int32.Parse(fm4.Cend.Text);
+                    this.panel_numbers = Int32.Parse(fm4.Cend.Text);
+                    changeCommentWindowsNumber();
+
                     commentLimit = Int32.Parse(fm4.setCommentLimit.Text);
                     if (Comment_Windows.Count > 0) {
                         for (int i = 0; i < Comment_Windows.Count; i++) {
@@ -6123,9 +6181,11 @@ namespace windowMediaPlayerDM
 
             if (fm7 != null) {
 
-                
-                String title = fm7.getLinks.SelectedItem.ToString();
-                fm7.setLinkbox.Text = title;
+                if (fm7.getLinks.SelectedItem != null)
+                {
+                    String title = fm7.getLinks.SelectedItem.ToString();
+                    fm7.setLinkbox.Text = title;
+                }
             
             }
         
@@ -6224,4 +6284,6 @@ namespace windowMediaPlayerDM
 
 
     }
+
+    
 }
