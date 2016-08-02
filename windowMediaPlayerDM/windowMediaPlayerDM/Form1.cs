@@ -5222,7 +5222,7 @@ namespace windowMediaPlayerDM
                 fm7.getFileUrl.MouseMove += new MouseEventHandler(setLinkbox_MouseMove);
                 fm7.getFileUrl.MouseLeave += new EventHandler(getFileUrl_MouseLeave);
                 fm7.reload.Click += new EventHandler(reload_Click);
-                fm7.Disposed += new EventHandler(fm7_Disposed);
+             //   fm7.Disposed += new EventHandler(fm7_Disposed);
                 if (Comment_Windows.Count > 0)
                 {
                     fm7.Owner = Comment_Windows.ElementAt(Comment_Windows.Count - 1);
@@ -5280,7 +5280,7 @@ namespace windowMediaPlayerDM
                 fm7.getFileUrl.MouseMove += new MouseEventHandler(setLinkbox_MouseMove);
                 fm7.getFileUrl.MouseLeave += new EventHandler(getFileUrl_MouseLeave);
                 fm7.reload.Click += new EventHandler(reload_Click);
-                fm7.Disposed += new EventHandler(fm7_Disposed);
+               // fm7.Disposed += new EventHandler(fm7_Disposed);
                  
                 if (Comment_Windows.Count > 0)
                 {
@@ -6283,16 +6283,28 @@ namespace windowMediaPlayerDM
                 bk.WorkerSupportsCancellation = true;
 
                 bk.DoWork += browserdowork(address);
-
+                bk.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bk_RunWorkerCompleted);
                 //only do this if it's on himado.in since this only works on there
                 if (address.OriginalString.Contains("himado.in"))
                 {
-                    bk.RunWorkerAsync();
+                    if (!bk.IsBusy)
+                    {
+                        bk.RunWorkerAsync();
+                    }
                 }
 
 
             }
         
+        }
+
+        void bk_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            //throw new NotImplementedException();
+            renamed = false;
+
+            BackgroundWorker bk = sender as BackgroundWorker;
+            bk.Dispose();
         }
         delegate void browser_thread(Uri address);
         void runbrowser_thread(Uri address){
@@ -6384,7 +6396,7 @@ namespace windowMediaPlayerDM
 
         void wb_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
-            
+            renamed = false;
 
             fm7.getDownloadstatus2.Text = "document loaded";
             
@@ -6432,7 +6444,7 @@ namespace windowMediaPlayerDM
                 }
             }
             wb.Dispose();
-            renamed = false;
+           
         }
 
         void wb_Navigated(object sender, WebBrowserNavigatedEventArgs e)
