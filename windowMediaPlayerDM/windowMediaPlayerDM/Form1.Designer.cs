@@ -380,6 +380,7 @@
             this.menuStrip1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            
             ((System.ComponentModel.ISupportInitialize)(this.Media_Player)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.vlcPlayer)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.VLC_track)).EndInit();

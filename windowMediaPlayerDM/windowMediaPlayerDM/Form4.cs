@@ -195,6 +195,11 @@ namespace windowMediaPlayerDM
             get { return this.Saturation_bar; }
 
         }
+        public CheckBox clipboard {
+            get { return Clicpboard_check; }
+            set { Clicpboard_check = value; }
+        
+        }
         public TextBox Cend
         {
 

@@ -162,10 +162,10 @@ namespace windowMediaPlayerDM
         public Form1()
         {
             InitializeComponent();
-            nextClipboardViewer = (IntPtr)SetClipboardViewer((int)this.Handle);
 
-            
-            
+
+
+            this.Shown += new EventHandler(Form1_Shown);
 
             Vlc.DotNet.Core.VlcMediaPlayer vlc = new Vlc.DotNet.Core.VlcMediaPlayer(new DirectoryInfo("C:\\Users\\Alan\\Documents\\GitHub\\DM_Player\\lib\\x86"));
             
@@ -273,7 +273,7 @@ namespace windowMediaPlayerDM
             //CommentEngineSetup(cme1, comment_storage3, move_distance);
             //CommentEngineSetup(cme2, comment_storage4, move_distance);
 
-            
+            nextClipboardViewer = (IntPtr)SetClipboardViewer((int)this.Handle);
           
           cme1 = new comment_move_engine(move_distance);
           cme2 = new comment_move_engine(move_distance);
@@ -283,8 +283,20 @@ namespace windowMediaPlayerDM
           DragDropSetup(this);
           CSettings();
 
-          //commentWindowSetup();
+         // commentWindowSetup();
   
+        }
+
+        void Form1_Shown(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
+            if (fm7 == null && clipboardswitch == true)
+            {
+                URL_menuloapup_clipboard();
+                fm7.Hide();
+                fm7.hide = true;
+
+            }
         }
         Neo_Comment_window fm3_1, fm3_2, fm3_3,fm3_4,fm3_5,fm3_6,fm3_7;
         comment_move_engine cme1;
@@ -359,43 +371,48 @@ namespace windowMediaPlayerDM
         }
         protected override void WndProc(ref Message m)
         {
-            //base.WndProc(ref m);
-            const int WM_DRAWCLIPBOARD = 0x308;
-            const int WM_CHANGECBCHAIN = 0x030D;
-            switch (m.Msg) {
-                case WM_DRAWCLIPBOARD:
+            if (clipboardswitch)
+            {
+                //base.WndProc(ref m);
+                const int WM_DRAWCLIPBOARD = 0x308;
+                const int WM_CHANGECBCHAIN = 0x030D;
+                switch (m.Msg)
+                {
+                    case WM_DRAWCLIPBOARD:
 
-                    showClipboard();
-                    
-                   SendMessage(nextClipboardViewer, m.Msg, m.WParam,
-                                m.LParam);
-                    break;
 
-                case WM_CHANGECBCHAIN:
-                  
+                        showClipboard();
 
-                    if (m.WParam == nextClipboardViewer)
-                        nextClipboardViewer = m.LParam;
-                    else
                         SendMessage(nextClipboardViewer, m.Msg, m.WParam,
-                                    m.LParam);
-                    break;
+                                     m.LParam);
+                        break;
 
-                default:
-                    base.WndProc(ref m);
-                    break;
-            
-            
-            
-            
-            
-            
+                    case WM_CHANGECBCHAIN:
+
+
+                        if (m.WParam == nextClipboardViewer)
+                            nextClipboardViewer = m.LParam;
+                        else
+                            SendMessage(nextClipboardViewer, m.Msg, m.WParam,
+                                        m.LParam);
+                        break;
+
+                    default:
+                        base.WndProc(ref m);
+                        break;
+
+
+
+
+
+
+                }
             }
         }
         String ClipBoardText = "";
         bool clipstartup = false;
         bool fm7_firsttime = true;
-
+        bool clipboardswitch = true;
         void showClipboard() {
 
             String text="";
@@ -453,7 +470,7 @@ namespace windowMediaPlayerDM
         }
         void clipaddlink(string text) {
 
-            if (linkaddress != null && this.fm7 != null)
+            if ( this.fm7 != null)
             {
 
 
@@ -775,6 +792,10 @@ namespace windowMediaPlayerDM
                                     case "Panel_number":
                                         panel_numbers = Int32.Parse(reader.Value);
                                         break;
+                                    case "useClipboard":
+                                        clipboardswitch = bool.Parse(reader.Value);
+
+                                        break;
                             
                                 }
 
@@ -828,6 +849,7 @@ namespace windowMediaPlayerDM
                     writer.WriteElementString("volume", vVolume.ToString());
                     writer.WriteElementString("CommentLimit", commentLimit.ToString());
                     writer.WriteElementString("Panel_number", panel_numbers.ToString());
+                    writer.WriteElementString("useClipboard", clipboardswitch.ToString());
                     writer.WriteEndElement();
                     writer.WriteEndDocument();
 
@@ -4500,6 +4522,7 @@ namespace windowMediaPlayerDM
                 fm4.getAudio_up.Click += new EventHandler(getAudio_up_Click);
                 fm4.auto_mode_check.CheckStateChanged += new EventHandler(auto_mode_check_CheckStateChanged);
                 fm4.select_commentswitch.SelectedValueChanged += new EventHandler(select_commentswitch_SelectedValueChanged);
+                fm4.clipboard.CheckStateChanged += new EventHandler(clipboard_CheckStateChanged);
                 VideoAdjuestAction(fm4.setBrightness);
                 VideoAdjuestAction(fm4.setContrast);
                 VideoAdjuestAction(fm4.setGamma);
@@ -4517,6 +4540,21 @@ namespace windowMediaPlayerDM
 
             }
        
+        }
+
+        void clipboard_CheckStateChanged(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
+            CheckBox ck = sender as CheckBox;
+            clipboardswitch=ck.Checked;
+            if (Comment_Windows.Count == 0) {
+
+                commentWindowSetup();
+                if (fm7 == null)
+                {
+                    URL_menuloapup_clipboard();
+                }
+            }
         }
 
         void select_commentswitch_SelectedValueChanged(object sender, EventArgs e)
@@ -4758,6 +4796,7 @@ namespace windowMediaPlayerDM
                 fm4.Cend.Text = this.panel_numbers.ToString();
                 fm4.setCommentLimit.Text = commentLimit.ToString();
                 loadAudio();
+                fm4.clipboard.Checked = clipboardswitch;
                 VideoSetup(fm4.setBrightness, (int)vlcPlayer.Video.Adjustments.Brightness*10);
                 VideoSetup(fm4.setContrast, (int)vlcPlayer.Video.Adjustments.Contrast*10);
                 VideoSetup(fm4.setGamma, (int)vlcPlayer.Video.Adjustments.Gamma*10);
@@ -4844,8 +4883,8 @@ namespace windowMediaPlayerDM
                         }
                     
                     }
-                    
 
+                    clipboardswitch = fm4.clipboard.Checked;
 
                 }
                 catch (Exception) { }
@@ -5215,8 +5254,10 @@ namespace windowMediaPlayerDM
 
              
                 this.fm7 = new Url_menu();
-                this.fm7.setLinkbox.Text = linkaddress.AbsoluteUri;
-
+                if (linkaddress != null)
+                {
+                    this.fm7.setLinkbox.Text = linkaddress.AbsoluteUri;
+                }
 
                 //load the list with the urls if exists
                 if (Links.Count > 0)
@@ -5250,6 +5291,13 @@ namespace windowMediaPlayerDM
                 if (Comment_Windows.Count > 0)
                 {
                     fm7.Owner = Comment_Windows.ElementAt(Comment_Windows.Count - 1);
+                }
+                else {
+
+                    commentWindowSetup();
+                    fm7.Owner = Comment_Windows.ElementAt(Comment_Windows.Count - 1);
+                
+                
                 }
                 fm7.Show();
 

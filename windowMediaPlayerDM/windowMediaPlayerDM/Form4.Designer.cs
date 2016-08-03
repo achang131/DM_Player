@@ -72,6 +72,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.audio_tab = new System.Windows.Forms.TabPage();
+            this.Clicpboard_check = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.Setting_tab.SuspendLayout();
             this.video_tab.SuspendLayout();
@@ -96,6 +97,7 @@
             // 
             // Setting_tab
             // 
+            this.Setting_tab.Controls.Add(this.Clicpboard_check);
             this.Setting_tab.Controls.Add(this.totalSubtitle_text);
             this.Setting_tab.Controls.Add(this.total_audio);
             this.Setting_tab.Controls.Add(this.label10);
@@ -527,6 +529,17 @@
             this.audio_tab.Text = "Audio";
             this.audio_tab.UseVisualStyleBackColor = true;
             // 
+            // Clicpboard_check
+            // 
+            this.Clicpboard_check.AutoSize = true;
+            this.Clicpboard_check.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.Clicpboard_check.Location = new System.Drawing.Point(15, 35);
+            this.Clicpboard_check.Name = "Clicpboard_check";
+            this.Clicpboard_check.Size = new System.Drawing.Size(87, 21);
+            this.Clicpboard_check.TabIndex = 36;
+            this.Clicpboard_check.Text = "Clipboard";
+            this.Clicpboard_check.UseVisualStyleBackColor = true;
+            // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -596,6 +609,7 @@
         private System.Windows.Forms.Button subtitle_button_u;
         private System.Windows.Forms.Label Subtitle_text;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.CheckBox Clicpboard_check;
 
     }
 }
