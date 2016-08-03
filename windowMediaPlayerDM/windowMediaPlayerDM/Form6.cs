@@ -39,8 +39,16 @@ namespace windowMediaPlayerDM
 
             get
             {
-                 dir=dir_box.Text; 
-                return dir; }
+                 dir=dir_box.Text;
+                 if (dir != "")
+                 {
+                     return dir;
+                 }
+                 else
+                 {
+                     return null;
+                 }
+            }
             set
             {
                 dir = value; 
@@ -49,8 +57,15 @@ namespace windowMediaPlayerDM
 
         public Uri getLink {
 
-            get { link = link_box.Text;
-            return new Uri(link);        
+            get { 
+                link = link_box.Text;
+                if (link != "")
+                {
+                    return new Uri(link);
+                }
+                else {
+                    return null;
+                }
             }
             set { link = value.LocalPath;
             link_box.Text = link;

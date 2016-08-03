@@ -294,9 +294,41 @@ namespace windowMediaPlayerDM
             //throw new NotImplementedException();
             if (fm7 == null && clipboardswitch == true)
             {
-                URL_menuloapup_clipboard();
-                fm7.Hide();
-                fm7.hide = true;
+
+                if (current_dir_url == null || current_dir_url == "")
+                {
+                    var t = MessageBox.Show("No Default Folder is selected, Do you want to select it now ?", "Alert", MessageBoxButtons.YesNo);
+                    if (t == DialogResult.Yes)
+                    {
+
+                        FolderBrowserDialog fbd = new FolderBrowserDialog();
+                        fbd.RootFolder = Environment.SpecialFolder.MyComputer;
+
+                        if (fbd.ShowDialog() == DialogResult.OK)
+                        {
+
+                            current_dir_url = fbd.SelectedPath;
+
+                        }
+
+
+
+                    }
+                    else
+                    {
+
+                        clipboardswitch = false;
+
+                    }
+
+                }
+                else
+                {
+
+                    URL_menuloapup_clipboard();
+                    fm7.Hide();
+                    fm7.hide = true;
+                }
 
             }
             if (Environment.GetCommandLineArgs() != null)
@@ -388,6 +420,9 @@ namespace windowMediaPlayerDM
         }
         protected override void WndProc(ref Message m)
         {
+
+
+
             if (clipboardswitch)
             {
                 //base.WndProc(ref m);
@@ -465,6 +500,7 @@ namespace windowMediaPlayerDM
 
                     clipaddlink(text);
 
+                
              //   }
              //   else {
              //       fm7_firsttime = false;
@@ -502,7 +538,6 @@ namespace windowMediaPlayerDM
 
 
                     }
-                    
 
                     ClipBoardText = text;
                     loadFromClipboard(ClipBoardText);
@@ -5432,34 +5467,54 @@ namespace windowMediaPlayerDM
             linkaddress = url;
         
         }
-        void reload_Click(object sender, EventArgs e)
-        {
-            //throw new NotImplementedException();
-            //implement reload the whole page remove the link from the list first then do original load page
-            string temp = fm7.setLinkbox.Text;
-            Uri url = new Uri(temp);
-            if (url != null) {
-
-                if (fm7.getLinks.Items.Contains(url))
+        void reload_click() {
+            if (fm7 != null)
+            {
+                string temp = fm7.setLinkbox.Text;
+                Uri url = new Uri(temp);
+                if (url != null)
                 {
-                    int place = fm7.getLinks.Items.IndexOf(url);
-                    fm7.getLinks.Items.RemoveAt(place);
-                    fm7.getTitle.Items.RemoveAt(place);
-               //     UrlDictionary.Remove(url);
-                    //no longer needed since already updated the part to adapt update links
-                    
-                    Links.Remove(url);
 
-                    load_Url_from(url);
-                }
-                else {
+                    if (fm7.getLinks.Items.Contains(url))
+                    {
+                        int place = fm7.getLinks.Items.IndexOf(url);
+                        fm7.getLinks.Items.RemoveAt(place);
+                        fm7.getTitle.Items.RemoveAt(place);
+                        //     UrlDictionary.Remove(url);
+                        //no longer needed since already updated the part to adapt update links
 
-                    load_Url_from(url);
-                
+                        Links.Remove(url);
+
+                        load_Url_from(url);
+                    }
+                    else
+                    {
+
+                        load_Url_from(url);
+
+                    }
                 }
             }
+        
+        }
+        void reload_Click(object sender, EventArgs e)
+        {
+            //Change the name to set directory
 
+            //throw new NotImplementedException();
+            //implement reload the whole page remove the link from the list first then do original load page
+            FolderBrowserDialog fbd = new FolderBrowserDialog();
+            fbd.RootFolder= Environment.SpecialFolder.MyComputer;
+            fbd.SelectedPath = current_dir_url;
+            
+            if (fbd.ShowDialog() == DialogResult.OK) {
+              
+                current_dir_url= fbd.SelectedPath;
+            
+            
+            }
 
+           
 
         }
 
@@ -6572,6 +6627,7 @@ namespace windowMediaPlayerDM
            // <input type="submit" value="ダウンロード">
             //throw new NotImplementedException();
             //when the set url button is clicked
+            /*
             Uri cb;
             try
             {
@@ -6584,7 +6640,8 @@ namespace windowMediaPlayerDM
             {
                 load_Url_from(cb);
             }
-
+             * */
+            reload_click();
 
         }
 
@@ -6713,9 +6770,15 @@ namespace windowMediaPlayerDM
         void setConfirm_Click(object sender, EventArgs e)
         {
             //throw new NotImplementedException();
-            //if confirm button is clicked 
-            linkaddress = fm6.getLink;
-            current_dir_url = fm6.getDri;
+            //if confirm button is clicked
+            if (fm6.getLink != null)
+            {
+                linkaddress = fm6.getLink;
+            }
+            if (fm6.getDri != null)
+            {
+                current_dir_url = fm6.getDri;
+            }
 
             fm6.Dispose();
         }

@@ -159,7 +159,7 @@
             this.reload_button.Name = "reload_button";
             this.reload_button.Size = new System.Drawing.Size(77, 20);
             this.reload_button.TabIndex = 5;
-            this.reload_button.Text = "ReLoad Link";
+            this.reload_button.Text = "Set Directory";
             this.reload_button.UseVisualStyleBackColor = true;
             // 
             // Url_menu
