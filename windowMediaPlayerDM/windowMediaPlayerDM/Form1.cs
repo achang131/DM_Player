@@ -147,7 +147,7 @@ namespace windowMediaPlayerDM
         int commentLimit;
 
         int commentmethod;
-
+        String Program_location;
         DllImportAttribute dla;
         [DllImport("User32.dll")]
         protected static extern int SetClipboardViewer(int hWndNewViewer);
@@ -157,13 +157,13 @@ namespace windowMediaPlayerDM
         public static extern int SendMessage(IntPtr hwnd, int wMsg, IntPtr wParam, IntPtr lParam);
 
         IntPtr nextClipboardViewer;
-        
 
+                   
         public Form1()
         {
             InitializeComponent();
 
-
+            Program_location = Environment.GetCommandLineArgs()[0];
 
             this.Shown += new EventHandler(Form1_Shown);
 
@@ -284,6 +284,8 @@ namespace windowMediaPlayerDM
           CSettings();
 
          // commentWindowSetup();
+
+
   
         }
 
@@ -296,6 +298,21 @@ namespace windowMediaPlayerDM
                 fm7.Hide();
                 fm7.hide = true;
 
+            }
+            if (Environment.GetCommandLineArgs() != null)
+            {
+                String[] test = Environment.GetCommandLineArgs();
+                if (test.Length > 1)
+                {
+                    //commentWindowSetup();
+                    FileInfo f = new FileInfo(test[1]);
+                    vlcSetMedia(f);
+                    clipboard_label.Text = test[1];
+                    if (vlcPlayer.GetCurrentMedia() != null)
+                    {
+                        vlcPlayer.Play();
+                    }
+                }
             }
         }
         Neo_Comment_window fm3_1, fm3_2, fm3_3,fm3_4,fm3_5,fm3_6,fm3_7;
@@ -424,7 +441,7 @@ namespace windowMediaPlayerDM
 
                 RichTextBox tb = new RichTextBox();
                 tb.Rtf = (String)data.GetData(DataFormats.Text);
-                clipboard_label.Text = tb.Text;
+              //  clipboard_label.Text = tb.Text;
                 text = tb.Text;  
             
             } else if (data.GetDataPresent(DataFormats.Text)){
@@ -3381,31 +3398,8 @@ namespace windowMediaPlayerDM
                   //      printvlc(file.FullName);
                     
                     }
-
-                    srCommentWindow();
-                    comment2.Clear();
-                    comment.Clear();
-                    _duplicates = 0;
-
                     FileInfo playfile = new FileInfo(files[0]);
-                    autoLoadByName(playfile);
-                    if (vlcPlayer.IsPlaying) {
-                        timerStop();
-                        time_counter = 0;
-                        
-                        
-                    }
-                    if (Comment_Windows.Count == 0) {
 
-                        commentWindowSetup();
-                    }
-                    string[] tp = { playfile.FullName, playfile.Name };
-                    if (files.Length == 1) {
-
-                        autoLoadMlist(tp);
-                      
-                    
-                    }
 
                     vlcSetMedia(playfile);
                     vlcPlayer.Play();
@@ -3482,11 +3476,17 @@ namespace windowMediaPlayerDM
         }
 
         void autoSetVolumn() {
-            if (vlcPlayer.Audio.Volume != vVolume)
+            try
             {
-                vlcPlayer.Audio.Volume = vVolume;
-                sound_trackbar.Value = vVolume;
-            };
+                if (vlcPlayer.Audio.Volume != vVolume)
+                {
+                    vlcPlayer.Audio.Volume = vVolume;
+                    sound_trackbar.Value = vVolume;
+                };
+            }
+            catch (NullReferenceException) { 
+            
+            }
         
         }
 
@@ -4348,32 +4348,27 @@ namespace windowMediaPlayerDM
                 {
                    current = currentfile.FullName;
                 }
+                //unload the loaded dm files, to avoid using the wrong dm on different media files?
 
+
+                if (fm2 != null)
+                {
+                    fm2.setDMListBox.Items.Clear();
+
+                }
                 vlcSetMedia(newMedia);
+
+                fm2.setDMList = DM_List;
+
                 vlcPlayer.Play();
                 timerStart();
 
-                //unload the loaded dm files, to avoid using the wrong dm on different media files?
-                if (current != null)
-                {
-                    if (!current.Equals(currentfile.FullName))
-                    {
-                        srCommentWindow();
-                        comment2.Clear();
-                        comment.Clear();
-                        DM_List.Clear();
-                        _duplicates = 0;
 
-                        if (fm2 != null)
-                        {
-                            fm2.setDMListBox.Items.Clear();
 
-                        }
+             //   autoLoadByName(newMedia);
 
-                    }
-                }
 
-                autoLoadByName(newMedia);
+
                 if (Comment_Windows.Count == 0) {
 
                     commentWindowSetup();
@@ -5047,6 +5042,31 @@ namespace windowMediaPlayerDM
         private void vlcSetMedia(FileInfo file) {
 
 
+            _duplicates = 0;
+
+            FileInfo playfile = file;
+           
+            if (vlcPlayer.IsPlaying)
+            {
+                timerStop();
+                time_counter = 0;
+
+
+            }
+            if (Comment_Windows.Count == 0)
+            {
+
+                commentWindowSetup();
+            }
+            string[] tp = { playfile.FullName, playfile.Name };
+
+
+                autoLoadMlist(tp);
+
+
+
+            Media_status.Text = "Media Set";
+            autoLoadByName(playfile);
             currentfile = file;
             vlcPlayer.SetMedia(file);
         
