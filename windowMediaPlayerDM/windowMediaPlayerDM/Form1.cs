@@ -1013,7 +1013,7 @@ namespace windowMediaPlayerDM
         {
             mousedown = true;
         }
-
+/*
         void vlcPlayer_EndReached(object sender, Vlc.DotNet.Core.VlcMediaPlayerEndReachedEventArgs e)
         {
             vlc_display.Text = "end reached";
@@ -1026,7 +1026,7 @@ namespace windowMediaPlayerDM
             }
 
         }
-
+        */
         void manual_checkend(int end, int current) {
 
             //set video loops here
@@ -1045,7 +1045,7 @@ namespace windowMediaPlayerDM
                         {
                             vlcPlayer.Stop();
                         }
-
+                        timerStop();
 
                        
 
@@ -1217,7 +1217,9 @@ namespace windowMediaPlayerDM
 
         
             DM_List.Clear();
+            CWRemoveComments(Comment_Windows);
             removeAllComments();
+            
 
             setVLCname(currentfile);
             autoLoadByName(currentfile);
@@ -1232,6 +1234,8 @@ namespace windowMediaPlayerDM
 
             playedcomment = 0;
             CWplayedcomments(Comment_Windows, 0);
+            CWRemoveComments(Comment_Windows);
+
             time_counter = 0;
 
             vlc_track_time = -2;
@@ -1242,7 +1246,7 @@ namespace windowMediaPlayerDM
 
        
 
-            removeAllComments();
+           // removeAllComments();
         }
 
         void vlcPlayer_Playing(object sender, Vlc.DotNet.Core.VlcMediaPlayerPlayingEventArgs e)
@@ -1984,9 +1988,25 @@ namespace windowMediaPlayerDM
                 l.ElementAt(i).getplayedComment = value;
             }
         }
+        void CWRemoveComments(List<Neo_Comment_window> l) {
+
+            for (int i = 0; i < l.Count; i++) {
+                List<Label> list = l.ElementAt(i).setStorage;
+                for (int j = 0; j < list.Count; j++)
+                {
+                    list.ElementAt(j).Text = "";
+                    list.ElementAt(j).Dispose();
+                }
+                l.ElementAt(i).setStorage.Clear();
+            }
+            
+        
+        }
+
 
         void Form1_StateChanged(object sender, Vlc.DotNet.Core.VlcMediaStateChangedEventArgs e)
         {
+          /*
           switch(e.State.ToString()){
           
               case "Stopped":
@@ -2022,7 +2042,7 @@ namespace windowMediaPlayerDM
                 
           
           }
-        
+        */
         }
 
 
@@ -2150,6 +2170,7 @@ namespace windowMediaPlayerDM
             }
 
         }
+        
         void removeAllComments()
         {
 
@@ -2183,7 +2204,7 @@ namespace windowMediaPlayerDM
                   
                     playedcomment = 0;
                     CWplayedcomments(Comment_Windows, 0);
-
+                    CWRemoveComments(Comment_Windows);
                     time_counter = 0;
 
   //                  onLoadUp();
@@ -2192,7 +2213,7 @@ namespace windowMediaPlayerDM
                 
   //                  resetComment();
 
-                    removeAllComments();
+                  //  removeAllComments();
                     break;
                 
                 case "wmppsReady":
@@ -2783,7 +2804,9 @@ namespace windowMediaPlayerDM
                     for (int i = 0; i < medias.Count(); i++)
             {
                 Media_Playlist.appendItem(Media_Player.newMedia(medias.ElementAt(i)[0]));
+                if(!Media_List.Contains(medias.ElementAt(i))){
                 Media_List.Add(medias.ElementAt(i));
+                }
 
             }
             media_dir = medias.ElementAt(0)[0];
@@ -2799,8 +2822,9 @@ namespace windowMediaPlayerDM
                     for (int i = 0; i < medias.Count(); i++)
             {
                 
+                        if(!Media_List.Contains(medias.ElementAt(i))){
                 Media_List.Add(medias.ElementAt(i));
-
+                }
             }
             media_dir = medias.ElementAt(0)[0];
             Media_status.Text = "Playlist Set";
@@ -2844,15 +2868,18 @@ namespace windowMediaPlayerDM
 
                 //only load if it's not xml file do this to avoid reading xml in wrong place
                 if(!file[i].Name.Contains(".xml") && !file[i].Name.Contains(".ass")){
-                Media_List.Add(ml);
+                    if (!Media_List.Contains(ml))
+                    {
+                        Media_List.Add(ml);
+                    }
                 }
 
-                if (fm2 != null)
-                {
 
-                    fm2.setMListBox.Items.Add(ml[1]);
 
-                }
+            }
+            if (fm2 != null)
+            {
+                fm2.setMediaList = Media_List;
 
             }
 
@@ -2870,15 +2897,17 @@ namespace windowMediaPlayerDM
             {
 
                 String[] ml = { file[i].FullName, file[i].Name };
-
-                Media_List.Add(ml);
-
-                if (fm2 != null)
+                if (!Media_List.Contains(ml))
                 {
-
-                    fm2.setMListBox.Items.Add(ml[1]);
-
+                    Media_List.Add(ml);
                 }
+
+         
+
+            }
+            if (fm2 != null)
+            {
+                fm2.setMediaList = Media_List;
 
             }
         }        
@@ -2949,8 +2978,9 @@ namespace windowMediaPlayerDM
             {
                 media_dir = medias.ElementAt(0)[0];
                 Media_status.Text = "Media Set";
+                if(!Media_List.Contains(medias.ElementAt(0))){
                 Media_List.Add(medias.ElementAt(0));
-
+                }
 
 
 
@@ -5103,6 +5133,14 @@ namespace windowMediaPlayerDM
             Media_status.Text = "Media Set";
             autoLoadByName(playfile);
             currentfile = file;
+            if (fm2 != null) {
+                if (currentfile != null)
+                {
+
+                    selectPlaying_box(currentfile.Name);
+                }
+            
+            }
             vlcPlayer.SetMedia(file);
         
         }
@@ -5665,7 +5703,10 @@ namespace windowMediaPlayerDM
                     if (currentfile==null || currentfile.Name != file.Name)
                     {
                         string[] temp = { file.FullName, file.Name };
-                        Media_List.Add(temp);
+                     //   if (!Media_List.Contains(temp))
+                     //   {
+                       //     Media_List.Add(temp);
+                     //   }
                         autoLoadMlist(temp);
                         autoLoadDMlist(temp);
 
@@ -5733,12 +5774,12 @@ namespace windowMediaPlayerDM
         
         }
 
-        public AsyncCompletedEventHandler DownloadFileCompleted(Uri filename,ProgressBar pbar,Label status)
+        public AsyncCompletedEventHandler DownloadFileCompleted(Uri filename,ProgressBar pbar,Label status,Button dlcancel)
         {
             Action<object, AsyncCompletedEventArgs> action = (sender, e) =>
             {
                 BackgroundWorker bk = new BackgroundWorker();
-                bk.DoWork += DownloadDoWork(filename, pbar, status);
+                bk.DoWork += DownloadDoWork(filename, pbar, status,dlcancel);
 
                 var _filename = filename;
 
@@ -5752,6 +5793,8 @@ namespace windowMediaPlayerDM
                         //fm7.Size = new Size(fm7.Width, fm7.Height - pbar.Height);
                         pbar.Dispose();
                         status.Dispose();
+                        dlcancel.Dispose();
+
                         //only changes the size back to normal if there's no task is downloading
                         if (fm7.Controls.OfType<ProgressBar>().Count() == 0)
                         {
@@ -5796,11 +5839,7 @@ namespace windowMediaPlayerDM
             //    }
             //    downloadFile(sender);
                 try{
-                    if (fm7 != null) {
-                        pbar.Dispose();
-                        status.Dispose();
-                    
-                    }
+              
           
                 if (bk!=null && !bk.IsBusy) {
                     bk.RunWorkerAsync();
@@ -5818,7 +5857,7 @@ namespace windowMediaPlayerDM
 
 
         }
-        public DoWorkEventHandler DownloadDoWork(Uri filename, ProgressBar pbar, Label status) {
+        public DoWorkEventHandler DownloadDoWork(Uri filename, ProgressBar pbar, Label status,Button dlcancel) {
 
 
             Action<object, DoWorkEventArgs> action = (sender, e) =>
@@ -5832,7 +5871,7 @@ namespace windowMediaPlayerDM
 
 
 
-                downloadfileCompleted_thread(filename, pbar, status);
+                downloadfileCompleted_thread(filename, pbar, status,dlcancel);
 
             };
         return new DoWorkEventHandler(action);
@@ -5892,7 +5931,7 @@ namespace windowMediaPlayerDM
                     dlCancel.Click += cancelDownload(wb) ;
                     
                     // wb.DownloadFileCompleted += new AsyncCompletedEventHandler(wb_DownloadFileCompleted);
-                    wb.DownloadFileCompleted += DownloadFileCompleted(filename, pbar, status);
+                    wb.DownloadFileCompleted += DownloadFileCompleted(filename, pbar, status,dlCancel);
                     //  wb.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wb_DownloadProgressChanged);
                     wb.DownloadProgressChanged += DownloadProgessChange(pbar, status, title, dlCancel);
                     
@@ -5944,7 +5983,7 @@ namespace windowMediaPlayerDM
                     urls.Remove((Uri)box.SelectedItem);
                     FileInfo file = new FileInfo(gb.playDownlist.OriginalString);
                     String[] temp = { file.FullName, file.Name };
-                    Media_List.Add(temp);
+                    //Media_List.Add(temp);
                     autoLoadMlist(temp);
                     autoLoadDMlist(temp);
 
@@ -5961,6 +6000,23 @@ namespace windowMediaPlayerDM
                 }
             }
         }
+        String safeFilename(String filename) {
+            String result = filename;
+            result = result.Replace("?", "");
+            result = result.Replace(":", "");
+            result = result.Replace("<", "");
+            result = result.Replace(">", "");
+            result = result.Replace("\"", "");
+            result = result.Replace("|", "");
+            result = result.Replace("*", "");
+            result = result.Replace("/", "");
+
+
+
+
+            return result;
+        
+        }
          public EventHandler cancelDownload(WebClient wb){
 
 
@@ -5970,7 +6026,10 @@ namespace windowMediaPlayerDM
                  String filename = wb.BaseAddress;
                  int start = filename.LastIndexOf("/")+1;
                  filename = filename.Substring(start, filename.Length - start);
+                 filename = safeFilename(filename);
                  filename = current_dir_url + "\\" + filename;
+
+
                  FileInfo file = new FileInfo(filename);
 
                  if (wb != null)
@@ -6004,10 +6063,7 @@ namespace windowMediaPlayerDM
          
          
          } 
-        void dlCancel_Click(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
+
         void autoLoadByName(FileInfo file)
         {
 
@@ -6169,9 +6225,9 @@ namespace windowMediaPlayerDM
 
 
         }
-        delegate void downlaod_complete_thread(Uri filename, ProgressBar pbar, Label status);
+        delegate void downlaod_complete_thread(Uri filename, ProgressBar pbar, Label status,Button dlcancel);
 
-        void downloadfileCompleted_thread(Uri ufilename, ProgressBar pbar, Label status){
+        void downloadfileCompleted_thread(Uri ufilename, ProgressBar pbar, Label status,Button dlcancel){
 
             if (fm7 != null) {
 
@@ -6181,7 +6237,7 @@ namespace windowMediaPlayerDM
                     downlaod_complete_thread dl = new downlaod_complete_thread(downloadfileCompleted_thread);
 
 
-                    fm7.Invoke(dl, new object[] { ufilename, pbar, status });
+                    fm7.Invoke(dl, new object[] { ufilename, pbar, status,dlcancel });
 
 
 
@@ -6189,7 +6245,7 @@ namespace windowMediaPlayerDM
                 }
                 else {
 
-                    wb_DownloadFileCompleted(ufilename, pbar, status);
+                    wb_DownloadFileCompleted(ufilename, pbar, status,dlcancel);
                 
                 }
             
@@ -6203,7 +6259,7 @@ namespace windowMediaPlayerDM
         
         
         }
-        void wb_DownloadFileCompleted(Uri ufilename,ProgressBar pbar, Label status)
+        void wb_DownloadFileCompleted(Uri ufilename,ProgressBar pbar, Label status,Button dlcancel)
         {
 
             if (fm7 != null)
@@ -6212,6 +6268,7 @@ namespace windowMediaPlayerDM
                 //fm7.Size = new Size(fm7.Width, fm7.Height - pbar.Height);
                 pbar.Dispose();
                 status.Dispose();
+                dlcancel.Dispose();
                 //only changes the size back to normal if there's no task is downloading
                 if (fm7.Controls.OfType<ProgressBar>().Count() == 0)
                 {
@@ -6238,7 +6295,7 @@ namespace windowMediaPlayerDM
             int end = dllink.Length;
 
             String filename = dllink.Substring(start, end - start);
-
+            filename = safeFilename(filename);
 
             FileInfo file = new FileInfo(current_dir_url + "\\" + filename);
             string[] tempstring = { file.FullName, file.Name };
@@ -6274,17 +6331,20 @@ namespace windowMediaPlayerDM
 
                 gb.dlnameUpdate = temp.FullName;
                 tempstring = new String[] { file.FullName, file.Name };
-                Media_List.Add(tempstring);
-
-
+        
+                if (!Media_List.Contains(tempstring))
+                {
+                    Media_List.Add(tempstring);
+                }
                 if (vlcPlayer.IsPlaying)
                 {
 
 
                     String[] m = {temp.FullName,temp.Name };
-                    Media_List.Add(m);
-
-
+                    if (!Media_List.Contains(m))
+                    {
+                        Media_List.Add(m);
+                    }
 
                 }
                 else
@@ -6292,7 +6352,10 @@ namespace windowMediaPlayerDM
 
 
                     String[] m = { temp.FullName, temp.Name };
-                    Media_List.Add(m);
+                    if (!Media_List.Contains(m))
+                    {
+                        Media_List.Add(m);
+                    }
                   //  vlcSetMedia(temp);
                   //  autoLoadByName(temp);
                     //           vlcPlayer.Play();
@@ -6381,7 +6444,10 @@ namespace windowMediaPlayerDM
 
                 gb.dlnameUpdate = temp.FullName;
                 tempstring= new String[]{file.FullName,file.Name};
-                Media_List.Add(tempstring);
+                if (!Media_List.Contains(tempstring))
+                {
+                    Media_List.Add(tempstring);
+                }
                 if (vlcPlayer.IsPlaying)
                 {
                     long temptime = vlcPlayer.Time;

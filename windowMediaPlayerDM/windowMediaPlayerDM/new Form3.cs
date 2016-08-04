@@ -310,22 +310,27 @@ namespace windowMediaPlayerDM
                 if(value != -1){
                     List<Label> remove = new List<Label>();
                     //int offset = comment_storage.Count / 5;
-                    for (int i = 0; i < comment_storage.Count; i++) {
+                    try
+                    {
+                        for (int i = 0; i < comment_storage.Count; i++)
+                        {
 
-                        moveLabel2(comment_storage.ElementAt(i), value);
-                        if (comment_storage.ElementAt(i).IsDisposed) { 
-                        remove.Add(comment_storage.ElementAt(i));
-                        
+                            moveLabel2(comment_storage.ElementAt(i), value);
+                            if (comment_storage.ElementAt(i).IsDisposed)
+                            {
+                                remove.Add(comment_storage.ElementAt(i));
+
+                            }
+
                         }
-                    
-                    }
-             
+
                         for (int i = 0; i < remove.Count; i++)
                         {
 
                             comment_storage.Remove(remove.ElementAt(i));
                         }
-                    
+                    }
+                    catch (ArgumentOutOfRangeException) { }
                   //  remove.Clear();
 
             };
