@@ -5685,7 +5685,7 @@ namespace windowMediaPlayerDM
           //      fm7.Focus();
           //  }
         }
-        public DownloadProgressChangedEventHandler DownloadProgessChange(ProgressBar pbar,Label percent,String title) {
+        public DownloadProgressChangedEventHandler DownloadProgessChange(ProgressBar pbar,Label percent,String title, Button dlcancel) {
 
             Action<object, DownloadProgressChangedEventArgs> action = (sender, e) =>
             {
@@ -5702,7 +5702,7 @@ namespace windowMediaPlayerDM
                     if (pbar.IsDisposed) {
                         ProgressBar npbar = new ProgressBar();
                         Label status = new Label();
-                        downloadstatusSetup(npbar, status);
+                        downloadstatusSetup(npbar, status, dlcancel);
 
                         pbar = npbar;
                         percent = status;
@@ -5737,7 +5737,8 @@ namespace windowMediaPlayerDM
         {
             Action<object, AsyncCompletedEventArgs> action = (sender, e) =>
             {
-
+                BackgroundWorker bk = new BackgroundWorker();
+                bk.DoWork += DownloadDoWork(filename, pbar, status);
 
                 var _filename = filename;
 
@@ -5748,10 +5749,25 @@ namespace windowMediaPlayerDM
                     if (fm7 != null)
                     {
 
-                        fm7.Size = new Size(fm7.Width, fm7.Height - pbar.Height);
+                        //fm7.Size = new Size(fm7.Width, fm7.Height - pbar.Height);
                         pbar.Dispose();
                         status.Dispose();
+                        //only changes the size back to normal if there's no task is downloading
+                        if (fm7.Controls.OfType<ProgressBar>().Count() == 0)
+                        {
+                            fm7.Size = new Size(fm7.Width, 475);
+                        }
 
+                        String filenames = filename.OriginalString;
+                        int start = filenames.LastIndexOf("/") + 1;
+                        filenames = filenames.Substring(start, filenames.Length - start);
+                        filenames = current_dir_url + "\\" + filenames;
+                        FileInfo file = new FileInfo(filenames);
+                       // bk.CancelAsync();
+                        bk.Dispose();
+                        if (file.Exists) {
+                            file.Delete();
+                        }
                     }
                   //  throw e.Error;
                 }
@@ -5785,9 +5801,8 @@ namespace windowMediaPlayerDM
                         status.Dispose();
                     
                     }
-                BackgroundWorker bk = new BackgroundWorker();
-                bk.DoWork += DownloadDoWork(filename,pbar,status);
-                if (!bk.IsBusy) {
+          
+                if (bk!=null && !bk.IsBusy) {
                     bk.RunWorkerAsync();
                 
                 }
@@ -5831,7 +5846,7 @@ namespace windowMediaPlayerDM
 
         Dictionary<Uri, String> MultiDownloadLinks = new Dictionary<Uri, string>();
 
-        void downloadstatusSetup(ProgressBar pbar, Label status) {
+        void downloadstatusSetup(ProgressBar pbar, Label status,Button dlCancel) {
 
 
 
@@ -5842,11 +5857,15 @@ namespace windowMediaPlayerDM
             pbar.Location = new Point(fm7.Width / 2, fm7.Height - 120 + pbar.Height);
             status.Location = new Point(0, fm7.Height - 120+5);
             status.AutoSize = true;
-
+            dlCancel.Text = "Cancel Download";
+            int width = dlCancel.Size.Width;
+            dlCancel.Location = new Point(pbar.Location.X - width-20, pbar.Location.Y);
             fm7.Controls.Add(pbar);
             fm7.Controls.Add(status);
+            fm7.Controls.Add(dlCancel);
             pbar.Show();
             status.Show();
+            dlCancel.Show();
 
         }
 
@@ -5856,6 +5875,7 @@ namespace windowMediaPlayerDM
             {
                 using (WebClient wb = new WebClient())
                 {
+              
                     wb.Encoding = Encoding.UTF8;
                     
                     Uri filename = (Uri)box.SelectedItem;
@@ -5863,14 +5883,19 @@ namespace windowMediaPlayerDM
                     //download status related items here
                     ProgressBar pbar = new ProgressBar();
                     Label status = new Label();
-                    downloadstatusSetup(pbar, status);
+                    Button dlCancel = new Button();
+                    downloadstatusSetup(pbar, status,dlCancel);
                     String title = fm7.getTitle.SelectedItem.ToString();
 
+                    wb.BaseAddress = box.SelectedItem.ToString();
+
+                    dlCancel.Click += cancelDownload(wb) ;
+                    
                     // wb.DownloadFileCompleted += new AsyncCompletedEventHandler(wb_DownloadFileCompleted);
                     wb.DownloadFileCompleted += DownloadFileCompleted(filename, pbar, status);
                     //  wb.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wb_DownloadProgressChanged);
-                    wb.DownloadProgressChanged += DownloadProgessChange(pbar, status, title);
-
+                    wb.DownloadProgressChanged += DownloadProgessChange(pbar, status, title, dlCancel);
+                    
                     gb.downlaodFile((Uri)box.SelectedItem, wb);
                     
 
@@ -5935,6 +5960,53 @@ namespace windowMediaPlayerDM
 
                 }
             }
+        }
+         public EventHandler cancelDownload(WebClient wb){
+
+
+             Action<object, EventArgs> action = (sender, e) =>
+             {
+                 Button cancel = sender as Button;
+                 String filename = wb.BaseAddress;
+                 int start = filename.LastIndexOf("/")+1;
+                 filename = filename.Substring(start, filename.Length - start);
+                 filename = current_dir_url + "\\" + filename;
+                 FileInfo file = new FileInfo(filename);
+
+                 if (wb != null)
+                 {
+                     var alert = MessageBox.Show("Are you sure you want to cancel this download?", "alert", MessageBoxButtons.YesNo);
+                     if (alert == DialogResult.Yes)
+                     {
+                         cancel.Dispose();
+                         wb.CancelAsync();
+
+                         wb.Dispose();
+
+
+                         
+                         if (file.Exists)
+                         {
+                             try
+                             {
+                              //   file.Refresh();
+                                 file.Delete();
+                             }
+                             catch (Exception) { };
+                         }
+                     }
+                     
+                 }
+             };
+         
+         return new EventHandler (action);
+         
+         
+         
+         } 
+        void dlCancel_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
         void autoLoadByName(FileInfo file)
         {
@@ -6171,7 +6243,7 @@ namespace windowMediaPlayerDM
             FileInfo file = new FileInfo(current_dir_url + "\\" + filename);
             string[] tempstring = { file.FullName, file.Name };
             Media_List.Remove(tempstring);
-            if (file.Length > 0)
+            if (file.Exists && file.Length > 0)
             {
                 if (fm7 != null)
                 {
@@ -6231,8 +6303,10 @@ namespace windowMediaPlayerDM
             }
             else
             {
-
-                file.Delete();
+                if (file.Exists)
+                {
+                    file.Delete();
+                }
 
             }
             if (fm7 != null)
@@ -6240,6 +6314,12 @@ namespace windowMediaPlayerDM
                 fm7.getDownloadstatus1.Text = "";
             }
             downlaod_status.Text = "";
+
+            if (fm7.getDownloadstatus2.Text == "server error" && !file.Exists) {
+
+                fm7.getDownloadstatus2.Text = "Downlaod Cancelled";
+            
+            };
 
         }
 
