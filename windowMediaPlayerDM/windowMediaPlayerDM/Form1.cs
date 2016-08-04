@@ -339,7 +339,7 @@ namespace windowMediaPlayerDM
                     //commentWindowSetup();
                     FileInfo f = new FileInfo(test[1]);
                     vlcSetMedia(f);
-                    clipboard_label.Text = test[1];
+                   // clipboard_label.Text = test[1];
                     if (vlcPlayer.GetCurrentMedia() != null)
                     {
                         vlcPlayer.Play();
@@ -481,11 +481,11 @@ namespace windowMediaPlayerDM
             
             } else if (data.GetDataPresent(DataFormats.Text)){
             
-            clipboard_label.Text = data.GetData(DataFormats.Text) as string;
+           // clipboard_label.Text = data.GetData(DataFormats.Text) as string;
             text = data.GetData(DataFormats.Text) as string;
             
             }else{
-            clipboard_label.Text="clipbaord data is not rtf or ascii";
+         //   clipboard_label.Text="clipbaord data is not rtf or ascii";
             }
             }catch(Exception e){
            // MessageBox.Show(e.ToString());
@@ -5857,7 +5857,7 @@ namespace windowMediaPlayerDM
                 using (WebClient wb = new WebClient())
                 {
                     wb.Encoding = Encoding.UTF8;
-
+                    
                     Uri filename = (Uri)box.SelectedItem;
 
                     //download status related items here
@@ -5872,6 +5872,7 @@ namespace windowMediaPlayerDM
                     wb.DownloadProgressChanged += DownloadProgessChange(pbar, status, title);
 
                     gb.downlaodFile((Uri)box.SelectedItem, wb);
+                    
 
                     //add the used link as a key for getting the title of the current file
                     MultiDownloadLinks.Add((Uri)box.SelectedItem, fm7.getTitle.SelectedItem.ToString());
