@@ -5105,11 +5105,18 @@ namespace windowMediaPlayerDM
             Media_Player_ClickAction();
         }
         private void vlcSetMedia(FileInfo file) {
-
-
-            _duplicates = 0;
-
+            
             FileInfo playfile = file;
+            _duplicates = 0;
+            if (file.Name.Contains(".xml")) {
+
+                playfile = new FileInfo(file.FullName.Replace(".xml", ""));
+                if (!playfile.Exists) {
+                    playfile = file;
+                }
+            }
+
+          
            
             if (vlcPlayer.IsPlaying)
             {
@@ -5132,7 +5139,7 @@ namespace windowMediaPlayerDM
 
             Media_status.Text = "Media Set";
             autoLoadByName(playfile);
-            currentfile = file;
+            currentfile = playfile;
             if (fm2 != null) {
                 if (currentfile != null)
                 {
@@ -5141,7 +5148,7 @@ namespace windowMediaPlayerDM
                 }
             
             }
-            vlcPlayer.SetMedia(file);
+            vlcPlayer.SetMedia(playfile);
         
         }
         private void next_track_Click(object sender, EventArgs e)
