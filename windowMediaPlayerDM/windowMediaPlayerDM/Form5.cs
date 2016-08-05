@@ -19,7 +19,7 @@ namespace windowMediaPlayerDM
     public partial class VLC_test : Form
     {
 
-       // DirectoryInfo dc = new DirectoryInfo("C:\\Users\\Alan\\Documents\\GitHub\\DM_Player\\lib");
+        // DirectoryInfo dc = new DirectoryInfo("C:\\Users\\Alan\\Documents\\GitHub\\DM_Player\\lib");
 
         List<Label> testlist = new List<Label>();
         List<Label> testlist2 = new List<Label>();
@@ -35,20 +35,21 @@ namespace windowMediaPlayerDM
 
             //vlcControl1.Audio.Tracks.
 
-          //  AXVLC.IVLCControl2 c2 = ((AXVLC.IVLCControl2)vlcControl1);
-            
-            
-            
-         //   vlcControl1.VlcLibDirectory = dc;
-            
+            //  AXVLC.IVLCControl2 c2 = ((AXVLC.IVLCControl2)vlcControl1);
 
-            for (int i = 0; i < 100; i++) {
+
+
+            //   vlcControl1.VlcLibDirectory = dc;
+
+
+            for (int i = 0; i < 100; i++)
+            {
 
                 Label l = new Label();
-                l.Location = new Point(ClientRectangle.Right+i,i);
+                l.Location = new Point(ClientRectangle.Right + i, i);
                 l.Text = " test ";
                 this.Controls.Add(l);
-             //   this.testlist.Add(l);
+                //   this.testlist.Add(l);
 
                 Label j = new Label();
                 j.Text = " test ";
@@ -61,22 +62,23 @@ namespace windowMediaPlayerDM
                 atest[i] = k;
             }
 
-            
-            
+
+
         }
 
         private void Open_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
 
-            if (ofd.ShowDialog()== DialogResult.OK) {
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
 
                 FileInfo t = new FileInfo(ofd.FileName);
 
                 vlcControl1.SetMedia(t);
 
-                
-               
+
+
             }
 
 
@@ -84,18 +86,20 @@ namespace windowMediaPlayerDM
 
         private void Play_Click(object sender, EventArgs e)
         {
-            if (vlcControl1.GetCurrentMedia() != null) {
+            if (vlcControl1.GetCurrentMedia() != null)
+            {
 
                 vlcControl1.Play();
 
-             //   label1.Text = vlcControl1.State.ToString() +"   " + vlcControl1.GetCurrentMedia().Duration.Milliseconds + "/" + vlcControl1.GetCurrentMedia().Duration.TotalMilliseconds + vlcControl1.Audio.Channel;
-            
+                //   label1.Text = vlcControl1.State.ToString() +"   " + vlcControl1.GetCurrentMedia().Duration.Milliseconds + "/" + vlcControl1.GetCurrentMedia().Duration.TotalMilliseconds + vlcControl1.Audio.Channel;
+
             }
         }
 
         private void Stop_Click(object sender, EventArgs e)
         {
-            if (vlcControl1.GetCurrentMedia() != null) {
+            if (vlcControl1.GetCurrentMedia() != null)
+            {
 
 
                 vlcControl1.Stop();
@@ -104,7 +108,8 @@ namespace windowMediaPlayerDM
 
         private void Pause_Click(object sender, EventArgs e)
         {
-            if (vlcControl1.GetCurrentMedia() != null) {
+            if (vlcControl1.GetCurrentMedia() != null)
+            {
 
 
                 vlcControl1.Pause();
@@ -114,41 +119,42 @@ namespace windowMediaPlayerDM
         List<Uri> fullurls;
         private void web_button_Click(object sender, EventArgs e)
         {
-             downloadstatus2.Text = "Fetching Url" + "http://himado.in/336121";
-            String local_path= dir_box.Text;
-            
-            
-         
+            downloadstatus2.Text = "Fetching Url" + "http://himado.in/336121";
+            String local_path = dir_box.Text;
+
+
+
             //enter url here
             Uri link = new Uri("http://himado.in/336121");
 
 
             //
-        //    jsontest();
-        
-             gb = new getWebVideo(link,local_path);
-  
-            
+            //    jsontest();
+
+            gb = new getWebVideo(link, local_path);
+
+
 
             fullurls = gb.getDownlist;
             downloadstatus2.Text = "Url fetch comeplete!";
 
-            for(int i=0;i<fullurls.Count;i++){
+            for (int i = 0; i < fullurls.Count; i++)
+            {
 
                 Url_List.Items.Add(fullurls.ElementAt(i).LocalPath);
-               // throw new Exception("origin") { };
-            
+                // throw new Exception("origin") { };
+
             }
 
             Url_List.SelectedValueChanged += new EventHandler(Url_List_SelectedValueChanged);
 
-           // link = new Uri(gb.getbasicUrl);
-            
+            // link = new Uri(gb.getbasicUrl);
+
             //vlcControl1.SetMedia(link);
 
-         //   FileInfo testfile = new FileInfo(gb.dlurl);
+            //   FileInfo testfile = new FileInfo(gb.dlurl);
 
-         //   vlcControl1.SetMedia(testfile);
+            //   vlcControl1.SetMedia(testfile);
 
         }
 
@@ -174,7 +180,8 @@ namespace windowMediaPlayerDM
             //throw new NotImplementedException();
             FileInfo file = new FileInfo(gb.playDownlist.LocalPath);
 
-            if (file.Length == 0) {
+            if (file.Length == 0)
+            {
 
                 downloadstatus2.Text = "Some thing went wrong, Can't download the file online !";
                 file.Delete();
@@ -183,31 +190,33 @@ namespace windowMediaPlayerDM
             {
                 downloadstatus2.Text = "Download Complete !";
             }
-                download_status.Text = "";
+            download_status.Text = "";
             downloadbar.Value = 0;
-            
+
 
         }
 
-        void jsontest() {
+        void jsontest()
+        {
 
-    
 
-            using (WebClient wb = new WebClient()) {
+
+            using (WebClient wb = new WebClient())
+            {
 
                 var json = wb.DownloadString(new Uri("http://himado.in/&isOtherSource=&post_id=386378&sourceid=&commentlink="));
 
-                
 
-                comment_test.Text=   json.ToString();
-                
+
+                comment_test.Text = json.ToString();
+
 
 
 
                 wb.Dispose();
             }
-        
-        
+
+
         }
 
         void nwb_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
@@ -223,18 +232,13 @@ namespace windowMediaPlayerDM
 
             //throw new NotImplementedException();
 
-            
-        }
 
-        private void test_button_Click(object sender, EventArgs e)
-        {
-            gb = new getWebVideo(new Uri("http://say-move.org/comeplay.php?comeid=1620354"),"A:\\video\\hima test video");
-
-            print.Text=gb.saymoveAP2();
-            // print.Text = "done";
         }
         
+        private void test_button_Click(object sender, EventArgs e)
+        {
 
+        }
 
     }
 }

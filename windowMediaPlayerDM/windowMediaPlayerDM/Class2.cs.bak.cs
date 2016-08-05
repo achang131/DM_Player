@@ -6,7 +6,8 @@ using System.Net.Http;
 using System.Net;
 using System.IO;
 using System.Windows.Forms;
-
+using System.Xml;
+using System.Text;
 
 //how to implement
 //use dictionary to hold the url as key and list of the movie urls as value
@@ -40,7 +41,7 @@ namespace windowMediaPlayerDM
             //System.Net.WebClient webclient = new System.Net.WebClient();
 
             loadInfo(websiteLink);
-          title=  getTitle();
+         title=  getTitle();
           titles.Add(title);
             getAllUrls();
         
@@ -64,9 +65,653 @@ namespace windowMediaPlayerDM
 
 
            otherSiteSupport(url);
-
+          // getCommentUri(url);
             
         }
+        public void getCommentUri(Uri url) {
+            bool lesscomment = false;
+
+            if(url.OriginalString.Contains("himado.in")){
+            String commentc = fullcontent;
+            //to get the full comment need to decode this
+
+            int left = commentc.IndexOf("<div id=\"commentdl_ret\">");
+            int right = commentc.LastIndexOf("<select name=\"limit\">");
+            if (left >= 0 && right > 0 && right > left)
+            {
+                commentc = commentc.Substring(left, right - left);
+
+                left = commentc.IndexOf("\"id\"");
+                right = commentc.Length;
+
+                commentc = commentc.Substring(left, right - left);
+
+                left = commentc.IndexOf("=\"") + 2;
+                right = commentc.IndexOf("\">");
+
+                String id = commentc.Substring(left, right - left);
+
+                commentc = commentc.Substring(right + 3, commentc.Length - (right + 3));
+
+                left = commentc.IndexOf("group_id\" value");
+                right = commentc.IndexOf("\">");
+
+                String group_id = commentc.Substring(left, right - left);
+                commentc = commentc.Substring(right + 3, commentc.Length - (right + 3));
+
+                left = group_id.IndexOf("=\"") + 2;
+                right = group_id.Length;
+
+                group_id = group_id.Substring(left, right - left);
+
+                left = commentc.IndexOf("key") + 5;
+
+                commentc = commentc.Substring(left, commentc.Length - left);
+
+                left = commentc.IndexOf("=\"") + 2;
+                right = commentc.IndexOf("\">");
+
+                String key = commentc.Substring(left, right - left);
+
+                //http://himado.in/?mode=comment&id=340887&limit=200000&key=23&group_id=391199,390082&start=0&ver=20100220
+
+                String trueUrl = "http://himado.in/?mode=comment&id=" + id + "&limit=200000&key=" + key + "&group_id=" + group_id + "&start=0";
+
+                Uri temp = new Uri(trueUrl);
+
+                //throw new Exception("check");
+                getHimadoComment(temp);
+            }
+            else {
+
+                lesscomment = true;
+            }
+
+            }
+
+
+            if (lesscomment == true)
+            {
+
+                if (url.OriginalString.Contains("himado.in"))
+                {
+                    //http://himado.in/?mode=comment&id=340877&limit=200000
+                    //http://himado.in/340877
+
+                    if (url.OriginalString.Contains("commentgroup"))
+                    {
+
+                        //http://himado.in/?mode=commentgroup&group_id=391236
+
+                        int start = url.OriginalString.IndexOf("id=") + 3;
+
+                        String id = url.OriginalString.Substring(start, url.OriginalString.Length - start);
+
+                        id = id.Replace("?", "");
+
+                        String commentPlace = "http://himado.in/?mode=comment&id=" + id + "&limit=200000";
+
+                        Uri temp = new Uri(commentPlace);
+
+                        getHimadoComment(temp);
+
+
+
+
+
+                    }
+                    else
+                    {
+                        Uri temp = null;
+                        String original = url.OriginalString;
+                        int start = original.LastIndexOf("/") + 1;
+                        original = original.Substring(start, original.Length - start);
+                        //just in case
+                        original = original.Replace("?", "");
+
+                        String commentPlace = "http://himado.in/?mode=comment&id=" + original + "&limit=200000";
+
+                        temp = new Uri(commentPlace);
+
+                        getHimadoComment(temp);
+                    }
+                }
+            }
+         
+         }
+         int decoder(char ch, int times)
+         {
+             int ans = 0;
+
+             int abase = 36;
+             int sbase = 0;
+             if (times < 0)
+             {
+                 sbase = 1;
+             }
+             else
+             {
+                 sbase = 36;
+             }
+             switch (ch)
+             {
+
+                 case '1':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 1 * sbase;
+                     break;
+                 case '2':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 2 * sbase;
+                     break;
+                 case '3':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 3 * sbase;
+                     break;
+                 case '4':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 4 * sbase;
+                     break;
+                 case '5':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 5 * sbase;
+                     break;
+                 case '6':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 6 * sbase;
+                     break;
+                 case '7':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 7 * sbase;
+                     break;
+                 case '8':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 8 * sbase;
+                     break;
+                 case '9':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 9 * sbase;
+                     break;
+                 case 'a':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 10 * sbase;
+                     break;
+                 case 'b':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 11 * sbase;
+                     break;
+                 case 'c':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 12 * sbase;
+                     break;
+                 case 'd':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 13 * sbase;
+                     break;
+                 case 'e':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 14 * sbase;
+                     break;
+                 case 'f':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 15 * sbase;
+                     break;
+                 case 'g':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 16 * sbase;
+                     break;
+                 case 'h':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 17 * sbase;
+                     break;
+                 case 'i':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 18 * sbase;
+                     break;
+                 case 'j':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 19 * sbase;
+                     break;
+                 case 'k':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 20 * sbase;
+                     break;
+                 case 'l':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 21 * sbase;
+                     break;
+                 case 'm':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 22 * sbase;
+                     break;
+                 case 'n':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 23 * sbase;
+                     break;
+                 case 'o':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 24 * sbase;
+                     break;
+                 case 'p':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 25 * sbase;
+                     break;
+                 case 'q':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 26 * sbase;
+                     break;
+                 case 'r':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 27 * sbase;
+                     break;
+                 case 's':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 28 * sbase;
+                     break;
+                 case 't':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 29 * sbase;
+                     break;
+                 case 'u':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 30 * sbase;
+                     break;
+                 case 'v':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 31 * sbase;
+                     break;
+                 case 'w':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 32 * sbase;
+                     break;
+                 case 'x':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 33 * sbase;
+                     break;
+                 case 'y':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 34 * sbase;
+                     break;
+
+                 case 'z':
+                     for (int i = 0; i < times; i++)
+                     {
+
+                         sbase = sbase * abase;
+
+                     }
+                     ans = 35 * sbase;
+                     break;
+                 default:
+
+                     ans = 0;
+                     break;
+
+             }
+
+
+             return ans;
+
+         }
+         int convert(String x)
+         {
+
+             int answer = 0;
+             //1~10+26 char
+             //int allbase = 36;
+
+             char[] allchar = x.ToCharArray();
+
+             for (int i = allchar.Length - 1; i >= 0; i--)
+             {
+                 int times = allchar.Length - (i + 1) - 1;
+                 answer += decoder(allchar[i], times);
+
+             };
+
+
+
+             return answer;
+         }
+
+         String commentPage = "";
+
+         void getHimadoComment(Uri url) {
+
+             using (WebClient wb = new WebClient()) {
+                 wb.Encoding = Encoding.UTF8;
+                 //MessageBox.Show(url.OriginalString);
+                 wb.DownloadStringAsync(url);
+                 wb.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wb_DownloadStringCompleted);
+             
+             
+             
+             }
+         
+         
+         
+         
+         }
+
+         void wb_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
+         {
+             //throw new NotImplementedException();
+             String CommentTitle = title+".xml";
+             commentPage = e.Result;
+             FileInfo temp_comment = new FileInfo("temp_comment");
+             if (temp_comment.Exists) {
+                 temp_comment.Delete();
+             }
+
+             // title
+             File.WriteAllText(temp_comment.FullName, commentPage);
+
+             XmlReader reader = new XmlTextReader(temp_comment.FullName);
+             XmlReader findID = new XmlTextReader(temp_comment.FullName);
+             Dictionary<String, String> ids = new Dictionary<string, string>();
+             while (findID.Read()) {
+
+                 switch (findID.NodeType) { 
+                        
+                     case XmlNodeType.Element:
+                         if(findID.Name=="d"){
+                             String n = "";
+                             String u = "";
+                             while (findID.MoveToNextAttribute()) {
+
+                                 if (findID.Name == "n") {
+                                     n = findID.Value;
+                                 
+                                 }
+
+                                 if (findID.Name == "u") {
+                                     u = findID.Value;
+                                 }
+                             
+                             
+                             }
+                             ids.Add(n, u);
+
+                         
+                         }
+
+                         break;
+                 
+                 
+                 }
+             
+             }
+             findID.Close();
+
+             using (XmlWriter writer = XmlWriter.Create(CommentTitle))
+             {
+                 writer.WriteStartDocument();
+                 writer.WriteStartElement("packet");
+                 while (reader.Read()) {
+                     
+                     switch (reader.NodeType) { 
+                     
+                         
+                         case XmlNodeType.Element:
+                             if(reader.Name=="c"){
+                                 writer.WriteStartElement("chat");
+                                 while (reader.MoveToNextAttribute()) {
+
+                                     //<c p="107,bb0,44dp7e,0,0">１</c>
+                                     if (reader.Name == "p") {
+                                        String raw= reader.Value;
+                                        int start = raw.IndexOf(",");
+                                        string prevpos = raw.Substring(0, start);
+                                        prevpos = prevpos.Replace(",", "");
+                                         //just in case if it's including the ,;
+                                        int vpos = convert(prevpos);
+                                       
+                                         writer.WriteAttributeString("vpos", vpos.ToString());
+                                        
+                                         raw = raw.Substring((start+1), raw.Length - (start+1));
+                                        start = raw.IndexOf(",");
+                                        raw = raw.Substring(start + 1, raw.Length - (start + 1));
+                                        start = raw.IndexOf(",");
+                                        String id = raw.Substring(0, start);
+                                        id = id.Replace(",", "");
+                                        int uid = convert(id);
+
+                                        writer.WriteAttributeString("no", uid.ToString());
+                                         
+                                         //<c p="1nj0,7st,44dr0b,3y,0">超高校級の菓子職人ｗｗｗｗｗｗ</c> 
+                                        raw = raw.Substring(start + 1, raw.Length - (start + 1));
+                                        start = raw.LastIndexOf(",");
+                                        string user = raw.Substring(0, start);
+                                        user = user.Replace(",", "");
+                                        String true_user = "";
+                                        if (ids.ContainsKey(user))
+                                        {
+                                            true_user = ids[user];
+                                        }
+                                        if (true_user != "") {
+
+                                            writer.WriteAttributeString("user_id", true_user);
+                                        
+                                        }
+
+
+                                     }
+                                 
+                                 }
+                             
+                             }
+
+                             break;
+
+                         case XmlNodeType.Text:
+                             writer.WriteString(reader.Value);
+                             break;
+
+                         case XmlNodeType.EndElement:
+                             writer.WriteEndElement();
+                             break;
+                     
+                     
+                     
+                     
+                     
+                     }
+                 
+                 
+                 
+                 }
+                 writer.WriteEndDocument();
+                 //writer.WriteEndElement();
+                // writer.WriteEndDocument();
+                 writer.Close();
+                 reader.Close();
+
+              //   MessageBox.Show("xml  complete");
+             }
+             FileInfo file = new FileInfo(CommentTitle);
+             try
+             {
+                 file.CopyTo(filestorage_dir + "\\" + CommentTitle, true);
+             }
+             catch (IOException) {
+                 file.CopyTo(filestorage_dir + "\\" + CommentTitle+"_new", true);
+             }
+                 file.Delete();
+            
+
+         }
+
+
         public void loadInfo_say(Uri url){
 
 
@@ -118,10 +763,10 @@ namespace windowMediaPlayerDM
 
                  default:
 
-           loadInfo(websiteLink);
-           title= getTitle();
-           titles.Add(title);
-                     getAllUrls();
+           loadInfo_hima(url);
+         //  title= getTitle();
+         //  titles.Add(title);
+          //           getAllUrls();
 
                      break;
              
@@ -147,7 +792,8 @@ namespace windowMediaPlayerDM
              // comment link get !
 
 
-             using(WebClient wb = new WebClient()){
+             WebClient wb = new WebClient();
+             
 
 
                  FileInfo file = new FileInfo(filestorage_dir + "\\" + title);
@@ -155,15 +801,16 @@ namespace windowMediaPlayerDM
                  //download the .xml file as the title name +.xml into the default folder 
                  if (!file.Exists)
                  {
-                     wb.DownloadFileAsync(new Uri(link), file.FullName+".xml");
+                     wb.DownloadFileAsync(new Uri(link), file.FullName + ".xml");
                  }
-                 else {
-                     wb.DownloadFileAsync(new Uri(link), file.FullName+"(S).xml");
-                 
+                 else
+                 {
+                     wb.DownloadFileAsync(new Uri(link), file.FullName + "(S).xml");
+
                  }
                  wb.Dispose();
+
              
-             }
           
          
          
@@ -299,6 +946,52 @@ namespace windowMediaPlayerDM
              filestorage_dir = dir;
          }
         CookieCollection cookie;
+        void loadInfo_hima(Uri url) {
+           WebClient loadcontent = new WebClient();
+                loadcontent.Encoding = Encoding.UTF8;
+
+                //loadcontent.DownloadStringCompleted += downloadString(url);
+                fullcontent=loadcontent.DownloadString(url);
+
+                title = getTitle();
+                titles.Add(title);
+                getAllUrls();
+                getCommentUri(url);
+               loadcontent.Dispose();
+            
+          
+        
+        
+        
+        }
+        public DownloadStringCompletedEventHandler downloadString(Uri url) {
+
+            Action<object, DownloadStringCompletedEventArgs> action = (sender, e) =>
+            {
+           
+                WebClient wb = sender as WebClient;
+                if (e.Error!=null) {
+                    wb.CancelAsync();
+                    MessageBox.Show("Something went wrong with the website");
+                }
+                fullcontent = e.Result;
+                if (fullcontent != null)
+                {
+                    title = getTitle();
+                    titles.Add(title);
+                    getAllUrls();
+
+
+                    wb.Dispose();
+                    getCommentUri(url);
+                }
+
+            };
+        return new DownloadStringCompletedEventHandler(action);
+        }
+
+
+
         void loadInfo(Uri url) {
           
             
@@ -330,7 +1023,6 @@ namespace windowMediaPlayerDM
                 wresponse.Close();
                 readers.Close();
 
-                
 
 
             }
@@ -511,7 +1203,8 @@ namespace windowMediaPlayerDM
             exchange = exchange.Replace(".jpg", ".flv");
             string test = "";
 
-            using (WebClient wb = new WebClient()) {
+            WebClient wb = new WebClient();
+       
                 //http://vip.video45000.fc2.com/up/flv/201607/23/N/20160723NH71111q.flv?mid=fbe6f6e49cde6e1ba13e68efe3b07e94
                 //mid=fbe6f6e49cde6e1ba13e68efe3b07e94
 
@@ -522,7 +1215,7 @@ namespace windowMediaPlayerDM
                 
             
             
-            }
+         
 
 
 

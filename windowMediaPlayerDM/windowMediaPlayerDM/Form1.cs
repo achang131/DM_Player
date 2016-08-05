@@ -5622,6 +5622,7 @@ namespace windowMediaPlayerDM
             }
             FileInfo[] files = chk.GetFiles("*xml");
 
+            int xmlnumber = files.Count(); 
 
             FileInfo newest= null;
 
@@ -5637,18 +5638,16 @@ namespace windowMediaPlayerDM
             
             }
 
-
-
                 //only do this if there's only 1 file that suits the condition 
-                if (newest!=null && renamed==false)
+                if (newest!=null && xmlnumber!=0)
                 {
 
                  //   FileInfo xml = files.ElementAt(0);
 
                     byte[] tempbytes = Encoding.Default.GetBytes(gb.getCurrentTitle);
                     string transtemp = Encoding.GetEncoding("shift-jis").GetString(tempbytes);
-                    transtemp = transtemp.Replace("?", " ");
-                    
+                   // transtemp = transtemp.Replace("?", " ");
+                    transtemp = safeFilename(transtemp);
                     newest.CopyTo(dif.FullName + "\\" + transtemp + ".xml", true);
 
                     newest.Delete();
@@ -6002,14 +6001,14 @@ namespace windowMediaPlayerDM
         }
         String safeFilename(String filename) {
             String result = filename;
-            result = result.Replace("?", "");
-            result = result.Replace(":", "");
-            result = result.Replace("<", "");
-            result = result.Replace(">", "");
-            result = result.Replace("\"", "");
-            result = result.Replace("|", "");
-            result = result.Replace("*", "");
-            result = result.Replace("/", "");
+            result = result.Replace("?", " ");
+            result = result.Replace(":", " ");
+            result = result.Replace("<", " ");
+            result = result.Replace(">", " ");
+            result = result.Replace("\""," ");
+            result = result.Replace("|", " ");
+            result = result.Replace("*", " ");
+            result = result.Replace("/", " ");
 
 
 
@@ -6511,6 +6510,7 @@ namespace windowMediaPlayerDM
 
         }
 
+
         void load_Url_from(Uri address) {
 
             if (!Links.Contains(address))
@@ -6573,20 +6573,20 @@ namespace windowMediaPlayerDM
                 //load url itembox with all the links
 
 
-                BackgroundWorker bk = new BackgroundWorker();
-                bk.WorkerSupportsCancellation = true;
+         //       BackgroundWorker bk = new BackgroundWorker();
+         //       bk.WorkerSupportsCancellation = true;
 
-               bk.DoWork += browserdowork(address);
-                bk.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bk_RunWorkerCompleted);
+             //  bk.DoWork += browserdowork(address);
+              //  bk.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bk_RunWorkerCompleted);
                 //only do this if it's on himado.in since this only works on there
 
-                if (address.OriginalString.Contains("himado.in"))
-                {
+           //     if (address.OriginalString.Contains("himado.in"))
+           //     {
                     
-                    if (!bk.IsBusy)
-                    {
-                        bk.RunWorkerAsync();
-                    }
+                 //   if (!bk.IsBusy)
+                 //   {
+                 //       bk.RunWorkerAsync();
+                //    }
                       
                    // runbrowser(address);
                 }
@@ -6594,7 +6594,7 @@ namespace windowMediaPlayerDM
 
             }
         
-        }
+        
 
         void bk_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
@@ -6626,23 +6626,20 @@ namespace windowMediaPlayerDM
     
     
         }
+
+
         void runbrowser(Uri address) {
-            WebBrowser wb = new WebBrowser();
+          //  gb.getCommentUri(address);
+            /*   WebBrowser wb = new WebBrowser();
 
             //  wb.TopLevelControl.Visible = false;
             wb.Visible = false;
             //wb.Document.Encoding = "UTF-8";
             wb.ScriptErrorsSuppressed = true;
-            // printvlc(wb.Version.ToString());
+              // printvlc(wb.Version.ToString());
 
             wb.Url = address;
-
-
-
-            // wb.Navigate(address);
-
-
-
+          
             // wb.Navigated +=new WebBrowserNavigatedEventHandler(wb_Navigated);
 
             wb.DocumentCompleted += new WebBrowserDocumentCompletedEventHandler(wb_DocumentCompleted);
@@ -6658,7 +6655,10 @@ namespace windowMediaPlayerDM
             fm7.getLinks.SelectedIndex = fm7.getLinks.Items.Count - 1;
             fm7.getTitle.SelectedIndex = fm7.getTitle.Items.Count - 1;
         
+          */ 
         }
+
+
         public DoWorkEventHandler browserdowork(Uri address) { 
         
         
@@ -6694,6 +6694,8 @@ namespace windowMediaPlayerDM
 
         void wb_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
+
+
             renamed = false;
 
             fm7.getDownloadstatus2.Text = "document loaded";
@@ -6703,8 +6705,10 @@ namespace windowMediaPlayerDM
 
             WebBrowser wb = (WebBrowser)sender;
 
+            fm7.getDownloadstatus2.Text = wb.Document.DefaultEncoding;
+            wb.Document.Encoding =Encoding.Unicode.WebName;
 
-            wb.Document.Encoding = "UTF-8";
+            //wb.Document.Encoding = "UTF-8";
 
        //     List<String> viewer = new List<string>();
       //      List<String> viewer2 = new List<string>();
