@@ -583,6 +583,18 @@ namespace windowMediaPlayerDM
 
                  switch (findID.NodeType) { 
                         
+                     case XmlNodeType.Text:
+                         if (findID.Value.Contains("http://") || findID.Value.Contains("https://")) {
+                             try
+                             {
+                                 Uri temp = new Uri(findID.Value);
+                                 Allfiles.Add(temp);
+                             }
+                             catch (Exception) { }
+                         
+                         }
+
+                         break;
                      case XmlNodeType.Element:
                          if(findID.Name=="d"){
                              String n = "";
