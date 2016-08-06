@@ -64,6 +64,7 @@
             this.vlcStop_button = new System.Windows.Forms.Button();
             this.vlcPlay_button = new System.Windows.Forms.Button();
             this.sound_trackbar = new System.Windows.Forms.TrackBar();
+            this.fullscreen_button = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Media_Player)).BeginInit();
@@ -104,7 +105,7 @@
             // setDMToolStripMenuItem
             // 
             this.setDMToolStripMenuItem.Name = "setDMToolStripMenuItem";
-            this.setDMToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.setDMToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.setDMToolStripMenuItem.Text = "Set Meida";
             this.setDMToolStripMenuItem.Click += new System.EventHandler(this.setDMToolStripMenuItem_Click);
             // 
@@ -113,21 +114,21 @@
             this.setDMToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.setDMsToolStripMenuItem});
             this.setDMToolStripMenuItem1.Name = "setDMToolStripMenuItem1";
-            this.setDMToolStripMenuItem1.Size = new System.Drawing.Size(134, 22);
+            this.setDMToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.setDMToolStripMenuItem1.Text = "Set DM";
             this.setDMToolStripMenuItem1.Click += new System.EventHandler(this.setDMToolStripMenuItem1_Click);
             // 
             // setDMsToolStripMenuItem
             // 
             this.setDMsToolStripMenuItem.Name = "setDMsToolStripMenuItem";
-            this.setDMsToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.setDMsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.setDMsToolStripMenuItem.Text = "Set DMs";
             this.setDMsToolStripMenuItem.Click += new System.EventHandler(this.setDMsToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -161,6 +162,7 @@
             // 
             // statusStrip1
             // 
+            this.statusStrip1.AutoSize = false;
             this.statusStrip1.Dock = System.Windows.Forms.DockStyle.None;
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.Media_status,
@@ -175,7 +177,7 @@
             this.clipboard_label});
             this.statusStrip1.Location = new System.Drawing.Point(0, 559);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(157, 23);
+            this.statusStrip1.Size = new System.Drawing.Size(1012, 23);
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -355,6 +357,17 @@
             this.sound_trackbar.TabStop = false;
             this.sound_trackbar.TickStyle = System.Windows.Forms.TickStyle.None;
             // 
+            // fullscreen_button
+            // 
+            this.fullscreen_button.BackgroundImage = global::windowMediaPlayerDM.Properties.Resources.fullscreen;
+            this.fullscreen_button.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.fullscreen_button.Location = new System.Drawing.Point(758, 540);
+            this.fullscreen_button.Name = "fullscreen_button";
+            this.fullscreen_button.Size = new System.Drawing.Size(30, 19);
+            this.fullscreen_button.TabIndex = 9;
+            this.fullscreen_button.UseVisualStyleBackColor = true;
+            this.fullscreen_button.Click += new System.EventHandler(this.fullscreen_button_Click);
+            // 
             // Form1
             // 
             this.AllowDrop = true;
@@ -362,6 +375,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(996, 582);
+            this.Controls.Add(this.fullscreen_button);
             this.Controls.Add(this.vlcSound_button);
             this.Controls.Add(this.sound_trackbar);
             this.Controls.Add(this.next_track);
@@ -425,6 +439,7 @@
         private System.Windows.Forms.ToolStripStatusLabel download_status2;
         private System.Windows.Forms.TrackBar sound_trackbar;
         private System.Windows.Forms.ToolStripStatusLabel clipboard_label;
+        private System.Windows.Forms.Button fullscreen_button;
     }
 }
 

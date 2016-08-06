@@ -530,7 +530,7 @@ namespace windowMediaPlayerDM
 
                 if (text.Contains("himado.in") || text.Contains("say-move.org"))
                 {
-                    
+                   /* 
                    if (fm7.hide == true)
                    {
                         fm7.hide = false;
@@ -538,7 +538,7 @@ namespace windowMediaPlayerDM
 
 
                     }
-
+                    */
                     ClipBoardText = text;
                     loadFromClipboard(ClipBoardText);
                   
@@ -709,6 +709,8 @@ namespace windowMediaPlayerDM
         Point originalLocation;
         void hide_All_fm1() {
 
+            fullscreen = true;
+
             originalsize = this.currentMediaWindowSize;
             originalLocation = this.currentMediaWindowLocation;
 
@@ -743,7 +745,7 @@ namespace windowMediaPlayerDM
                 this.FormBorderStyle = FormBorderStyle.None;
 
 
-                fullscreen = true;
+              
 
                 if (Comment_Windows.Count > 0)
                 {
@@ -788,9 +790,14 @@ namespace windowMediaPlayerDM
                // Cursor.Hide();
 
                // 620 559 form.size.y-61
-                statusStrip1.Location = new Point(0, this.Size.Height - statusStrip1.Height);
-                statusStrip1.Size = new Size(this.Size.Width, 23) ;
-                vlcPlay_button.Location = new Point(32, statusStrip1.Location.Y - 19);
+            
+           //      statusStrip1.Location = new Point(0, this.Size.Height - statusStrip1.Height);
+           //      statusStrip1.ImageScalingSize = new Size(this.Size.Width, 23) ;
+
+            statusStrip1.Location = new Point(0, vlcPlayer.Size.Height - statusStrip1.Height);
+            statusStrip1.ImageScalingSize = new Size(vlcPlayer.Size.Width, 23) ;
+
+            vlcPlay_button.Location = new Point(32, statusStrip1.Location.Y - 19);
 
                 vlcStop_button.Location = new Point(77, statusStrip1.Location.Y - 19);
 
@@ -798,6 +805,7 @@ namespace windowMediaPlayerDM
 
                 loop_button.Location = new Point(ClientRectangle.Right - 218, statusStrip1.Location.Y - 19);
 
+                fullscreen_button.Location = new Point(loop_button.Location.X - fullscreen_button.Size.Width - 5, loop_button.Location.Y);
                 last_track.Location = new Point(145, statusStrip1.Location.Y - 19);
                 next_track.Location = new Point(194, statusStrip1.Location.Y - 19);
 
@@ -1914,18 +1922,25 @@ namespace windowMediaPlayerDM
             {
                 vlcPlayer.Size = new Size(ClientRectangle.Width, ClientRectangle.Height - 94);
                 vlcPlayer.Location = new Point(0, ClientRectangle.Top + 29);
-            }
-            statusStrip1.Location = new Point(0, this.Size.Height - 61);
-            statusStrip1.Size = new Size(this.Size.Width, 23);
 
+                statusStrip1.Location = new Point(0, this.Size.Height - 61);
+                statusStrip1.ImageScalingSize = new Size(this.Size.Width, 23);
+            }
+            else {
+             //   statusStrip1.Location = new Point(0, 1500 - statusStrip1.Height);
+             //   statusStrip1.ImageScalingSize = new Size(this.Size.Width, 23);
+            }
+
+     
+            
             vlcPlay_button.Location = new Point(32, statusStrip1.Location.Y - 19);
 
             vlcStop_button.Location = new Point(77, statusStrip1.Location.Y - 19);
 
             vlcSound_button.Location = new Point(ClientRectangle.Right - 182, statusStrip1.Location.Y - 19);
-
+        
             loop_button.Location = new Point(ClientRectangle.Right - 218, statusStrip1.Location.Y - 19);
-
+            fullscreen_button.Location = new Point(loop_button.Location.X - fullscreen_button.Size.Width - 5, loop_button.Location.Y);
             last_track.Location = new Point(145, statusStrip1.Location.Y - 19);
             next_track.Location = new Point(194, statusStrip1.Location.Y - 19);
 
@@ -7239,6 +7254,11 @@ namespace windowMediaPlayerDM
 
             fm6.Dispose();
 
+        }
+
+        private void fullscreen_button_Click(object sender, EventArgs e)
+        {
+            FullScreenSwitch();          
         }
 
 
