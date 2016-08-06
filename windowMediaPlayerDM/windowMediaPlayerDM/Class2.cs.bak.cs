@@ -74,53 +74,95 @@ namespace windowMediaPlayerDM
             if(url.OriginalString.Contains("himado.in")){
             String commentc = fullcontent;
             //to get the full comment need to decode this
-
-            int left = commentc.IndexOf("<div id=\"commentdl_ret\">");
-            int right = commentc.LastIndexOf("<select name=\"limit\">");
-            if (left >= 0 && right > 0 && right > left)
+                String tp = "\"commentdlform\"";
+            int left = commentc.IndexOf("\"commentdlform\"")+tp.Length+3;
+            int right = commentc.IndexOf("\"nico\"");
+               
+            if (left >= 0 && right >=0 && right>left)
             {
                 commentc = commentc.Substring(left, right - left);
+
+
 
                 left = commentc.IndexOf("\"id\"");
                 right = commentc.Length;
 
-                commentc = commentc.Substring(left, right - left);
+                if (left >= 0 && right > 0 && right > left)
+                {
 
-                left = commentc.IndexOf("=\"") + 2;
-                right = commentc.IndexOf("\">");
+                    commentc = commentc.Substring(left, right - left);
 
-                String id = commentc.Substring(left, right - left);
+                    left = commentc.IndexOf("=\"") + 2;
+                    right = commentc.IndexOf("\">");
 
-                commentc = commentc.Substring(right + 3, commentc.Length - (right + 3));
+                    String id = commentc.Substring(left, right - left);
 
-                left = commentc.IndexOf("group_id\" value");
-                right = commentc.IndexOf("\">");
+                    commentc = commentc.Substring(right + 3, commentc.Length - (right + 3));
 
-                String group_id = commentc.Substring(left, right - left);
-                commentc = commentc.Substring(right + 3, commentc.Length - (right + 3));
+                    left = commentc.IndexOf("group_id\" value");
+                    right = commentc.IndexOf("\">");
 
-                left = group_id.IndexOf("=\"") + 2;
-                right = group_id.Length;
+                    String group_id = commentc.Substring(left, right - left);
+                    commentc = commentc.Substring(right + 3, commentc.Length - (right + 3));
 
-                group_id = group_id.Substring(left, right - left);
+                    left = group_id.IndexOf("=\"") + 2;
+                    right = group_id.Length;
 
-                left = commentc.IndexOf("key") + 5;
+                    group_id = group_id.Substring(left, right - left);
 
-                commentc = commentc.Substring(left, commentc.Length - left);
+                    left = commentc.IndexOf("key") + 5;
 
-                left = commentc.IndexOf("=\"") + 2;
-                right = commentc.IndexOf("\">");
+                    commentc = commentc.Substring(left, commentc.Length - left);
 
-                String key = commentc.Substring(left, right - left);
+                    left = commentc.IndexOf("=\"") + 2;
+                    right = commentc.IndexOf("\">");
 
-                //http://himado.in/?mode=comment&id=340887&limit=200000&key=23&group_id=391199,390082&start=0&ver=20100220
+                    String key = commentc.Substring(left, right - left);
 
-                String trueUrl = "http://himado.in/?mode=comment&id=" + id + "&limit=200000&key=" + key + "&group_id=" + group_id + "&start=0";
+                    //http://himado.in/?mode=comment&id=340887&limit=200000&key=23&group_id=391199,390082&start=0&ver=20100220
 
-                Uri temp = new Uri(trueUrl);
+                    String trueUrl = "http://himado.in/?mode=comment&id=" + id + "&limit=200000&key=" + key + "&group_id=" + group_id + "&start=0";
 
-                //throw new Exception("check");
-                getHimadoComment(temp);
+                    Uri temp = new Uri(trueUrl);
+
+                    //throw new Exception("check");
+                    getHimadoComment(temp);
+                }
+                else
+                {
+                    int start = url.OriginalString.LastIndexOf("=")+1;
+                    int end = url.OriginalString.Length;
+                    String id = url.OriginalString.Substring(start, end - start);
+
+                    left = commentc.IndexOf("group_id\" value");
+                    right = commentc.IndexOf("\">");
+
+                    String group_id = commentc.Substring(left, right - left);
+                    commentc = commentc.Substring(right + 3, commentc.Length - (right + 3));
+
+                    left = group_id.IndexOf("=\"") + 2;
+                    right = group_id.Length;
+
+                    group_id = group_id.Substring(left, right - left);
+
+                    left = commentc.IndexOf("key") + 5;
+
+                    commentc = commentc.Substring(left, commentc.Length - left);
+
+                    left = commentc.IndexOf("=\"") + 2;
+                    right = commentc.IndexOf("\">");
+
+                    String key = commentc.Substring(left, right - left);
+
+                    //http://himado.in/?mode=comment&id=340887&limit=200000&key=23&group_id=391199,390082&start=0&ver=20100220
+
+                    String trueUrl = "http://himado.in/?mode=comment&id=" + id + "&limit=200000&key=" + key + "&group_id=" + group_id + "&start=0";
+
+                    Uri temp = new Uri(trueUrl);
+
+                    //throw new Exception("check");
+                    getHimadoComment(temp);
+                }
             }
             else {
 
@@ -711,13 +753,64 @@ namespace windowMediaPlayerDM
               //   MessageBox.Show("xml  complete");
              }
              FileInfo file = new FileInfo(CommentTitle);
-             try
+             FileInfo basefile = new FileInfo(filestorage_dir + "\\" + CommentTitle);
+             if (!basefile.Exists)
              {
-                 file.CopyTo(filestorage_dir + "\\" + CommentTitle, true);
+                 try
+                 {
+                     file.CopyTo(filestorage_dir + "\\" + CommentTitle, true);
+                 }
+                 catch (IOException)
+                 {
+                     file.CopyTo(filestorage_dir + "\\" + CommentTitle + "_new", true);
+                 }
              }
-             catch (IOException) {
-                 file.CopyTo(filestorage_dir + "\\" + CommentTitle+"_new", true);
+             else {
+                 //overwrite if the original file is smaller than the current file
+                 //the _new is there because if the comment file is in use it can't be access/ overwrite
+                 //rename if the original file is larger than the current file
+                 //
+                 if (basefile.Length < file.Length)
+                 {
+                     try
+                     {
+                         file.CopyTo(filestorage_dir + "\\" + CommentTitle, true);
+                     }
+                     catch (IOException)
+                     {
+                         file.CopyTo(filestorage_dir + "\\" + CommentTitle + "_new", true);
+                     }
+
+                 }
+                 else {
+                     var msg = MessageBox.Show("The new file is smaller than the original one, Do you want to overwrite it?", "alert", MessageBoxButtons.YesNo);
+
+                     if (msg == DialogResult.Yes) {
+                         try
+                         {
+                             file.CopyTo(filestorage_dir + "\\" + CommentTitle, true);
+                         }
+                         catch (IOException)
+                         {
+                             file.CopyTo(filestorage_dir + "\\" + CommentTitle + "_new", true);
+                         }
+                     }
+                     else
+                     {
+                         try
+                         {
+                             file.CopyTo(filestorage_dir + "\\" + CommentTitle + "_new", true);
+                         }
+                         catch (IOException)
+                         {
+                             file.CopyTo(filestorage_dir + "\\" + CommentTitle + "_new(1)", true);
+                         }
+                     }
+                 
+                 }
+             
              }
+           
                  file.Delete();
             
 

@@ -52,6 +52,7 @@
             this.vlc_display = new System.Windows.Forms.ToolStripStatusLabel();
             this.downlaod_status = new System.Windows.Forms.ToolStripStatusLabel();
             this.download_status2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.clipboard_label = new System.Windows.Forms.ToolStripStatusLabel();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.Media_Player = new AxWMPLib.AxWindowsMediaPlayer();
             this.vlcPlayer = new Vlc.DotNet.Forms.VlcControl();
@@ -63,7 +64,6 @@
             this.vlcStop_button = new System.Windows.Forms.Button();
             this.vlcPlay_button = new System.Windows.Forms.Button();
             this.sound_trackbar = new System.Windows.Forms.TrackBar();
-            this.clipboard_label = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Media_Player)).BeginInit();
@@ -161,6 +161,7 @@
             // 
             // statusStrip1
             // 
+            this.statusStrip1.Dock = System.Windows.Forms.DockStyle.None;
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.Media_status,
             this.Danmoku_status,
@@ -174,7 +175,7 @@
             this.clipboard_label});
             this.statusStrip1.Location = new System.Drawing.Point(0, 559);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(996, 23);
+            this.statusStrip1.Size = new System.Drawing.Size(157, 23);
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -224,6 +225,11 @@
             // 
             this.download_status2.Name = "download_status2";
             this.download_status2.Size = new System.Drawing.Size(0, 18);
+            // 
+            // clipboard_label
+            // 
+            this.clipboard_label.Name = "clipboard_label";
+            this.clipboard_label.Size = new System.Drawing.Size(0, 18);
             // 
             // Media_Player
             // 
@@ -349,11 +355,6 @@
             this.sound_trackbar.TabStop = false;
             this.sound_trackbar.TickStyle = System.Windows.Forms.TickStyle.None;
             // 
-            // clipboard_label
-            // 
-            this.clipboard_label.Name = "clipboard_label";
-            this.clipboard_label.Size = new System.Drawing.Size(0, 18);
-            // 
             // Form1
             // 
             this.AllowDrop = true;
@@ -380,7 +381,6 @@
             this.menuStrip1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
-            
             ((System.ComponentModel.ISupportInitialize)(this.Media_Player)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.vlcPlayer)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.VLC_track)).EndInit();

@@ -617,6 +617,22 @@ namespace windowMediaPlayerDM
             
             
          //   }
+
+               if (fullscreenBottom == true)
+               {
+                   hidePlayMenu();
+               }
+               for (int i = 0; i < trackbars.Count; i++)
+               {
+                   trackbars.ElementAt(i).BringToFront();
+               }
+                   for (int i = 0; i < buttons.Count; i++) {
+                       buttons.ElementAt(i).BringToFront();
+                   }
+              
+                   statusStrip1.BringToFront();
+              
+             
             for (int i = 0; i < this.Controls.OfType<Button>().Count(); i++)
             {
                 this.Controls.OfType<Button>().ElementAt(i).Show();
@@ -676,7 +692,7 @@ namespace windowMediaPlayerDM
                 }
                 else
                 {
-                    Cursor.Hide();
+                  //  Cursor.Hide();
                 }
             }
             else
@@ -749,6 +765,8 @@ namespace windowMediaPlayerDM
 
                    // vlcPlayer.Size = new Size(this.ClientRectangle.Width+8, this.ClientRectangle.Height+30);
 //
+
+                this.Size = new Size(1920, 1080);
                     vlcPlayer.Size = new Size(1920,1080);
          //           vlcPlayer.Size = new Size(Screen.PrimaryScreen.WorkingArea.Width,Screen.PrimaryScreen.WorkingArea.Height);
         //           vlcPlayer.Location = new Point(this.ClientRectangle.Location.X+8, this.ClientRectangle.Location.Y+8);
@@ -767,7 +785,25 @@ namespace windowMediaPlayerDM
 
                // this.MaximizedBounds = Screen.PrimaryScreen.Bounds;
                 this.Bounds = Screen.PrimaryScreen.Bounds;
-                Cursor.Hide();
+               // Cursor.Hide();
+
+               // 620 559 form.size.y-61
+                statusStrip1.Location = new Point(0, this.Size.Height - statusStrip1.Height);
+                statusStrip1.Size = new Size(this.Size.Width, 23) ;
+                vlcPlay_button.Location = new Point(32, statusStrip1.Location.Y - 19);
+
+                vlcStop_button.Location = new Point(77, statusStrip1.Location.Y - 19);
+
+                vlcSound_button.Location = new Point(ClientRectangle.Right - 182, statusStrip1.Location.Y - 19);
+
+                loop_button.Location = new Point(ClientRectangle.Right - 218, statusStrip1.Location.Y - 19);
+
+                last_track.Location = new Point(145, statusStrip1.Location.Y - 19);
+                next_track.Location = new Point(194, statusStrip1.Location.Y - 19);
+
+                VLC_track.Size = new Size(this.Size.Width - 171, 45);
+                VLC_track.Location = new Point(0, statusStrip1.Location.Y - 46);
+                sound_trackbar.Location = new Point(VLC_track.Size.Width, statusStrip1.Location.Y - 46);
  
             }
         void setCommentWS(List<Neo_Comment_window>l,Size s, Point t) {
@@ -1255,15 +1291,32 @@ namespace windowMediaPlayerDM
             if(_first_load==false){
                 vlc_videoSetup();
             }
-            test_label.Text = vlcPlayer.State.ToString();
-
-            
+            print_test_label(vlcPlayer.State.ToString());
+          
 
             timerStart();
             vlcPlayer.Audio.Volume = vVolume;
             
         }
+        void print_test_label(string t) {
+            try
+            {
+                test_label.Text = t;
+            }
+            catch (Exception) {
+                if (this.InvokeRequired)
+                {
+                    setString s = new setString(print_test_label);
+                    this.Invoke(s, new object[] { t});
 
+                }
+                else {
+
+                    test_label.Text = t;
+                }
+            
+            }
+        }
         void vlcPlayer_MouseClick(object sender, MouseEventArgs e)
         {
             Media_Player_ClickAction();
@@ -1412,9 +1465,25 @@ namespace windowMediaPlayerDM
        
 
             counter_check = -9999;
-        
+
+            int bt =this.Controls.OfType<Button>().Count();
+
+            for (int i = 0; i < bt; i++) {
+                buttons.Add(Controls.OfType<Button>().ElementAt(i));
+            }
+            int tb = this.Controls.OfType<TrackBar>().Count();
+
+            for (int i = 0; i < tb; i++)
+            {
+                trackbars.Add(Controls.OfType<TrackBar>().ElementAt(i));
+            }
+
+            statusStrip1.BackColor = this.BackColor;
+
+
         }
-        void switchPlayer(int c) {
+        void switchPlayer(int c)
+        {
 
             switch (c) { 
             
@@ -1846,7 +1915,8 @@ namespace windowMediaPlayerDM
                 vlcPlayer.Size = new Size(ClientRectangle.Width, ClientRectangle.Height - 94);
                 vlcPlayer.Location = new Point(0, ClientRectangle.Top + 29);
             }
-
+            statusStrip1.Location = new Point(0, this.Size.Height - 61);
+            statusStrip1.Size = new Size(this.Size.Width, 23);
 
             vlcPlay_button.Location = new Point(32, statusStrip1.Location.Y - 19);
 
@@ -1859,7 +1929,7 @@ namespace windowMediaPlayerDM
             last_track.Location = new Point(145, statusStrip1.Location.Y - 19);
             next_track.Location = new Point(194, statusStrip1.Location.Y - 19);
 
-            VLC_track.Size = new Size(statusStrip1.Size.Width-171, 45);
+            VLC_track.Size = new Size(this.Size.Width-171, 45);
             VLC_track.Location = new Point(0,statusStrip1.Location.Y-46);
             sound_trackbar.Location = new Point(VLC_track.Size.Width, statusStrip1.Location.Y-46);
             
@@ -3096,9 +3166,23 @@ namespace windowMediaPlayerDM
             }
         }
         void print3(String s) {
+            try
+            {
+                Video_comment.Text = s;
+            }
+            catch (Exception) {
+                if (this.InvokeRequired)
+                {
+                    setString sa = new setString(print3);
+                    this.Invoke(sa, new object[] { s });
 
-            Video_comment.Text = s;
-        
+                }
+                else {
+                    Video_comment.Text = s;
+                }
+            
+            
+            }
         }
         private void readXML(String danmoku_dir)
         {
@@ -3311,6 +3395,9 @@ namespace windowMediaPlayerDM
             f.MouseWheel += new MouseEventHandler(Form1_MouseWheel);
             DragDropSetup(f);
 
+            f.MouseMove += new MouseEventHandler(f_MouseMove);
+
+
             f.Show();
       
             f.setInterval = winterval;
@@ -3318,6 +3405,210 @@ namespace windowMediaPlayerDM
             f.setCommentLimit = commentLimit;
             winterval++;
             Comment_Windows.Add(f);
+        
+        }
+
+        void f_MouseMove(object sender, MouseEventArgs e)
+        {
+            //throw new NotImplementedException();
+            int x = e.X;
+            int y = e.Y;
+            //during fullscreen mode
+            if (fullscreen)
+            {
+                if (Comment_Windows.Count > 0)
+                {
+                    int borderY = VLC_track.Location.Y;
+                    if (y > borderY)
+                    {
+                        showPlayMenu();
+
+
+                    }
+                    else
+                    {
+                        hidePlayMenu();
+
+                    }
+
+                }
+            }
+            else {
+
+                hidePlayMenu();
+            }
+
+
+        }
+        List<Button> buttons = new List<Button>();
+        List<TrackBar> trackbars = new List<TrackBar>();
+        List<ToolStripStatusLabel> sslabel = new List<ToolStripStatusLabel>();
+        StatusStrip sstrip = new StatusStrip();
+
+        void  Clone<T>(T n, T o) where T: Control
+        {
+            try
+            {
+                n.Location = o.Location;
+                n.Size = o.Size;
+                n.Text = o.Text;
+                n.BackgroundImage = o.BackgroundImage;
+            }
+            catch (Exception) { 
+            
+
+            }
+ 
+          
+            //the code here clones all events
+            var eventsField = typeof(Component).GetField("events", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var eventHandlerList = eventsField.GetValue(o);
+            eventsField.SetValue(n, eventHandlerList);
+            
+
+    
+    }
+        bool fullscreenBottom = false;
+        void showPlayMenu() {
+            int cw= Comment_Windows.Count-1;
+            if (fullscreenBottom==false && Comment_Windows.ElementAt(cw).Controls.OfType<Button>().Count() == 0)
+            {
+                //if the layer doen't contain the component, make them
+                for (int i = 0; i < buttons.Count; i++)
+                {
+                    /*
+                    Button a = new Button();
+                    Clone<Button>(a,this.Controls.OfType<Button>().ElementAt(i));
+                    Comment_Windows.ElementAt(cw).Controls.Add(a);
+                    a.Show();
+
+                    buttons.Add(a);
+                     */
+                    this.Controls.Remove(buttons.ElementAt(i));
+                    Comment_Windows.ElementAt(cw).Controls.Add(buttons.ElementAt(i));
+                    buttons.ElementAt(i).Show();
+                }
+
+                for (int i = 0; i < trackbars.Count(); i++)
+                {
+                    /*
+                    TrackBar a = new TrackBar();
+                    Clone<TrackBar>(a,this.Controls.OfType<TrackBar>().ElementAt(i));
+                    Comment_Windows.ElementAt(cw).Controls.Add(a);
+                    a.Show();
+
+                    trackbars.Add(a);
+                    */
+                    this.Controls.Remove(trackbars.ElementAt(i));
+                    Comment_Windows.ElementAt(cw).Controls.Add(trackbars.ElementAt(i));
+                    trackbars.ElementAt(i).Show();
+                }
+                /*
+                Clone<StatusStrip>(sstrip,statusStrip1);
+                Comment_Windows.ElementAt(cw).Controls.Add(sstrip);
+
+                sstrip.Show();
+
+                int countsslabel = this.Controls.OfType<ToolStripStatusLabel>().Count();
+                for (int i = 0; i < countsslabel; i++) {
+
+
+                    ToolStripStatusLabel s = new ToolStripStatusLabel();
+                    s.Text = this.Controls.OfType<ToolStripStatusLabel>().ElementAt(i).Text;
+                    sstrip.Items.Add(s);
+                    sslabel.Add(s);
+
+                }
+                 */
+                this.Controls.Remove(statusStrip1);
+                Comment_Windows.ElementAt(cw).Controls.Add(statusStrip1);
+                statusStrip1.Show();
+                
+                fullscreenBottom = true;
+
+            }
+            else if (fullscreenBottom == false)
+            {
+                /*
+                for (int i = 0; i < buttons.Count; i++) {
+                    buttons.ElementAt(i).Show();
+                }
+                for (int i = 0; i < trackbars.Count; i++) {
+                    trackbars.ElementAt(i).Show();
+                }
+                 */
+                int countbutton = this.Controls.OfType<Button>().Count();
+                int counttrack = this.Controls.OfType<TrackBar>().Count();
+                for (int i = 0; i < buttons.Count(); i++)
+                {
+                 
+                    buttons.ElementAt(i).Show();
+                }
+                for (int i = 0; i < trackbars.Count(); i++)
+                {
+                  
+                    trackbars.ElementAt(i).Show();
+                }
+
+                statusStrip1.Show();
+
+                fullscreenBottom = true;
+            }
+            Cursor.Show();
+
+        }
+        void hidePlayMenu()
+        {
+            if (fullscreenBottom == true && fullscreen==true) {
+               /*
+                for (int i = 0; i < buttons.Count; i++)
+                {
+                    buttons.ElementAt(i).Hide();
+                }
+                for (int i = 0; i < trackbars.Count; i++)
+                {
+                    trackbars.ElementAt(i).Hide();
+                }
+                if (fullscreenBottom == true && fullscreen==true)
+                {
+                    statusStrip1.Hide();
+                }
+                */
+                /*
+                int countbutton = this.Controls.OfType<Button>().Count();
+                int counttrack = this.Controls.OfType<TrackBar>().Count();
+                for (int i = 0; i < this.Controls.OfType<Button>().Count(); i++)
+                {
+                    Controls.OfType<Button>().ElementAt(i).Hide();
+                }
+                for (int i = 0; i <  this.Controls.OfType<TrackBar>().Count(); i++)
+                {
+                    Controls.OfType<TrackBar>().ElementAt(i).Hide();
+                }
+                statusStrip1.Hide();
+                 */
+                int cw = Comment_Windows.Count - 1;
+                for (int i = 0; i < trackbars.Count; i++)
+                {
+
+                    Comment_Windows.ElementAt(cw).Controls.Remove(trackbars.ElementAt(i));
+                    this.Controls.Add(trackbars.ElementAt(i));
+                }
+               
+                for (int i = 0; i < buttons.Count; i++) {
+                    Comment_Windows.ElementAt(cw).Controls.Remove(buttons.ElementAt(i));
+                    this.Controls.Add(buttons.ElementAt(i));
+                   
+                }
+
+                Comment_Windows.ElementAt(cw).Controls.Remove(statusStrip1);
+
+                this.Controls.Add(statusStrip1);
+                fullscreenBottom = false;
+            
+            
+            }
+         //   Cursor.Hide();
         
         }
         int winterval = 57;
