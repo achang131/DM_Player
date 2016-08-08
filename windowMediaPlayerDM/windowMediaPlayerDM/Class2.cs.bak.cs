@@ -781,6 +781,15 @@ namespace windowMediaPlayerDM
                          file.CopyTo(filestorage_dir + "\\" + CommentTitle + "_new", true);
                      }
 
+                 }else if(basefile.Length==file.Length){
+                     try
+                     {
+                         file.CopyTo(filestorage_dir + "\\" + CommentTitle, true);
+                     }
+                     catch (IOException)
+                     {
+                         file.CopyTo(filestorage_dir + "\\" + CommentTitle + "_new", true);
+                     }
                  }
                  else {
                      var msg = MessageBox.Show("The new file is smaller than the original one, Do you want to overwrite it?", "alert", MessageBoxButtons.YesNo);
@@ -864,7 +873,7 @@ namespace windowMediaPlayerDM
 
                      break;
 
-
+                //make himado a case and make default stright dl file
 
                  default:
 
@@ -1052,18 +1061,19 @@ namespace windowMediaPlayerDM
          }
         CookieCollection cookie;
         void loadInfo_hima(Uri url) {
-           WebClient loadcontent = new WebClient();
+            using (WebClient loadcontent = new WebClient())
+            {
                 loadcontent.Encoding = Encoding.UTF8;
 
                 //loadcontent.DownloadStringCompleted += downloadString(url);
-                fullcontent=loadcontent.DownloadString(url);
+                fullcontent = loadcontent.DownloadString(url);
 
                 title = getTitle();
                 titles.Add(title);
                 getAllUrls();
                 getCommentUri(url);
-               loadcontent.Dispose();
-            
+                loadcontent.Dispose();
+            }
           
         
         
@@ -1686,6 +1696,7 @@ namespace windowMediaPlayerDM
          
          
          }
+        
          int percentage = 0;
           double byte_recieved = 0;
          void wb_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)

@@ -5609,7 +5609,7 @@ namespace windowMediaPlayerDM
         add_link_form fm6;
         Dictionary<Uri, List<Uri>> UrlDictionary= new Dictionary<Uri,List<Uri>>();
         Url_menu fm7;
-        getWebVideo gb;
+       // getWebVideo gb;
         private void setFromURL_menu_Click(object sender, EventArgs e)
         {
             if (current_dir_url == null || linkaddress == null)
@@ -5924,6 +5924,7 @@ namespace windowMediaPlayerDM
 
         }
         bool renamed = false;
+        /*
         void renametoXML() {
             //throw new NotImplementedException();
             //rename the shattered xml file to the current file name
@@ -5958,7 +5959,7 @@ namespace windowMediaPlayerDM
                 {
 
                  //   FileInfo xml = files.ElementAt(0);
-
+                   
                     byte[] tempbytes = Encoding.Default.GetBytes(gb.getCurrentTitle);
                     string transtemp = Encoding.GetEncoding("shift-jis").GetString(tempbytes);
                    // transtemp = transtemp.Replace("?", " ");
@@ -5973,9 +5974,10 @@ namespace windowMediaPlayerDM
                 }
         
         }
+         */
         void getTitle_DoubleClick(object sender, EventArgs e)
         {
-            renametoXML();
+            //renametoXML();
         }
 
         void fm7_Disposed(object sender, EventArgs e)
@@ -5996,7 +5998,7 @@ namespace windowMediaPlayerDM
 
             //・xml
 
-            renametoXML();
+            //renametoXML();
 
             DirectoryInfo dif = new DirectoryInfo(current_dir_url);
 
@@ -6228,9 +6230,9 @@ namespace windowMediaPlayerDM
             {
                 using (WebClient wb = new WebClient())
                 {
-              
+                    getWebVideo gb = new getWebVideo(new Uri(fm7.getLinks.SelectedItem.ToString()), current_dir_url);
                     wb.Encoding = Encoding.UTF8;
-                    
+                            
                     Uri filename = (Uri)box.SelectedItem;
 
                     //download status related items here
@@ -6316,6 +6318,7 @@ namespace windowMediaPlayerDM
         }
         String safeFilename(String filename) {
             String result = filename;
+            result = result.Replace("\\", " ");
             result = result.Replace("?", " ");
             result = result.Replace(":", " ");
             result = result.Replace("<", " ");
@@ -6517,6 +6520,7 @@ namespace windowMediaPlayerDM
         
         
         }
+        /*
         void wb_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
             //throw new NotImplementedException();
@@ -6539,6 +6543,7 @@ namespace windowMediaPlayerDM
 
 
         }
+         */ 
         delegate void downlaod_complete_thread(Uri filename, ProgressBar pbar, Label status,Button dlcancel);
 
         void downloadfileCompleted_thread(Uri ufilename, ProgressBar pbar, Label status,Button dlcancel){
@@ -6643,7 +6648,7 @@ namespace windowMediaPlayerDM
                     file.CopyTo(file.Directory + "\\" + title + "(1)", false);
                 }
 
-                gb.dlnameUpdate = temp.FullName;
+             //   gb.dlnameUpdate = temp.FullName;
                 tempstring = new String[] { file.FullName, file.Name };
         
                 if (!Media_List.Contains(tempstring))
@@ -6756,7 +6761,7 @@ namespace windowMediaPlayerDM
                     file.CopyTo(file.Directory + "\\" + title + "(1)", false);
                 }
 
-                gb.dlnameUpdate = temp.FullName;
+          //      gb.dlnameUpdate = temp.FullName;
                 tempstring= new String[]{file.FullName,file.Name};
                 if (!Media_List.Contains(tempstring))
                 {
@@ -6823,6 +6828,8 @@ namespace windowMediaPlayerDM
             }
             downlaod_status.Text = "";
 
+           
+
         }
 
 
@@ -6836,17 +6843,11 @@ namespace windowMediaPlayerDM
                 
 
                 fm7.getFileUrl.Items.Clear();
-                gb = new getWebVideo(address, current_dir_url);
+                getWebVideo gb = new getWebVideo(address, current_dir_url);
                 Links.Add(address);
                 // :/\?<>*|
-                gb.getCurrentTitle = gb.getCurrentTitle.Replace("\\", " ");
-                gb.getCurrentTitle = gb.getCurrentTitle.Replace("/", " ");
-                gb.getCurrentTitle = gb.getCurrentTitle.Replace(":"," ");
-                gb.getCurrentTitle = gb.getCurrentTitle.Replace("?", " ");
-                gb.getCurrentTitle = gb.getCurrentTitle.Replace("<", " ");
-                gb.getCurrentTitle = gb.getCurrentTitle.Replace(">", " ");
-                gb.getCurrentTitle = gb.getCurrentTitle.Replace("*", " ");
-                gb.getCurrentTitle = gb.getCurrentTitle.Replace("|", " ");
+                gb.getCurrentTitle = safeFilename(gb.getCurrentTitle);
+
                 if (!urlTitles.Contains(gb.getCurrentTitle))
                 {
                     urlTitles.Add(gb.getCurrentTitle);
@@ -6859,6 +6860,20 @@ namespace windowMediaPlayerDM
                 }
                 urls = gb.getAllfiles;
                 if (UrlDictionary.ContainsKey(address)) {
+                    //instaed of doing this check if there's dulplicate in links if not then add it
+
+    
+                        for (int j = 0; j < gb.getAllfiles.Count; j++) {
+
+                        if(!UrlDictionary[address].Contains(gb.getAllfiles.ElementAt(j))){
+                            
+                            UrlDictionary[address].Add(gb.getAllfiles.ElementAt(j));
+                        }
+
+
+                        }
+    
+                    /*
                     if (gb.getAllfiles.Count > 0)
                     {
                         //if the updated page contains at least 1 links then update otherwise do nothing
@@ -6874,7 +6889,7 @@ namespace windowMediaPlayerDM
                     
                     
                     }
-                
+                */
                 
                 }
                 else
