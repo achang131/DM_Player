@@ -3436,11 +3436,14 @@ namespace windowMediaPlayerDM
                 if (Comment_Windows.Count > 0)
                 {
                     int borderY = VLC_track.Location.Y;
+                    int borderUY = menuStrip1.Size.Height;
                     if (y > borderY)
                     {
-                        showPlayMenu();
+                        showPlayMenuDown();
 
 
+                    }else if(y<borderUY){
+                        showPlayMenuUp();
                     }
                     else
                     {
@@ -3461,6 +3464,20 @@ namespace windowMediaPlayerDM
         List<TrackBar> trackbars = new List<TrackBar>();
         List<ToolStripStatusLabel> sslabel = new List<ToolStripStatusLabel>();
         StatusStrip sstrip = new StatusStrip();
+        bool fullscreenUp = false;
+        void showPlayMenuUp() {
+            int cw = Comment_Windows.Count - 1;
+            if(fullscreenUp==false){
+
+                this.Controls.Remove(menuStrip1);
+                Comment_Windows.ElementAt(cw).Controls.Add(menuStrip1);
+                menuStrip1.Show();
+
+                hideCurosr = false;
+                fullscreenUp = true;
+            }
+        
+        }
 
         void  Clone<T>(T n, T o) where T: Control
         {
@@ -3486,7 +3503,7 @@ namespace windowMediaPlayerDM
     
     }
         bool fullscreenBottom = false;
-        void showPlayMenu() {
+        void showPlayMenuDown() {
             int cw= Comment_Windows.Count-1;
             if (fullscreenBottom==false && Comment_Windows.ElementAt(cw).Controls.OfType<Button>().Count() == 0)
             {
@@ -3577,7 +3594,7 @@ namespace windowMediaPlayerDM
         }
         void hidePlayMenu()
         {
-            if (fullscreenBottom == true && fullscreen==true) {
+            if ((fullscreenBottom == true ||fullscreenUp==true) && fullscreen==true) {
                /*
                 for (int i = 0; i < buttons.Count; i++)
                 {
@@ -3604,26 +3621,40 @@ namespace windowMediaPlayerDM
                     Controls.OfType<TrackBar>().ElementAt(i).Hide();
                 }
                 statusStrip1.Hide();
-                 */
-                int cw = Comment_Windows.Count - 1;
-                for (int i = 0; i < trackbars.Count; i++)
+                 */ int cw = Comment_Windows.Count - 1;
+                if (fullscreenBottom == true)
                 {
+                   
+                    for (int i = 0; i < trackbars.Count; i++)
+                    {
 
-                    Comment_Windows.ElementAt(cw).Controls.Remove(trackbars.ElementAt(i));
-                    this.Controls.Add(trackbars.ElementAt(i));
-                }
-               
-                for (int i = 0; i < buttons.Count; i++) {
-                    Comment_Windows.ElementAt(cw).Controls.Remove(buttons.ElementAt(i));
-                    this.Controls.Add(buttons.ElementAt(i));
+                        Comment_Windows.ElementAt(cw).Controls.Remove(trackbars.ElementAt(i));
+                        this.Controls.Add(trackbars.ElementAt(i));
+                    }
+
+                    for (int i = 0; i < buttons.Count; i++)
+                    {
+                        Comment_Windows.ElementAt(cw).Controls.Remove(buttons.ElementAt(i));
+                        this.Controls.Add(buttons.ElementAt(i));
+
+                    }
+
+                    Comment_Windows.ElementAt(cw).Controls.Remove(statusStrip1);
+
+                    this.Controls.Add(statusStrip1);
                    
                 }
-
-                Comment_Windows.ElementAt(cw).Controls.Remove(statusStrip1);
-
-                this.Controls.Add(statusStrip1);
+                else
+                {
+                    Comment_Windows.ElementAt(cw).Controls.Remove(menuStrip1);
+                    this.Controls.Add(menuStrip1);
+                }
                 fullscreenBottom = false;
-                hideCurosr = true;
+                fullscreenUp = false;
+                if (activeForms == 0)
+                {
+                    hideCurosr = true;
+                }
             
             }
          //   Cursor.Hide();
@@ -4455,7 +4486,8 @@ namespace windowMediaPlayerDM
             fm2.setMListBox.KeyUp += new KeyEventHandler(setMListBox_KeyUp);
             fm2.setDMListBox.KeyUp += new KeyEventHandler(setDMListBox_KeyUp);
             fm2.setFullDMBox.KeyUp += new KeyEventHandler(setFullDMBox_KeyUp);
-
+            fm2.FormClosed += new FormClosedEventHandler(Form_FormClosed);
+           // fm2.MouseMove += new MouseEventHandler(Form_MourseMove);
 
             // if (vlcPlayer.GetCurrentMedia() != null) {
             if(currentfile !=null){  
@@ -4464,8 +4496,49 @@ namespace windowMediaPlayerDM
             }
 
             fm2.Show();
-
+            if (fullscreen == true) {
+                hideCurosr = false;
+            }
+            activeForms++;
         
+        }
+        int activeForms = 0;
+        void Form_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            activeForms--;
+            //throw new NotImplementedException();
+            if (fullscreen == true && activeForms==0) {
+                hideCurosr = true;
+            }
+        }
+
+        void Form_MourseMove(object sender, MouseEventArgs e)
+        {
+            //throw new NotImplementedException();
+            Form test = sender as Form;
+            if (fullscreen == true) {
+                int mouseX = e.X;
+                int mouseY = e.Y;
+                Point defaultLocation = test.DesktopLocation;
+                int boundX = test.Size.Width + defaultLocation.X;
+                int boundY = test.Size.Height + defaultLocation.Y;
+
+                if (mouseX < boundX && mouseX > defaultLocation.X && mouseY<boundY&&mouseY >defaultLocation.Y)
+                {
+
+                    hideCurosr = false;
+                }
+                else {
+
+                    hideCurosr = true;
+                }
+            
+            
+            
+            
+            
+            
+            }
         }
 
         void setFullDMBox_KeyUp(object sender, KeyEventArgs e)
@@ -4893,6 +4966,7 @@ namespace windowMediaPlayerDM
                 fm4.auto_mode_check.CheckStateChanged += new EventHandler(auto_mode_check_CheckStateChanged);
                 fm4.select_commentswitch.SelectedValueChanged += new EventHandler(select_commentswitch_SelectedValueChanged);
                 fm4.clipboard.CheckStateChanged += new EventHandler(clipboard_CheckStateChanged);
+                fm4.FormClosed += new FormClosedEventHandler(Form_FormClosed);
                 VideoAdjuestAction(fm4.setBrightness);
                 VideoAdjuestAction(fm4.setContrast);
                 VideoAdjuestAction(fm4.setGamma);
@@ -4901,6 +4975,11 @@ namespace windowMediaPlayerDM
                 subTittlebuttons(fm4.setSubtitleUP);
                 subTittlebuttons(fm4.setSubtitleDown);
 
+                if (fullscreen == true)
+                {
+                    hideCurosr = false;
+                }
+                activeForms++;
                 this.loadAll();
                 if (Comment_Windows.Count>0)
                 {
@@ -5622,8 +5701,15 @@ namespace windowMediaPlayerDM
                     fm6.setCacnel.Click += new EventHandler(setCacnel_Click);
                     fm6.setConfirm.Click += new EventHandler(setConfirm_Click);
                     fm6.Disposed += new EventHandler(fm6_Disposed);
+                    fm6.FormClosed += new FormClosedEventHandler(Form_FormClosed);
+                    activeForms++;
 
+                    if (fullscreen == true)
+                    {
+                        hideCurosr = false;
+                    }
                     if (current_dir_url != null ) {
+
 
                         fm6.getDri = current_dir_url;
                     
@@ -5696,7 +5782,19 @@ namespace windowMediaPlayerDM
                 fm7.getFileUrl.MouseHover += new EventHandler(setLinkbox_MouseHover);
                 fm7.getFileUrl.MouseMove += new MouseEventHandler(setLinkbox_MouseMove);
                 fm7.getFileUrl.MouseLeave += new EventHandler(getFileUrl_MouseLeave);
+                fm7.FormClosed += new FormClosedEventHandler(Form_FormClosed);
                 fm7.reload.Click += new EventHandler(reload_Click);
+              //  activeForms++;
+
+                if (fullscreen == true)
+                {
+                    hideCurosr = false;
+                }
+
+                if (fullscreen == true)
+                {
+                    hideCurosr = false;
+                }
              //   fm7.Disposed += new EventHandler(fm7_Disposed);
                 if (Comment_Windows.Count > 0)
                 {
@@ -5714,7 +5812,12 @@ namespace windowMediaPlayerDM
             }
             else
             {
+              //  activeForms++;
 
+                if (fullscreen == true)
+                {
+                    hideCurosr = false;
+                }
                     fm7.hide = false;
                     fm7.Show();
 
@@ -5776,10 +5879,18 @@ namespace windowMediaPlayerDM
                 {
                     fm7.Hide();
                     fm7.hide = true;
+                    activeForms--;
+                    if (activeForms == 0 && fullscreen) {
+                        hideCurosr = true;
+                    }
                 }
                 else {
                     fm7.hide = false;
                     fm7.Show();
+                    activeForms++;
+                    if (activeForms > 0) {
+                        hideCurosr = false;
+                    }
                 
                 }
 
