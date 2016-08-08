@@ -678,7 +678,8 @@ namespace windowMediaPlayerDM
              //   ///////fm3.Owner = this;
             }
 
-            Cursor.Show();
+           // Cursor.Show();
+            hideCurosr = false;
 
         }
 
@@ -689,8 +690,7 @@ namespace windowMediaPlayerDM
                 if (mousemoving)
                 {
 
-
-                    Cursor.Show();
+                    hideCurosr = false;
                 }
                 else
                 {
@@ -699,8 +699,8 @@ namespace windowMediaPlayerDM
             }
             else
             {
-                
-                Cursor.Show();
+
+                hideCurosr = false;
             }
         
         }
@@ -790,7 +790,7 @@ namespace windowMediaPlayerDM
                // this.MaximizedBounds = Screen.PrimaryScreen.Bounds;
                 this.Bounds = Screen.PrimaryScreen.Bounds;
                // Cursor.Hide();
-
+                hideCurosr = true;
                // 620 559 form.size.y-61
             
            //      statusStrip1.Location = new Point(0, this.Size.Height - statusStrip1.Height);
@@ -3542,6 +3542,7 @@ namespace windowMediaPlayerDM
                 statusStrip1.Show();
                 
                 fullscreenBottom = true;
+                //hideCurosr = false;
 
             }
             else if (fullscreenBottom == false)
@@ -3571,7 +3572,7 @@ namespace windowMediaPlayerDM
 
                 fullscreenBottom = true;
             }
-            Cursor.Show();
+            hideCurosr = false;
 
         }
         void hidePlayMenu()
@@ -3622,10 +3623,11 @@ namespace windowMediaPlayerDM
 
                 this.Controls.Add(statusStrip1);
                 fullscreenBottom = false;
-            
+                hideCurosr = true;
             
             }
          //   Cursor.Hide();
+          
         
         }
         int winterval = 57;
@@ -6543,7 +6545,28 @@ namespace windowMediaPlayerDM
 
 
         }
-         */ 
+         */
+        bool _cursor = false;
+        //this is so that the same method won't be called twice in a row since it's counted
+        public bool hideCurosr{
+            get { return _cursor; }
+            set { if (_cursor != value) {
+
+                if (value == true)
+                {
+                    Cursor.Hide();
+                }
+                else {
+                    Cursor.Show();
+                }
+                
+                
+                _cursor = value;
+                  } 
+            }
+    
+    
+        }
         delegate void downlaod_complete_thread(Uri filename, ProgressBar pbar, Label status,Button dlcancel);
 
         void downloadfileCompleted_thread(Uri ufilename, ProgressBar pbar, Label status,Button dlcancel){
