@@ -465,6 +465,8 @@ namespace windowMediaPlayerDM
         bool clipstartup = false;
         bool fm7_firsttime = true;
         bool clipboardswitch = true;
+        
+        
         void showClipboard() {
 
             String text="";
