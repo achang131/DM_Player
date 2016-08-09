@@ -1540,7 +1540,7 @@ namespace windowMediaPlayerDM
         }
 
         void BackgroundworkerSetup() {
-
+            
             replacetimer1 = new BackgroundWorker();
             replacetimer1.DoWork += new DoWorkEventHandler(replacetimer1_DoWork);
             replacetimer1.WorkerSupportsCancellation = true;
@@ -1548,9 +1548,9 @@ namespace windowMediaPlayerDM
             replacetimer2.DoWork += new DoWorkEventHandler(replacetimer2_DoWork);
             replacetimer2.WorkerSupportsCancellation = true;
 
-            replacetimer3 = new BackgroundWorker();
-            replacetimer3.DoWork += new DoWorkEventHandler(replacetimer3_DoWork);
-            replacetimer3.WorkerSupportsCancellation = true;
+         //   replacetimer3 = new BackgroundWorker();
+         //   replacetimer3.DoWork += new DoWorkEventHandler(replacetimer3_DoWork);
+         //   replacetimer3.WorkerSupportsCancellation = true;
         
         
         }
@@ -2651,7 +2651,10 @@ namespace windowMediaPlayerDM
                        test_label.Text = vlcPlayer.State.ToString();
                        vlcPlay_button.BackgroundImage = Properties.Resources.pause;
                        vlcPlayer.Play();
-
+                       if (fullscreen && hideCurosr == false && activeForms == 0 && fullscreenUp == false && fullscreenBottom == false)
+                       {
+                           hideCurosr = true;
+                       }
                      
 
                        timerStart();
@@ -2667,6 +2670,9 @@ namespace windowMediaPlayerDM
                        test_label.Text = vlcPlayer.State.ToString();
 
                       timerStart();
+                      if (fullscreen && hideCurosr == false && activeForms==0 && fullscreenUp==false && fullscreenBottom==false) {
+                          hideCurosr = true;
+                      }
 
                        break;
 
@@ -2679,6 +2685,10 @@ namespace windowMediaPlayerDM
                        test_label.Text = vlcPlayer.State.ToString();
 
                        timerStop();
+                       if (fullscreen&&hideCurosr) {
+                           hideCurosr = false;
+                       
+                       }
                        break;
 
                    default:
@@ -3669,7 +3679,7 @@ namespace windowMediaPlayerDM
                 }
                 fullscreenBottom = false;
                 fullscreenUp = false;
-                if (activeForms == 0)
+                if (activeForms == 0 && vlcPlayer.State.ToString()=="Playing")
                 {
                     hideCurosr = true;
                 }
