@@ -17,6 +17,7 @@ using ShockwaveFlashObjects;
 using System.Runtime.InteropServices;
 using System.Runtime;
 using System.Windows.Interop;
+using System.Diagnostics;
 
 namespace windowMediaPlayerDM
 {
@@ -157,8 +158,10 @@ namespace windowMediaPlayerDM
         public static extern int SendMessage(IntPtr hwnd, int wMsg, IntPtr wParam, IntPtr lParam);
 
         IntPtr nextClipboardViewer;
-
-                   
+        [DllImport("kernel32.dll", SetLastError=true)]
+        [return:MarshalAs(UnmanagedType.Bool)]
+        static extern bool AllocConsole();
+        bool debug;           
         public Form1()
         {
             InitializeComponent();
@@ -274,7 +277,7 @@ namespace windowMediaPlayerDM
             //CommentEngineSetup(cme2, comment_storage4, move_distance);
 
             nextClipboardViewer = (IntPtr)SetClipboardViewer((int)this.Handle);
-          
+            debug = true;
           cme1 = new comment_move_engine(move_distance);
           cme2 = new comment_move_engine(move_distance);
 
@@ -282,7 +285,10 @@ namespace windowMediaPlayerDM
 
           DragDropSetup(this);
           CSettings();
-
+ 
+          if (debug) {
+              AllocConsole();
+          }
          // commentWindowSetup();
 
 
@@ -497,6 +503,7 @@ namespace windowMediaPlayerDM
             }
             }catch(Exception e){
            // MessageBox.Show(e.ToString());
+                Console.WriteLine(e.ToString());
             
             }
   //the startup is to prevent the player run the get link from start up 
@@ -843,7 +850,7 @@ namespace windowMediaPlayerDM
             void form1_loadSetting_XML() {
 
 
-                FileInfo config = new FileInfo(@Directory.GetCurrentDirectory() + "\\" + "settings.DMconfig");
+                FileInfo config = new FileInfo(@Application.StartupPath + "\\settings.DMconfig");
 
                 if(config.Exists){
             
@@ -900,6 +907,10 @@ namespace windowMediaPlayerDM
                                         clipboardswitch = bool.Parse(reader.Value);
 
                                         break;
+                                    case "debug_mode":
+
+                                        debug = bool.Parse(reader.Value);
+                                        break;
                             
                                 }
 
@@ -920,7 +931,7 @@ namespace windowMediaPlayerDM
                     reader.Close();
 
                 }
-                catch (XmlException) { };
+                catch (XmlException e) { Console.WriteLine(e.ToString()); }
         
                 }
         
@@ -932,18 +943,18 @@ namespace windowMediaPlayerDM
 
                 //throw new NotImplementedException();
                 //save the settings on disposed
-                FileInfo settings = new FileInfo(Directory.GetCurrentDirectory() + "\\settings.DMconfig");
-
+               // FileInfo settings = new FileInfo(Directory.GetCurrentDirectory() + "\\settings.DMconfig");
+                FileInfo settings = new FileInfo(Application.StartupPath + "\\settings.DMconfig");
                 if (settings.Exists)
                 {
                     try
                     {
                         settings.Delete();
                     }
-                    catch (IOException) { }
+                    catch (IOException e) { Console.WriteLine(e.ToString()); }
                 }
 
-                using (XmlWriter writer = XmlWriter.Create("settings.DMconfig"))
+                using (XmlWriter writer = XmlWriter.Create(Application.StartupPath+"\\settings.DMconfig"))
                 {
 
                     writer.WriteStartDocument();
@@ -954,6 +965,7 @@ namespace windowMediaPlayerDM
                     writer.WriteElementString("CommentLimit", commentLimit.ToString());
                     writer.WriteElementString("Panel_number", panel_numbers.ToString());
                     writer.WriteElementString("useClipboard", clipboardswitch.ToString());
+                    writer.WriteElementString("debug_mode", debug.ToString());
                     writer.WriteEndElement();
                     writer.WriteEndDocument();
 
@@ -1144,7 +1156,7 @@ namespace windowMediaPlayerDM
 
                             this.Text = "DM Player " + nv.Name;
                             }
-                            catch (ArgumentException) { };
+                            catch (ArgumentException e) { Console.WriteLine(e.ToString()); };
 
                         }
                         else
@@ -1235,7 +1247,7 @@ namespace windowMediaPlayerDM
                 {
                     this.Invoke(st, new object[] { t });
                 }
-                catch (Exception) { }
+                catch (Exception e){Console.WriteLine(e.ToString()); }
             }
 
 
@@ -1243,7 +1255,7 @@ namespace windowMediaPlayerDM
              try{
                     VLC_track.Value = t;
                 }
-                catch (Exception) { };
+                catch (Exception e){Console.WriteLine(e.ToString()); }
             }
         
         
@@ -1319,7 +1331,7 @@ namespace windowMediaPlayerDM
             {
                 test_label.Text = t;
             }
-            catch (Exception) {
+            catch (Exception e){Console.WriteLine(e.ToString());
                 if (this.InvokeRequired)
                 {
                     setString s = new setString(print_test_label);
@@ -2047,7 +2059,7 @@ namespace windowMediaPlayerDM
 
                         currentLanguage = i;
                 }
-                catch (ArgumentOutOfRangeException) { };
+                catch (ArgumentOutOfRangeException e) { Console.WriteLine(e.ToString()); };
 
             }
 
@@ -3193,7 +3205,7 @@ namespace windowMediaPlayerDM
             {
                 Video_comment.Text = s;
             }
-            catch (Exception) {
+            catch (Exception e){Console.WriteLine(e.ToString());
                 if (this.InvokeRequired)
                 {
                     setString sa = new setString(print3);
@@ -3494,7 +3506,7 @@ namespace windowMediaPlayerDM
                 n.Text = o.Text;
                 n.BackgroundImage = o.BackgroundImage;
             }
-            catch (Exception) { 
+            catch (Exception e){Console.WriteLine(e.ToString()); 
             
 
             }
@@ -3896,7 +3908,9 @@ namespace windowMediaPlayerDM
                     sound_trackbar.Value = vVolume;
                 };
             }
-            catch (NullReferenceException) { 
+            catch (NullReferenceException e)
+            {
+                Console.WriteLine(e.ToString()); 
             
             }
         
@@ -3979,7 +3993,7 @@ namespace windowMediaPlayerDM
             }
 
             }
-            catch (Exception) { comment_time = 0; }
+            catch (Exception e){Console.WriteLine(e.ToString()); comment_time = 0; }
 
             
 
@@ -4243,7 +4257,7 @@ namespace windowMediaPlayerDM
 
                             }
                         }
-                        catch (Exception) { };
+                        catch (Exception e){Console.WriteLine(e.ToString()); };
                         //clear removelist here ?    but it should be empty by the end of the code
 
 
@@ -4315,7 +4329,7 @@ namespace windowMediaPlayerDM
 
 
                                        }
-                                       catch (Exception) { };
+                                       catch (Exception e){Console.WriteLine(e.ToString()); };
                             //clear removelist here ?    but it should be empty by the end of the code
                            
 
@@ -4368,7 +4382,7 @@ namespace windowMediaPlayerDM
                     this.Invoke(c, new object[] { });
 
                 }
-                catch (Exception) { }
+                catch (Exception e){Console.WriteLine(e.ToString()); }
 
 
             }
@@ -4754,10 +4768,23 @@ namespace windowMediaPlayerDM
                 dmbox.Items.Remove(dmbox.SelectedItem);
 
             }
-            catch (NullReferenceException) { Console.WriteLine("in removeDMitem"); };
+            catch (NullReferenceException a) {
+                Console.WriteLine(a.ToString());
+                Console.WriteLine("in removeDMitem"); };
         
         }
-
+        ProcessStartInfo ps = new ProcessStartInfo();
+        void restartApplication() {
+            /*
+            ps.Arguments = "/C ping 127.0.0.1 -n 2 && \"" + Application.ExecutablePath + "\"";
+            ps.WindowStyle = ProcessWindowStyle.Hidden;
+            ps.CreateNoWindow = true;
+            ps.FileName = "cmd.exe";
+            Process.Start(ps);
+            Application.Exit();
+        */
+            Application.Restart();
+        }
         void setDMListBox_DoubleClick(object sender, EventArgs e)
         {
             removeDMitem(sender, e);
@@ -4957,7 +4984,9 @@ namespace windowMediaPlayerDM
                         audioinfo = vlcPlayer.Audio.Tracks.Current.Name;
                        
                     }
-                    catch (NullReferenceException) { Console.Write("in void settingup"); }
+                    catch (NullReferenceException e) {
+                        Console.WriteLine(e.ToString());
+                        Console.Write("in void settingup"); }
                 
                 
                 }
@@ -4973,6 +5002,7 @@ namespace windowMediaPlayerDM
                 fm4.select_commentswitch.SelectedValueChanged += new EventHandler(select_commentswitch_SelectedValueChanged);
                 fm4.clipboard.CheckStateChanged += new EventHandler(clipboard_CheckStateChanged);
                 fm4.FormClosed += new FormClosedEventHandler(Form_FormClosed);
+                fm4.debug_mode.Click += new EventHandler(debug_mode_Click);
                 VideoAdjuestAction(fm4.setBrightness);
                 VideoAdjuestAction(fm4.setContrast);
                 VideoAdjuestAction(fm4.setGamma);
@@ -4995,6 +5025,18 @@ namespace windowMediaPlayerDM
 
             }
        
+        }
+
+        void debug_mode_Click(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
+            var msg = MessageBox.Show("Changing this will require a restart to take effect, Do you want a restart now?", "alert", MessageBoxButtons.YesNo);
+            if(msg==DialogResult.Yes){
+            debug=fm4.debug_mode.Checked;
+                restartApplication();
+            }else{
+            debug=fm4.debug_mode.Checked;
+            }
         }
 
         void clipboard_CheckStateChanged(object sender, EventArgs e)
@@ -5257,6 +5299,7 @@ namespace windowMediaPlayerDM
                 VideoSetup(fm4.setGamma, (int)vlcPlayer.Video.Adjustments.Gamma*10);
                 VideoSetup(fm4.setHue, (int)vlcPlayer.Video.Adjustments.Hue*10);
                 VideoSetup(fm4.setSaturation, (int)vlcPlayer.Video.Adjustments.Saturation*10);
+                fm4.debug_mode.Checked = debug;
                 findSubtitleIndex();
             }
         
@@ -5342,7 +5385,7 @@ namespace windowMediaPlayerDM
                     clipboardswitch = fm4.clipboard.Checked;
 
                 }
-                catch (Exception) { }
+                catch (Exception e){Console.WriteLine(e.ToString()); }
             
             
             
@@ -6261,7 +6304,8 @@ namespace windowMediaPlayerDM
 
                     }
                 }
-                catch (Exception) {
+                catch (Exception a){
+                    Console.WriteLine(a.ToString());
 
                     fm7.getDownloadstatus2.Text = "server error";
 
@@ -6487,7 +6531,7 @@ namespace windowMediaPlayerDM
                               //   file.Refresh();
                                  file.Delete();
                              }
-                             catch (Exception) { };
+                             catch (Exception a){Console.WriteLine(a.ToString()); };
                          }
                      }
                      
@@ -7254,7 +7298,7 @@ namespace windowMediaPlayerDM
             {
                  cb = new Uri(fm7.setLinkbox.Text);
             }
-            catch (Exception) {
+            catch (Exception e){Console.WriteLine(e.ToString());
                  cb = null;
             }
             if (cb != null)

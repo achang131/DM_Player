@@ -88,6 +88,11 @@ namespace windowMediaPlayerDM
             get { return this.audio_down; }
 
         }
+        public CheckBox debug_mode {
+            get { return this.Debug_mode; }
+            set { this.Debug_mode = value; }
+        
+        }
         public Label getCurrentAudio {
 
             set { this.current_audio = value; }
