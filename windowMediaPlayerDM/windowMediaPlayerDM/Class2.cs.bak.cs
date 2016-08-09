@@ -872,12 +872,19 @@ namespace windowMediaPlayerDM
                      downloadComment_say();
 
                      break;
+                 case "himado.in":
 
+
+                     loadInfo_hima(url);
+
+                     break;
                 //make himado a case and make default stright dl file
 
                  default:
-
-           loadInfo_hima(url);
+                     if (url.IsFile) { 
+                     
+                     }
+        
          //  title= getTitle();
          //  titles.Add(title);
           //           getAllUrls();
@@ -888,6 +895,32 @@ namespace windowMediaPlayerDM
              
              }
 
+         
+         }
+         void normal_download(Uri url) {
+             if (url.IsFile)
+             {
+                 String filename = url.OriginalString;
+                 int left = filename.LastIndexOf("/")+1;
+                 filename = filename.Substring(left,filename.Length-left);
+                 filename = filestorage_dir +"\\"+ filename;
+                 //if the url is a file instead of a webpage
+                 using (WebClient wb = new WebClient()){
+                     
+                     wb.DownloadFileAsync(url, filename);
+                 
+                 }
+
+
+             }
+             else {
+                 loadInfo(url);
+                 title = getTitle();
+                 titles.Add(title);
+                 // most likely won't work but still put it in just in case
+                 getAllUrls();
+             
+             }
          
          }
          void downloadComment_say() { 
