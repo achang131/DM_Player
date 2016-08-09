@@ -39,3 +39,4 @@ C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM
 C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\Interop.ShockwaveFlashObjects.dll
 C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM\bin\Debug\Vlc.DotNet.Wpf.dll
 C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\windowMediaPlayerDM.Neo_Comment_window.resources
+C:\Users\Alan\Documents\GitHub\DM_Player\windowMediaPlayerDM\windowMediaPlayerDM\obj\x86\Debug\windowMediaPlayerDM.MessageWindow.resources

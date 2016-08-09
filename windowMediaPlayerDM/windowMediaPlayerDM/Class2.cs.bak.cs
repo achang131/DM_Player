@@ -881,13 +881,17 @@ namespace windowMediaPlayerDM
                 //make himado a case and make default stright dl file
 
                  default:
-                     if (url.IsFile) { 
-                     
+                     if (url.IsFile)
+                     {
+                         normal_download(url);
                      }
-        
-         //  title= getTitle();
-         //  titles.Add(title);
-          //           getAllUrls();
+                     else
+                     {
+                         loadInfo(url);
+                         title = getTitle();
+                         titles.Add(title);
+                         getAllUrls();
+                     }
 
                      break;
              
@@ -895,6 +899,43 @@ namespace windowMediaPlayerDM
              
              }
 
+         
+         }
+         MessageWindow progressbox;
+         void normal_download_ProgressChanged(object sender, DownloadProgressChangedEventArgs e) {
+             int progress = e.ProgressPercentage;
+             String total = e.TotalBytesToReceive.ToString();
+             String current = e.BytesReceived.ToString();
+             if (progressbox == null)
+             {
+                 progressbox = new MessageWindow();
+                 // use a new form will be easier then message box
+                // progressbox = MessageBox.Show("Downloading: " + current + "/" + total + " " + progress + "%");
+                 progressbox.setMessage = "Downloading: " + current + "/" + total + " " + progress + "%";
+             }
+             else {
+                 progressbox.setMessage = "Downloading: " + current + "/" + total + " " + progress + "%";
+          
+             }
+
+         
+         }
+         public DownloadProgressChangedEventHandler normal_dlProgress(MessageWindow msg, Uri url) {
+
+             Action<object, DownloadProgressChangedEventArgs> action = (sender, e) =>
+             {
+                 int progress = e.ProgressPercentage;
+                 String total = e.TotalBytesToReceive.ToString();
+                 String current = e.BytesReceived.ToString();
+
+                 msg.setMessage = "Downloading: "+url.AbsolutePath+Environment.NewLine + current + "/" + total + " " + progress + "%";
+
+                 
+
+
+
+             };
+         return new DownloadProgressChangedEventHandler(action);
          
          }
          void normal_download(Uri url) {
@@ -906,9 +947,9 @@ namespace windowMediaPlayerDM
                  filename = filestorage_dir +"\\"+ filename;
                  //if the url is a file instead of a webpage
                  using (WebClient wb = new WebClient()){
-                     
+                     MessageWindow msg = new MessageWindow();
                      wb.DownloadFileAsync(url, filename);
-                 
+                     wb.DownloadProgressChanged += normal_dlProgress(msg,url);
                  }
 
 

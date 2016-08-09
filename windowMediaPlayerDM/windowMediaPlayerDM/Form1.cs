@@ -1124,7 +1124,7 @@ namespace windowMediaPlayerDM
                               //  Uri nuri = new Uri(vlcPlayer.GetCurrentMedia().Mrl);
                                 Uri nuri = new Uri(currentfile.FullName);
                                 FileInfo nfile = new FileInfo(nuri.LocalPath);
-                                String currentv = nfile.Name;
+                                String currentv = currentfile.Name;
 
                                 for (int i = 0; i < Media_List.Count(); i++)
                             {
@@ -1137,6 +1137,7 @@ namespace windowMediaPlayerDM
                                 }
 
                             }
+
                             if (currentinx == Media_List.Count - 1)
                             {
 
@@ -4058,7 +4059,10 @@ namespace windowMediaPlayerDM
             //super important the main clock for the comment engine;
            
             time_counter++;
-            setTime_track(time_counter);
+            if (time_counter < VLC_track.Maximum)
+            {
+                setTime_track(time_counter);
+            }
         
         }
         int missed = 0;
