@@ -403,16 +403,22 @@ namespace windowMediaPlayerDM
         Point playerlocation;
         Size commentPanelsize;
         Point commentPanelLocation;
-
+        bool firstFullscreen = false;
         void FullScreenSwitch() {
             if (fullscreen)
             {
-
+  
                 show_all_fm1();
             }
             else
             {
-
+                if (firstFullscreen == false)
+                {
+                    //to solve the weird first time fullscreen bug, just a temp fix
+                    hide_All_fm1();
+                    show_all_fm1();
+                    firstFullscreen = true;
+                }
                 hide_All_fm1();
             }
         
