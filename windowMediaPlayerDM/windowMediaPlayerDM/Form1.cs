@@ -489,9 +489,12 @@ namespace windowMediaPlayerDM
             if (data.GetDataPresent(DataFormats.Rtf)) {
 
                 RichTextBox tb = new RichTextBox();
-                tb.Rtf = (String)data.GetData(DataFormats.Text);
+                tb.Rtf = data.GetData(DataFormats.Text) as String;
               //  clipboard_label.Text = tb.Text;
-                text = tb.Text;  
+                if (tb.Rtf != null)
+                {
+                    text = tb.Text;
+                }
             
             } else if (data.GetDataPresent(DataFormats.Text)){
             
@@ -5413,8 +5416,14 @@ namespace windowMediaPlayerDM
         void fm4_Disposed(object sender, EventArgs e)
         {
             // save all the changes here
+            activeForms--;
+            if (activeForms == 0&&fullscreen) {
+                hideCurosr = true;
+            }
             fm4.Dispose();
             fm4 = null;
+
+
         }
 
 

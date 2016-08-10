@@ -78,6 +78,9 @@
     <Compile Include="Class3.cs" />
     <Compile Include="clipboard.cs" />
     <Compile Include="comment_move_engine.cs" />
+    <Compile Include="Font_OutLine.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="MessageWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -135,6 +138,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VlcConfiguration.cs" />
+    <EmbeddedResource Include="Font_OutLine.resx">
+      <DependentUpon>Font_OutLine.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MessageWindow.resx">
       <DependentUpon>MessageWindow.cs</DependentUpon>
     </EmbeddedResource>

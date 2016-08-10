@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
+
 namespace windowMediaPlayerDM
 {
     public partial class Neo_Comment_window : Form
@@ -30,10 +31,11 @@ namespace windowMediaPlayerDM
         Dictionary<int, String> comments;
         int currenttime;
         int commentLimit;
+       
         public Neo_Comment_window()
         {
             InitializeComponent();
-
+            
             move = -1;
             this.TransparencyKey = Color.AliceBlue;
             this.BackColor = Color.AliceBlue;
@@ -48,7 +50,7 @@ namespace windowMediaPlayerDM
             this.BringToFront();
             this.ShowInTaskbar = false;
             comment_storage = new List<Label>();
-            userColor = Color.DarkGray;
+            userColor = Color.White;
             comments = new Dictionary<int, string>();
             fullscreen = false;
             interval = 60;
@@ -58,6 +60,22 @@ namespace windowMediaPlayerDM
             currenttime = 0;
             commentLimit = 20;
             playedcomment = 0;
+            userOutlineColor = Color.Black;
+            userOutlineWidth = 2;
+            Random temp = new Random();
+            int uppint = temp.Next(0, 1);
+            if (uppint == 0)
+            {
+                upper = false;
+            }
+            else {
+                upper = true;
+            }
+        }
+        public Color userOutlineColor
+        {
+            set;
+            get;
         }
         public int getplayedComment {
             get { return playedcomment; }
@@ -377,47 +395,88 @@ namespace windowMediaPlayerDM
             }
         }
         bool fullscreen;
-        Color userColor;
+        public Color userColor{set;get;}
         int ycurrent;
+
+       public float userOutlineWidth{set;get;}
+       bool upper { get; set; }
+
         public String createLabel{
             // add the comment to the list and the controls
             // returns the newest comment ( latest set comment if read
             set
             {
                 playedcomment++;
-                Label dm = new Label();
-
+               // Label dm = new Label();
+                Font_Outline dm = new Font_Outline();
                 //
 
                 dm.Text = value;
                 dm.Name = value;
-                dm.TabIndex = 3;
-                dm.Visible = true;
-                dm.AutoSize = true;
+               // dm.TabIndex = 3;
+               // dm.Visible = true;
+                
+
 
                 dm.Font = new Font("Microsoft Sans Serif", 24, FontStyle.Bold);
+                
                 dm.ForeColor = userColor;
+                dm.OutlineForeColor = userOutlineColor;
+                dm.OutlineWidth = userOutlineWidth;
+
+
+                Size s = TextRenderer.MeasureText(dm.Text, dm.Font, new Size(value.Length*100 + 7, 1000),
+       TextFormatFlags.VerticalCenter
+       | TextFormatFlags.Left
+       | TextFormatFlags.NoPadding
+       | TextFormatFlags.WordBreak);
+
+                // dm.MaximumSize= new Size(value.Length*100,0);
+                dm.Size = new Size(s.Width+70,s.Height);
+                
+
+                //  dm.AutoSize = true;
 
 
                 Random ypos = new Random();
+                // to prevent two comments goes to close to each other
+
 
                 if (!fullscreen)
                 {
-                    if (40 < this.Size.Height - (80 + dm.Size.Height))
+                    if (0 < this.Size.Height - (dm.Size.Height))
                     {
-                        ycurrent = ypos.Next(40, this.Size.Height - (80 + dm.Size.Height));//fm3.ClientRectangle.Bottom
+                        if (upper == false)
+                        {
+                            ycurrent = ypos.Next(0, this.Size.Height/2 - (dm.Size.Height));//fm3.ClientRectangle.Bottom
+                            upper = true;
+                        }
+                        else {
+                            ycurrent = ypos.Next(this.Size.Height/2, this.Size.Height - (dm.Size.Height));//fm3.ClientRectangle.Bottom
+                            upper = false;
+                        }
+                    
                     }
                     else
                     {
 
-                        ycurrent = 40;
+                        ycurrent = 0;
                     }
                 }
                 else
                 {
 
-
-                    ycurrent = ypos.Next(this.ClientRectangle.Top, this.ClientRectangle.Bottom - dm.Size.Height - 80);
+                    if (upper == false)
+                    {
+                        ycurrent = ypos.Next(0, this.Size.Height / 2 - (dm.Size.Height));//fm3.ClientRectangle.Bottom
+                        upper = true;
+                    }
+                    else
+                    {
+                        ycurrent = ypos.Next(this.Size.Height / 2, this.Size.Height - (dm.Size.Height));//fm3.ClientRectangle.Bottom
+                        upper = false;
+                    }
+                    //ycurrent = ypos.Next(this.ClientRectangle.Top, this.ClientRectangle.Bottom - dm.Size.Height - 80);
 
                 }
 

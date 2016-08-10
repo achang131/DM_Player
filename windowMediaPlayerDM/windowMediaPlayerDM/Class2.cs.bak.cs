@@ -604,10 +604,29 @@ namespace windowMediaPlayerDM
          
          
          }
+         String safeFilename(String filename)
+         {
+             String result = filename;
+             result = result.Replace("\\", " ");
+             result = result.Replace("?", " ");
+             result = result.Replace(":", " ");
+             result = result.Replace("<", " ");
+             result = result.Replace(">", " ");
+             result = result.Replace("\"", " ");
+             result = result.Replace("|", " ");
+             result = result.Replace("*", " ");
+             result = result.Replace("/", " ");
 
+
+
+
+             return result;
+
+         }
          void wb_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
          {
              //throw new NotImplementedException();
+             title = safeFilename(title);
              String CommentTitle = title+".xml";
              commentPage = e.Result;
              FileInfo temp_comment = new FileInfo("temp_comment");
