@@ -1561,7 +1561,7 @@ namespace windowMediaPlayerDM
         int totalComments(List<Neo_Comment_window> l){
             int result = 0;
 
-            for (int i = 0; i < l.Count; i++) {
+            for (int i = 0; i < l.Count-1; i++) {
 
                 result += l.ElementAt(i).setStorage.Count;
             
@@ -1835,7 +1835,7 @@ namespace windowMediaPlayerDM
         }
         void CWmoveComment(List<Neo_Comment_window> l,int move) {
 
-            for (int i = 0; i < l.Count; i++) {
+            for (int i = 0; i < l.Count-1; i++) {
 
                 l.ElementAt(i).movecomment = move;
             }
@@ -2271,7 +2271,7 @@ namespace windowMediaPlayerDM
         void srCommentWindow(Dictionary<int,String> dic)
         {
             
-            for (int i = 0; i < Comment_Windows.Count; i++)
+            for (int i = 0; i < Comment_Windows.Count-1; i++)
             {
 
                 Comment_Windows.ElementAt(i).setDictionary=dic;
@@ -3431,10 +3431,18 @@ namespace windowMediaPlayerDM
 
             setDM_Menu();
         }
+        bool cw = false;
         void multicommentwindowsetup() {
 
-
-           Neo_Comment_window f = new Neo_Comment_window();
+            if (cw == false)
+            {
+                cw = true;
+            }
+            else {
+                cw = false;
+            }
+            
+           Neo_Comment_window f = new Neo_Comment_window(cw);
             f.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
             f.Size = new Size(vlcPlayer.Size.Width, vlcPlayer.Size.Height); // - 45
             f.MouseClick += new MouseEventHandler(dm_MouseClick);
@@ -3764,7 +3772,7 @@ namespace windowMediaPlayerDM
         {
 
 
-            for (int i = 0; i < panel_numbers; i++) {
+            for (int i = 0; i < panel_numbers+1; i++) {
 
                 multicommentwindowsetup();
             }
@@ -4116,7 +4124,7 @@ namespace windowMediaPlayerDM
         {
             String result = "";
 
-            for (int i = 0; i < l.Count; i++) {
+            for (int i = 0; i < l.Count-1; i++) {
                result+=" L"+i+": "+ l.ElementAt(i).setStorage.Count;
             
             }

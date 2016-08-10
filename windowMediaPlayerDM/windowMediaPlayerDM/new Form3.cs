@@ -32,7 +32,7 @@ namespace windowMediaPlayerDM
         int currenttime;
         int commentLimit;
        
-        public Neo_Comment_window()
+        public Neo_Comment_window( bool uppert)
         {
             InitializeComponent();
             
@@ -62,15 +62,8 @@ namespace windowMediaPlayerDM
             playedcomment = 0;
             userOutlineColor = Color.Black;
             userOutlineWidth = 2;
-            Random temp = new Random();
-            int uppint = temp.Next(0, 1);
-            if (uppint == 0)
-            {
-                upper = false;
-            }
-            else {
-                upper = true;
-            }
+
+            upper = uppert;
         }
         public Color userOutlineColor
         {
@@ -484,12 +477,15 @@ namespace windowMediaPlayerDM
 
                 this.comment_storage.Add(dm);
                 this.Controls.Add(dm);
+               
                 dm.Show();
                  }
             get { return this.comment_storage.Last().Text; }
         
         
         }
+
+
         //gets the comment storage of this form 
         public List<Label> setStorage {
             set { this.comment_storage = value; }
