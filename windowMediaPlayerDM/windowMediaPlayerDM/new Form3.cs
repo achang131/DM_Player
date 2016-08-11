@@ -62,7 +62,7 @@ namespace windowMediaPlayerDM
             playedcomment = 0;
             userOutlineColor = Color.Black;
             userOutlineWidth = 2;
-
+            fontsize = 20;
             upper = uppert;
         }
         public Color userOutlineColor
@@ -390,7 +390,7 @@ namespace windowMediaPlayerDM
         bool fullscreen;
         public Color userColor{set;get;}
         int ycurrent;
-
+        public int fontsize { set; get; }
        public float userOutlineWidth{set;get;}
        bool upper { get; set; }
 
@@ -411,7 +411,7 @@ namespace windowMediaPlayerDM
                 
 
 
-                dm.Font = new Font("Microsoft Sans Serif", 24, FontStyle.Bold);
+                dm.Font = new Font("Microsoft Sans Serif", fontsize, FontStyle.Bold);
                 
                 dm.ForeColor = userColor;
                 dm.OutlineForeColor = userOutlineColor;

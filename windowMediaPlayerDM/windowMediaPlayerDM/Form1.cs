@@ -489,7 +489,7 @@ namespace windowMediaPlayerDM
             if (data.GetDataPresent(DataFormats.Rtf)) {
 
                 RichTextBox tb = new RichTextBox();
-                tb.Rtf = data.GetData(DataFormats.Text) as String;
+                tb.Rtf = data.GetData(DataFormats.Rtf) as String;
               //  clipboard_label.Text = tb.Text;
                 if (tb.Rtf != null)
                 {
@@ -890,6 +890,9 @@ namespace windowMediaPlayerDM
 
                                         break;
 
+                                    case "Font_Size":
+                                        fontsize = Int32.Parse(reader.Value);
+                                        break;
 
                                     case "volume":
 
@@ -967,6 +970,7 @@ namespace windowMediaPlayerDM
                     writer.WriteElementString("volume", vVolume.ToString());
                     writer.WriteElementString("CommentLimit", commentLimit.ToString());
                     writer.WriteElementString("Panel_number", panel_numbers.ToString());
+                    writer.WriteElementString("Font_Size", fontsize.ToString());
                     writer.WriteElementString("useClipboard", clipboardswitch.ToString());
                     writer.WriteElementString("debug_mode", debug.ToString());
                     writer.WriteEndElement();
@@ -1407,7 +1411,8 @@ namespace windowMediaPlayerDM
             replacetimer2_interval = 10;
 
 
-            
+            fontsize = 20;
+
             cme1.setInterval = 64;
             cme2.setInterval = 63;
 
@@ -2655,7 +2660,7 @@ namespace windowMediaPlayerDM
                        test_label.Text = vlcPlayer.State.ToString();
                        vlcPlay_button.BackgroundImage = Properties.Resources.pause;
                        vlcPlayer.Play();
-                       if (fullscreen && hideCurosr == false && activeForms == 0 && fullscreenUp == false && fullscreenBottom == false)
+                       if (fullscreen && hideCurosr == false && activeForms == 0)
                        {
                            hideCurosr = true;
                        }
@@ -2674,7 +2679,7 @@ namespace windowMediaPlayerDM
                        test_label.Text = vlcPlayer.State.ToString();
 
                       timerStart();
-                      if (fullscreen && hideCurosr == false && activeForms==0 && fullscreenUp==false && fullscreenBottom==false) {
+                      if (fullscreen && hideCurosr == false && activeForms==0) {
                           hideCurosr = true;
                       }
 
@@ -3445,15 +3450,7 @@ namespace windowMediaPlayerDM
            Neo_Comment_window f = new Neo_Comment_window(cw);
             f.setLocation = new Point(this.Location.X + 8, this.Location.Y + 59);
             f.Size = new Size(vlcPlayer.Size.Width, vlcPlayer.Size.Height); // - 45
-            f.MouseClick += new MouseEventHandler(dm_MouseClick);
-            f.MouseDoubleClick += new MouseEventHandler(fm3_MouseDoubleClick);
-
-            f.KeyUp += new KeyEventHandler(fm3_KeyUp);
-            f.MouseWheel += new MouseEventHandler(Form1_MouseWheel);
-            DragDropSetup(f);
-
-            f.MouseMove += new MouseEventHandler(f_MouseMove);
-
+            f.fontsize = fontsize;
 
             f.Show();
       
@@ -3689,6 +3686,7 @@ namespace windowMediaPlayerDM
                     Comment_Windows.ElementAt(cw).Controls.Remove(menuStrip1);
                     this.Controls.Add(menuStrip1);
                 }
+
                 fullscreenBottom = false;
                 fullscreenUp = false;
                 if (activeForms == 0 && vlcPlayer.State.ToString()=="Playing")
@@ -3768,6 +3766,20 @@ namespace windowMediaPlayerDM
         
         
         }
+        void commentControlSetup(Neo_Comment_window f) {
+
+            f.MouseClick += new MouseEventHandler(dm_MouseClick);
+            f.MouseDoubleClick += new MouseEventHandler(fm3_MouseDoubleClick);
+
+            f.KeyUp += new KeyEventHandler(fm3_KeyUp);
+            f.MouseWheel += new MouseEventHandler(Form1_MouseWheel);
+            DragDropSetup(f);
+
+            f.MouseMove += new MouseEventHandler(f_MouseMove);
+
+
+            
+        }
         void commentWindowSetup()
         {
 
@@ -3776,8 +3788,8 @@ namespace windowMediaPlayerDM
 
                 multicommentwindowsetup();
             }
-
-            
+            int cw = Comment_Windows.Count - 1;
+            commentControlSetup(Comment_Windows.ElementAt(cw));
 
             // maybe will add this in a list to reduce lines
 
@@ -4531,7 +4543,7 @@ namespace windowMediaPlayerDM
             fm2.setMListBox.KeyUp += new KeyEventHandler(setMListBox_KeyUp);
             fm2.setDMListBox.KeyUp += new KeyEventHandler(setDMListBox_KeyUp);
             fm2.setFullDMBox.KeyUp += new KeyEventHandler(setFullDMBox_KeyUp);
-            fm2.FormClosed += new FormClosedEventHandler(Form_FormClosed);
+            //fm2.FormClosed += new FormClosedEventHandler(Form_FormClosed);
            // fm2.MouseMove += new MouseEventHandler(Form_MourseMove);
 
             // if (vlcPlayer.GetCurrentMedia() != null) {
@@ -4552,7 +4564,7 @@ namespace windowMediaPlayerDM
         {
             activeForms--;
             //throw new NotImplementedException();
-            if (fullscreen == true && activeForms==0) {
+            if (fullscreen == true && activeForms==0 && vlcPlayer.State.ToString()=="Playing") {
                 hideCurosr = true;
             }
         }
@@ -4768,6 +4780,7 @@ namespace windowMediaPlayerDM
             ListBox dmbox = (ListBox)sender;
 
             srCommentWindow();
+            CWRemoveComments(Comment_Windows);
             comment2.Clear();
             comment.Clear();
             _duplicates = 0;
@@ -4790,13 +4803,14 @@ namespace windowMediaPlayerDM
                     }
 
                 }
-                dmbox.Items.Remove(dmbox.SelectedItem);
+                //dmbox.Items.Remove(dmbox.SelectedItem);
+                fm2.setDMList = DM_List;
 
             }
             catch (NullReferenceException a) {
                 Console.WriteLine(a.ToString());
                 Console.WriteLine("in removeDMitem"); };
-        
+          
         }
         ProcessStartInfo ps = new ProcessStartInfo();
         void restartApplication() {
@@ -4878,8 +4892,11 @@ namespace windowMediaPlayerDM
                 if (Comment_Windows.Count == 0) {
 
                     commentWindowSetup();
-                    fm2.Owner = Comment_Windows.ElementAt(Comment_Windows.Count - 1);
-                    fm2.Dispose();
+                    if (fm2 != null)
+                    {
+                        fm2.Owner = Comment_Windows.ElementAt(Comment_Windows.Count - 1);
+                    }
+                    // fm2.Dispose();
                     DMMlistsetup();
                 }
 
@@ -4909,8 +4926,11 @@ namespace windowMediaPlayerDM
         }
         void fm2_Disposed(object sender, EventArgs e)
         {
-
+            activeForms--;
             fm2 = null;
+            if (fullscreen && activeForms == 0 && vlcPlayer.State.ToString()=="Playing") {
+                hideCurosr = true;
+            }
         }
        
         
@@ -5040,12 +5060,13 @@ namespace windowMediaPlayerDM
                 {
                     hideCurosr = false;
                 }
-                activeForms++;
+            
                 this.loadAll();
                 if (Comment_Windows.Count>0)
                 {
                     fm4.Owner = Comment_Windows.ElementAt(Comment_Windows.Count - 1);
                 }
+                activeForms++;
                 fm4.Show();
 
             }
@@ -5295,6 +5316,7 @@ namespace windowMediaPlayerDM
             a.Maximum = 30;
             a.Value = value;
         }
+        int fontsize;
         void loadAll() {
             if (fm4 != null) {
                 switch (this.sommentswitch) { 
@@ -5325,6 +5347,7 @@ namespace windowMediaPlayerDM
                 VideoSetup(fm4.setHue, (int)vlcPlayer.Video.Adjustments.Hue*10);
                 VideoSetup(fm4.setSaturation, (int)vlcPlayer.Video.Adjustments.Saturation*10);
                 fm4.debug_mode.Checked = debug;
+                fm4.setFontSize.Text = fontsize.ToString();
                 findSubtitleIndex();
             }
         
@@ -5355,6 +5378,7 @@ namespace windowMediaPlayerDM
             }
         
         }
+
         void applyAll() {
             if (fm4 != null) {
 
@@ -5406,7 +5430,11 @@ namespace windowMediaPlayerDM
                         }
                     
                     }
-
+                    for (int i = 0; i < Comment_Windows.Count - 1; i++)
+                    {
+                        fontsize = Int32.Parse(fm4.setFontSize.Text);
+                        Comment_Windows.ElementAt(i).fontsize = fontsize;
+                    }
                     clipboardswitch = fm4.clipboard.Checked;
 
                 }
@@ -5424,10 +5452,11 @@ namespace windowMediaPlayerDM
         void fm4_Disposed(object sender, EventArgs e)
         {
             // save all the changes here
-            activeForms--;
-            if (activeForms == 0&&fullscreen) {
-                hideCurosr = true;
-            }
+          //  activeForms--;
+         //   if (activeForms == 0&&fullscreen) {
+         //       hideCurosr = true;
+           // }
+            fm4.Close();
             fm4.Dispose();
             fm4 = null;
 
@@ -5806,7 +5835,7 @@ namespace windowMediaPlayerDM
 
                 }
                 else {
-
+                 
                     fm6.Dispose();
                 
                 }
@@ -5951,6 +5980,7 @@ namespace windowMediaPlayerDM
                 {
                     fm7.Owner = Comment_Windows.ElementAt(Comment_Windows.Count - 1);
                 }
+                activeForms++;
                 fm7.Show();
             }
             else {
@@ -7440,7 +7470,7 @@ namespace windowMediaPlayerDM
         {
             //throw new NotImplementedException();
             //when fm6 gets disposed;
-
+            fm6.Close();
             if (current_dir_url == null || linkaddress == null)
             {
 
@@ -7460,6 +7490,7 @@ namespace windowMediaPlayerDM
             
             }
             fm6 = null;
+
 
         }
 

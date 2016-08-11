@@ -93,6 +93,7 @@ namespace windowMediaPlayerDM
             set { this.Debug_mode = value; }
         
         }
+        public TextBox setFontSize { get { return font_size_box;} set {font_size_box=value ;} }
         public Label getCurrentAudio {
 
             set { this.current_audio = value; }

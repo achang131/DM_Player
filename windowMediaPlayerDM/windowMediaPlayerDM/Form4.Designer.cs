@@ -74,6 +74,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.audio_tab = new System.Windows.Forms.TabPage();
             this.Debug_mode = new System.Windows.Forms.CheckBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.font_size_box = new System.Windows.Forms.TextBox();
             this.tabControl1.SuspendLayout();
             this.Setting_tab.SuspendLayout();
             this.video_tab.SuspendLayout();
@@ -98,6 +100,8 @@
             // 
             // Setting_tab
             // 
+            this.Setting_tab.Controls.Add(this.font_size_box);
+            this.Setting_tab.Controls.Add(this.label8);
             this.Setting_tab.Controls.Add(this.Debug_mode);
             this.Setting_tab.Controls.Add(this.Clicpboard_check);
             this.Setting_tab.Controls.Add(this.totalSubtitle_text);
@@ -553,6 +557,23 @@
             this.Debug_mode.Text = "Debug_mode";
             this.Debug_mode.UseVisualStyleBackColor = true;
             // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.label8.Location = new System.Drawing.Point(12, 138);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(130, 17);
+            this.label8.TabIndex = 38;
+            this.label8.Text = "Comment Font Size";
+            // 
+            // font_size_box
+            // 
+            this.font_size_box.Location = new System.Drawing.Point(164, 134);
+            this.font_size_box.Name = "font_size_box";
+            this.font_size_box.Size = new System.Drawing.Size(100, 20);
+            this.font_size_box.TabIndex = 39;
+            // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -624,6 +645,8 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.CheckBox Clicpboard_check;
         private System.Windows.Forms.CheckBox Debug_mode;
+        private System.Windows.Forms.TextBox font_size_box;
+        private System.Windows.Forms.Label label8;
 
     }
 }
