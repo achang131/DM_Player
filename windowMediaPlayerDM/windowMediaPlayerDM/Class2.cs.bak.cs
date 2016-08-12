@@ -781,7 +781,7 @@ namespace windowMediaPlayerDM
                  }
                  catch (IOException)
                  {
-                     file.CopyTo(filestorage_dir + "\\" + CommentTitle + "_new", true);
+                     file.CopyTo(filestorage_dir + "\\temp_xml\\" + CommentTitle, true);
                  }
              }
              else {
@@ -795,9 +795,10 @@ namespace windowMediaPlayerDM
                      {
                          file.CopyTo(filestorage_dir + "\\" + CommentTitle, true);
                      }
-                     catch (IOException)
+                     catch (IOException c)
                      {
-                         file.CopyTo(filestorage_dir + "\\" + CommentTitle + "_new", true);
+                         Console.WriteLine(c);
+                         file.CopyTo(filestorage_dir + "\\temp_xml\\" + CommentTitle, true);
                      }
 
                  }else if(basefile.Length==file.Length){
@@ -805,9 +806,10 @@ namespace windowMediaPlayerDM
                      {
                          file.CopyTo(filestorage_dir + "\\" + CommentTitle, true);
                      }
-                     catch (IOException)
+                     catch (IOException c)
                      {
-                         file.CopyTo(filestorage_dir + "\\" + CommentTitle + "_new", true);
+                         Console.WriteLine(c);
+                         file.CopyTo(filestorage_dir + "\\temp_xml\\" + CommentTitle, true);
                      }
                  }
                  else {
@@ -820,18 +822,18 @@ namespace windowMediaPlayerDM
                          }
                          catch (IOException)
                          {
-                             file.CopyTo(filestorage_dir + "\\" + CommentTitle + "_new", true);
+                             file.CopyTo(filestorage_dir + "\\temp_xml\\" + CommentTitle, true);
                          }
                      }
                      else
                      {
                          try
                          {
-                             file.CopyTo(filestorage_dir + "\\" + CommentTitle + "_new", true);
+                             file.CopyTo(filestorage_dir + "\\temp_xml\\" + CommentTitle, true);
                          }
                          catch (IOException)
                          {
-                             file.CopyTo(filestorage_dir + "\\" + CommentTitle + "_new(1)", true);
+                             file.CopyTo(filestorage_dir + "\\temp_xml\\" + CommentTitle, true);
                          }
                      }
                  

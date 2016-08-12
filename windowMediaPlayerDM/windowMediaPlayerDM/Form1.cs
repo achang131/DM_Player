@@ -489,8 +489,10 @@ namespace windowMediaPlayerDM
             if (data.GetDataPresent(DataFormats.Rtf)) {
 
                 RichTextBox tb = new RichTextBox();
+                //tb.Rtf = data.GetData(DataFormats.Text) as String;
                 tb.Rtf = data.GetData(DataFormats.Rtf) as String;
-              //  clipboard_label.Text = tb.Text;
+                
+                //  clipboard_label.Text = tb.Text;
                 if (tb.Rtf != null)
                 {
                     text = tb.Text;
@@ -6343,6 +6345,7 @@ namespace windowMediaPlayerDM
                         String filenames = filename.OriginalString;
                         int start = filenames.LastIndexOf("/") + 1;
                         filenames = filenames.Substring(start, filenames.Length - start);
+                        filenames = safeFilename(filenames);
                         filenames = current_dir_url + "\\" + filenames;
                         FileInfo file = new FileInfo(filenames);
                        // bk.CancelAsync();
@@ -6479,8 +6482,18 @@ namespace windowMediaPlayerDM
                     
 
                     //add the used link as a key for getting the title of the current file
-                    MultiDownloadLinks.Add((Uri)box.SelectedItem, fm7.getTitle.SelectedItem.ToString());
-
+                    if (!MultiDownloadLinks.ContainsKey(box.SelectedItem as Uri))
+                    {
+                        MultiDownloadLinks.Add((Uri)box.SelectedItem, fm7.getTitle.SelectedItem.ToString());
+                    }
+                    else {
+                        var t = MessageBox.Show("The file has already been download once, are you sure you want to download it again?", "alert", MessageBoxButtons.YesNo);
+                        if (t == DialogResult.Yes) {
+                            MultiDownloadLinks.Remove(box.SelectedItem as Uri);
+                            MultiDownloadLinks.Add((Uri)box.SelectedItem, fm7.getTitle.SelectedItem.ToString());
+         
+                        }
+                    }
                     //vlcSetMedia(gb.playDownlist);
                     vlc_track_time = -2;
                     //autoLoadByName(gb.playDownlist);
