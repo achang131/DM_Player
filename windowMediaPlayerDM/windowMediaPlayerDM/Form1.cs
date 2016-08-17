@@ -1127,7 +1127,7 @@ namespace windowMediaPlayerDM
                     {
                         if (Media_List.Count > 1)
                         {
-                            int currentinx = -2;
+                            int currentinx = 0;
                             try
                             {
                               //  Uri nuri = new Uri(vlcPlayer.GetCurrentMedia().Mrl);
@@ -1147,7 +1147,7 @@ namespace windowMediaPlayerDM
 
                             }
 
-                            if (currentinx == Media_List.Count - 1)
+                            if (currentinx >= Media_List.Count - 1)
                             {
 
                                 currentinx = 0;
@@ -4564,13 +4564,17 @@ namespace windowMediaPlayerDM
         int activeForms = 0;
         void Form_FormClosed(object sender, FormClosedEventArgs e)
         {
+            form_closing_action();
+        }
+        void form_closing_action() {
+
             activeForms--;
             //throw new NotImplementedException();
-            if (fullscreen == true && activeForms==0 && vlcPlayer.State.ToString()=="Playing") {
+            if (fullscreen == true && activeForms == 0 && vlcPlayer.State.ToString() == "Playing")
+            {
                 hideCurosr = true;
             }
         }
-
         void Form_MourseMove(object sender, MouseEventArgs e)
         {
             //throw new NotImplementedException();
@@ -5694,7 +5698,9 @@ namespace windowMediaPlayerDM
 
             String temp = file.Name;
             setVLCname_thread("DM Player " + file.Name);
-        
+
+           // Media_status.Text = currentfile.Name;
+            
         }
 
         void setVLCname_thread(string s) {
@@ -5706,7 +5712,6 @@ namespace windowMediaPlayerDM
             } else {
 
                 this.Text = s;
-            
             }
         
         
@@ -5885,6 +5890,7 @@ namespace windowMediaPlayerDM
 
 
                 }
+                fm7.FormClosing += new FormClosingEventHandler(fm7_FormClosing);
                 fm7.getTitle.Click += new EventHandler(getTitle_Click);
                 fm7.getTitle.DoubleClick += new EventHandler(getTitle_DoubleClick);
                 fm7.getLinks.Click += new EventHandler(getLinks_Click);
@@ -5936,6 +5942,12 @@ namespace windowMediaPlayerDM
 
             }
         }
+
+        void fm7_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            //throw new NotImplementedException();
+            form_closing_action();
+        }
       
         void URL_menuLoadup() {
             fm7_firsttime = false;
@@ -5976,13 +5988,14 @@ namespace windowMediaPlayerDM
                 fm7.getFileUrl.MouseMove += new MouseEventHandler(setLinkbox_MouseMove);
                 fm7.getFileUrl.MouseLeave += new EventHandler(getFileUrl_MouseLeave);
                 fm7.reload.Click += new EventHandler(reload_Click);
+                fm7.FormClosing +=new FormClosingEventHandler(fm7_FormClosing);
                // fm7.Disposed += new EventHandler(fm7_Disposed);
-                 
+                fm7.Shown += new EventHandler(fm7_Shown);
                 if (Comment_Windows.Count > 0)
                 {
                     fm7.Owner = Comment_Windows.ElementAt(Comment_Windows.Count - 1);
                 }
-                activeForms++;
+               // activeForms++;
                 fm7.Show();
             }
             else {
@@ -6010,6 +6023,12 @@ namespace windowMediaPlayerDM
             }
         
         
+        }
+
+        void fm7_Shown(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
+            activeForms++;
         }
         void loadFromClipboard(String urlt) {
 

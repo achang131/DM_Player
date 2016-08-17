@@ -1661,7 +1661,7 @@ namespace windowMediaPlayerDM
                          else
                          {
 
-
+                             //wb.DownloadFileAsync(filepath, @newfile.FullName);
                              dlfilepath = newfile.FullName;
                          }
                      }
@@ -1679,7 +1679,7 @@ namespace windowMediaPlayerDM
 
                      FileInfo newfile = new FileInfo(ndir.FullName + "\\" + filename);
 
-                     // if the file exists then stop download
+                     // if the file exists then stop download //keep download and overwrite
                      if (!newfile.Exists)
                      {
                          wb.DownloadFileAsync(filepath, @newfile.FullName);
@@ -1690,7 +1690,7 @@ namespace windowMediaPlayerDM
                      }
                      else
                      {
-
+                         wb.DownloadFileAsync(filepath, @newfile.FullName);
                          dlfilepath = newfile.FullName;
                      }
                  }
