@@ -3244,83 +3244,88 @@ namespace windowMediaPlayerDM
         {
             String[] temp_comment = new String[2];
 
-            dm_comment = new XmlTextReader(danmoku_dir);
-
-            while (dm_comment.Read())
+            using (dm_comment = new XmlTextReader(danmoku_dir))
             {
 
-                switch (dm_comment.NodeType)
+                while (dm_comment.Read())
                 {
 
-                    case XmlNodeType.Element:
+                    switch (dm_comment.NodeType)
+                    {
+
+                        case XmlNodeType.Element:
 
 
 
-                        while (dm_comment.MoveToNextAttribute())
-                        {
-
-                            //get the time value if the attribute is vpos
-                            if (dm_comment.Name == "vpos")
+                            while (dm_comment.MoveToNextAttribute())
                             {
-                                temp_comment[0] = dm_comment.Value;
+
+                                //get the time value if the attribute is vpos
+                                if (dm_comment.Name == "vpos")
+                                {
+                                    temp_comment[0] = dm_comment.Value;
+
+                                }
+
+                            }
+                            break;
+
+                        case XmlNodeType.Text:
+                            temp_comment[1] = dm_comment.Value;
+                            comment.Add(temp_comment);
+                            int vpost = Int32.Parse(temp_comment[0]);
+
+                            //this will ends with the final vpos in the xml files
+                            if (vpost > vpos_end)
+                            {
+
+                                vpos_end = vpost;
+                            }
+
+
+                            if (comment2.ContainsKey(vpost))
+                            {
+
+                                String tempc = comment2[vpost] + Environment.NewLine + temp_comment[1];
+                                _duplicates++;
+                                comment2.Remove(vpost);
+                                comment2.Add(vpost, tempc);
+
+
+                            }
+                            else
+                            {
+                                comment2.Add(vpost, temp_comment[1]);
+                            }
+                            //temp_comment = new String[2];
+
+
+                            break;
+
+                        case XmlNodeType.EndElement:
+                            if (dm_comment.Name == "</chat>")
+                            {
+
+                                temp_comment = new String[2];
 
                             }
 
-                        }
-                        break;
-
-                    case XmlNodeType.Text:
-                        temp_comment[1] = dm_comment.Value;
-                        comment.Add(temp_comment);
-                        int vpost = Int32.Parse(temp_comment[0]);
-
-                        //this will ends with the final vpos in the xml files
-                        if (vpost > vpos_end) {
-
-                            vpos_end = vpost;
-                        }
-
-
-                        if (comment2.ContainsKey(vpost))
-                        {
-
-                            String tempc = comment2[vpost] + Environment.NewLine + temp_comment[1];
-                            _duplicates++;
-                            comment2.Remove(vpost);
-                            comment2.Add(vpost, tempc);
-
-
-                        }
-                        else
-                        {
-                            comment2.Add(vpost, temp_comment[1]);
-                        }
-                        //temp_comment = new String[2];
-
-
-                        break;
-
-                    case XmlNodeType.EndElement:
-                        if (dm_comment.Name == "</chat>")
-                        {
-
-                            temp_comment = new String[2];
-
-                        }
-
-                        break;
+                            break;
 
 
 
+                    }
                 }
-            }
-            srCommentWindow(comment2);
-        
-            //every time xml loads
-            
+                srCommentWindow(comment2);
 
-            _first_load = false;
-  //          onLoadUp();
+                //every time xml loads
+
+
+                _first_load = false;
+                //          onLoadUp();
+                dm_comment.Close();
+                
+            }
         }
 
         void setDM_Multi() { 
