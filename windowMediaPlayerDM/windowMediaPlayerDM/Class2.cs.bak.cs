@@ -1611,10 +1611,114 @@ namespace windowMediaPlayerDM
                }
            }
          }
+         public String RenameExistFile(String dir, String filename) {
+             if (checkFileExist(dir, filename))
+             {
+                 bool a = filename.Contains("(");
+                 bool b = filename.Contains(")");
+                 String newFilename = filename;
+                 int number = 1;
+                 if (a && b)
+                 {
 
+                     if (filename.LastIndexOf(")") == filename.Length - 1)
+                     {
+                         //this means that it's most likely been renamed by this program before
+                         int left = filename.LastIndexOf("(") + 1;
+                         int right = filename.LastIndexOf(")");
+                         //find the current number and then delete the whole (*) part;
+                         number = Int32.Parse(filename.Substring(left, right - left));
+                         newFilename = filename.Replace("(" + number + ")", "");
+                     }
+                 }
 
+                 number++;
+                 newFilename = newFilename + "(" + number + ")";
+                 if (!checkFileExist(dir, newFilename))
+                 {
+                     return newFilename;
+                 }
+                 else
+                 {
+                     //this will keep going until it get's a unused name
+                     return RenameExistFile(dir, newFilename);
+                 }
+             }
+             else {
+                 return filename;
+             }
+         
+         }
+
+         public bool checkFileExist(String dir, String filename) {
+             
+
+             if(File.Exists(dir+"\\"+filename)){
+             return true;
+             }else{
+             return false;
+             }
+         
+         }
         // other version of download file for form interaction
+         public void downlaodFile(Uri filepath, WebClient wb, String titlename) {
 
+            //  String fileU = filepath.AbsolutePath;
+             //this is the actual download path
+
+             //there's no need to get the downlaod file name in this because it's going to be the title name
+             DirectoryInfo maindir = new DirectoryInfo(filestorage_dir);
+             String CurrentDir = "";
+             if (maindir.Exists)
+             {
+                 CurrentDir = maindir.FullName;
+             }
+             else {
+                 var temp = new FolderBrowserDialog();
+                 if (temp.ShowDialog() == DialogResult.OK)
+                 {
+                     CurrentDir = new FolderBrowserDialog().SelectedPath;
+                 }
+             }
+             if (CurrentDir != "") {
+                 String filename = safeFilename(titlename);
+
+                 if (!checkFileExist(CurrentDir, filename))
+                 {
+                    // filename = filename;
+                     FileInfo dltemp = new FileInfo(CurrentDir + "\\" + filename);
+                     wb.DownloadFileAsync(filepath,@dltemp.FullName);
+                     dlfilepath = dltemp.FullName;
+                 }
+                 else
+                 {
+                     var alert = MessageBox.Show("the file with the same name already exist in the directory, are you sure you want to dl it ?", "alert", MessageBoxButtons.YesNo);
+                     if (alert == DialogResult.Yes)
+                     {
+
+                         filename = RenameExistFile(CurrentDir, filename);
+                         FileInfo dltemp = new FileInfo(CurrentDir + "\\" + filename);
+                         wb.DownloadDataAsync(filepath, @dltemp.FullName);
+                         dlfilepath = dltemp.FullName;
+                     }
+                     else
+                     {
+                         // not sure dlfilepath do here so leave it empty
+
+                     }
+                 }
+             
+             
+             
+             
+             
+             
+             }
+
+
+
+         
+         }
          public void downlaodFile(Uri filepath, WebClient wb)
          {
              //test download file code here
@@ -1639,8 +1743,15 @@ namespace windowMediaPlayerDM
 
                  DirectoryInfo ndir = new DirectoryInfo(filestorage_dir);
 
-
-
+                 filename = filename.Replace(":", "");
+                 filename = filename.Replace("\\", "");
+                 filename = filename.Replace("*", "");
+                 filename = filename.Replace("|", "");
+                 filename = filename.Replace("\"", "");
+                 filename = filename.Replace("?", "");
+                 filename = filename.Replace("<", "");
+                 filename = filename.Replace(">", "");
+                 
                  if (!ndir.Exists)
                  {
 
@@ -1668,14 +1779,7 @@ namespace windowMediaPlayerDM
                  }
                  else
                  {
-                     filename = filename.Replace(":", "");
-                     filename = filename.Replace("\\", "");
-                     filename = filename.Replace("*", "");
-                     filename = filename.Replace("|", "");
-                     filename = filename.Replace("\"", "");
-                     filename = filename.Replace("?", "");
-                     filename = filename.Replace("<", "");
-                     filename = filename.Replace(">", "");
+
 
                      FileInfo newfile = new FileInfo(ndir.FullName + "\\" + filename);
 

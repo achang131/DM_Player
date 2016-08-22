@@ -6513,6 +6513,7 @@ namespace windowMediaPlayerDM
                     else {
                         var t = MessageBox.Show("The file has already been download once, are you sure you want to download it again?", "alert", MessageBoxButtons.YesNo);
                         if (t == DialogResult.Yes) {
+
                             MultiDownloadLinks.Remove(box.SelectedItem as Uri);
                             MultiDownloadLinks.Add((Uri)box.SelectedItem, fm7.getTitle.SelectedItem.ToString());
          
