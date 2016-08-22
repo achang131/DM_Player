@@ -1617,7 +1617,7 @@ namespace windowMediaPlayerDM
                  bool a = filename.Contains("(");
                  bool b = filename.Contains(")");
                  String newFilename = filename;
-                 int number = 1;
+                 int number = 0;
                  if (a && b)
                  {
 
@@ -1628,12 +1628,12 @@ namespace windowMediaPlayerDM
                          int right = filename.LastIndexOf(")");
                          //find the current number and then delete the whole (*) part;
                          number = Int32.Parse(filename.Substring(left, right - left));
-                         newFilename = filename.Replace("(" + number + ")", "");
+                         newFilename = filename.Replace(" (" + number + ")", "");
                      }
                  }
 
                  number++;
-                 newFilename = newFilename + "(" + number + ")";
+                 newFilename = newFilename + " (" + number + ")";
                  if (!checkFileExist(dir, newFilename))
                  {
                      return newFilename;
@@ -1661,7 +1661,7 @@ namespace windowMediaPlayerDM
          
          }
         // other version of download file for form interaction
-         public void downlaodFile(Uri filepath, WebClient wb, String titlename) {
+         public void downlaodFile(Uri filepath, WebClient wb, String titlename,List<String[]> Media_List) {
 
             //  String fileU = filepath.AbsolutePath;
              //this is the actual download path
@@ -1669,15 +1669,25 @@ namespace windowMediaPlayerDM
              //there's no need to get the downlaod file name in this because it's going to be the title name
              DirectoryInfo maindir = new DirectoryInfo(filestorage_dir);
              String CurrentDir = "";
+             //make sure the directory is not  null or empty string
              if (maindir.Exists)
              {
                  CurrentDir = maindir.FullName;
              }
              else {
-                 var temp = new FolderBrowserDialog();
-                 if (temp.ShowDialog() == DialogResult.OK)
+                 // try to create the dir if it doesn't exist, if error then ask for a dir
+                 try
                  {
-                     CurrentDir = new FolderBrowserDialog().SelectedPath;
+                     maindir.Create();
+                 }
+                 catch (Exception e)
+                 {
+                     Console.WriteLine(e);
+                     var temp = new FolderBrowserDialog();
+                     if (temp.ShowDialog() == DialogResult.OK)
+                     {
+                         CurrentDir = new FolderBrowserDialog().SelectedPath;
+                     }
                  }
              }
              if (CurrentDir != "") {
@@ -1692,32 +1702,122 @@ namespace windowMediaPlayerDM
                  }
                  else
                  {
-                     var alert = MessageBox.Show("the file with the same name already exist in the directory, are you sure you want to dl it ?", "alert", MessageBoxButtons.YesNo);
-                     if (alert == DialogResult.Yes)
+                     //the old file
+                     FileInfo oldfile = new FileInfo(CurrentDir + "\\" + filename);
+                     //if the old file is larger than 20kb then count it as dulplicate
+                     if (oldfile.Length > 20000)
                      {
+                         var alert = MessageBox.Show("the file with the same name already exist in the directory, are you sure you want to dl it ?", "alert", MessageBoxButtons.YesNo);
+                         if (alert == DialogResult.Yes)
+                         {
 
-                         filename = RenameExistFile(CurrentDir, filename);
-                         FileInfo dltemp = new FileInfo(CurrentDir + "\\" + filename);
-                         wb.DownloadDataAsync(filepath, @dltemp.FullName);
-                         dlfilepath = dltemp.FullName;
+                             filename = RenameExistFile(CurrentDir, filename);
+
+                             FileInfo dltemp = new FileInfo(oldfile.DirectoryName + "\\" + filename);
+
+                             wb.DownloadFileAsync(filepath, CurrentDir+"\\"+filename);
+
+                             dlfilepath = dltemp.FullName;
+                             //throw new Exception("test");
+                         }
+                         else
+                         {
+                             // not sure dlfilepath do here so leave it empty
+
+                         }
                      }
-                     else
-                     {
-                         // not sure dlfilepath do here so leave it empty
+                     else {
+                         oldfile.Delete();
+                         FileInfo dltemp = new FileInfo(CurrentDir + "\\" + filename);
 
+                         wb.DownloadFileAsync(filepath, CurrentDir + "\\" + filename);
+                         dlfilepath = dltemp.FullName;
+                         throw new Exception("test");
                      }
                  }
-             
-             
-             
+
+
+                 wb.DownloadFileCompleted += DownloadComplete(CurrentDir,titlename,filename, Media_List);
+
              
              
              
              }
-
+          
+             wb.Dispose();
 
 
          
+         }
+         public System.ComponentModel.AsyncCompletedEventHandler DownloadComplete(String dir,String title,String newtitle,List<String[]> Media_List) {
+
+             Action<object, System.ComponentModel.AsyncCompletedEventArgs> action = (sender, e) =>
+             {
+                 //do the error handling outside ?
+                 String tempT = safeFilename(title);
+                 FileInfo newfile = new FileInfo(dir + "\\" + newtitle);
+
+                 if (e.Cancelled) {
+                     if (newfile.Exists)
+                     {
+                         newfile.Delete();
+                     }
+                 
+                 }
+
+                 if (tempT == newtitle)
+                 {
+                     //if no rename happened
+                     //do nothing ?
+                     String[] temp = { newfile.FullName, newfile.Name };
+                     if (!Media_List.Contains(temp)) {
+                         Media_List.Add(temp);
+                     }
+                     
+                 }
+                 else { 
+                 // if the file is renamed to other names
+                 // check to see if the newest file is larger than the old file
+                // if it's larger then delete the old file
+                     FileInfo oldfile =new FileInfo(dir + "\\" + tempT);
+
+                     if (oldfile.Exists)
+                     {
+
+                         if (oldfile.Length < newfile.Length)
+                         {
+                           
+                             oldfile.Delete();
+                             newfile.CopyTo(oldfile.FullName);
+                             newfile.Delete();
+                             String[] temp = { oldfile.FullName, oldfile.Name };
+                             if (!Media_List.Contains(temp))
+                             {
+                                 Media_List.Add(temp);
+                             }
+
+                         }
+                         else {
+
+                             String[] temp = { newfile.FullName, newfile.Name };
+                             if (!Media_List.Contains(temp))
+                             {
+                                 Media_List.Add(temp);
+                             }
+                         
+                         }
+                  
+                     }
+                   
+                 
+                 }
+
+
+
+
+             };
+
+             return new System.ComponentModel.AsyncCompletedEventHandler(action);
          }
          public void downlaodFile(Uri filepath, WebClient wb)
          {
