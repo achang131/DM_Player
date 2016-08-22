@@ -25,8 +25,45 @@ namespace windowMediaPlayerDM
 
 
             this.ShowInTaskbar = false;
+            this.Media_List_Box.MouseWheel += new MouseEventHandler(Media_List_Box_MouseWheel);
            
             
+        }
+        
+        public void  Media_List_Box_MouseWheel(object sender, MouseEventArgs e)
+        {
+            //throw new NotImplementedException();
+            ListBox box = sender as ListBox;
+            HandledMouseEventArgs handle = e as HandledMouseEventArgs;
+            handle.Handled = true;
+
+          //  ((HandledMouseEventArgs)e).Handled = true;
+            if (box.SelectedItem == null)
+            {
+                
+                box.ClearSelected();
+                box.SelectedItem=box.Items[0];
+            }
+            else {
+                int temp = box.SelectedIndex;
+                switch(e.Delta){
+                case -120:
+                        if (box.Items.Count-1 > temp)
+                        {
+                            box.ClearSelected();
+                            box.SelectedItem = box.Items[temp + 1];
+                        }
+                break;
+                case 120:
+                if (0 < temp)
+                {
+                    box.ClearSelected();
+                    box.SelectedItem = box.Items[temp - 1];
+                }
+                       
+                break;
+            }
+            }
         }
 
 

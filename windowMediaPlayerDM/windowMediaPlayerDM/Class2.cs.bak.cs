@@ -1704,8 +1704,8 @@ namespace windowMediaPlayerDM
                  {
                      //the old file
                      FileInfo oldfile = new FileInfo(CurrentDir + "\\" + filename);
-                     //if the old file is larger than 20kb then count it as dulplicate
-                     if (oldfile.Length > 20000)
+                     //if the old file is larger than 500kb then count it as dulplicate
+                     if (oldfile.Length > 500000)
                      {
                          var alert = MessageBox.Show("the file with the same name already exist in the directory, are you sure you want to dl it ?", "alert", MessageBoxButtons.YesNo);
                          if (alert == DialogResult.Yes)
@@ -1732,7 +1732,7 @@ namespace windowMediaPlayerDM
 
                          wb.DownloadFileAsync(filepath, CurrentDir + "\\" + filename);
                          dlfilepath = dltemp.FullName;
-                         throw new Exception("test");
+                        // throw new Exception("test");
                      }
                  }
 
@@ -2029,7 +2029,15 @@ namespace windowMediaPlayerDM
 
          public Uri playDownlist {
 
-             get { return new Uri(dlfilepath); }
+             get {
+                 if (dlfilepath != null)
+                 {
+                     return new Uri(dlfilepath);
+                 }
+                 else {
+                     return null;
+                 }
+             }
              set {
                  playing = value;
                  downlaodFile(value); }
