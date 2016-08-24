@@ -291,10 +291,8 @@ namespace windowMediaPlayerDM
           }
          // commentWindowSetup();
 
-
-  
         }
-
+  
         void Form1_Shown(object sender, EventArgs e)
         {
             //throw new NotImplementedException();
@@ -5037,7 +5035,13 @@ namespace windowMediaPlayerDM
                      
                     try
                     {
-                        audioinfo = vlcPlayer.Audio.Tracks.Current.Name;
+                        if (currentfile != null)
+                        {
+                            audioinfo = vlcPlayer.Audio.Tracks.Current.Name;
+                        }
+                        else {
+                            audioinfo = "No Media Loaded";
+                        }
                        
                     }
                     catch (NullReferenceException e) {

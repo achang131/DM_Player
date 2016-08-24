@@ -1,0 +1,4 @@
+C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\VLClibDM\VLClibDM\bin\Debug\VLClibDM.dll
+C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\VLClibDM\VLClibDM\bin\Debug\VLClibDM.pdb
+C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\VLClibDM\VLClibDM\obj\Debug\VLClibDM.dll
+C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\VLClibDM\VLClibDM\obj\Debug\VLClibDM.pdb

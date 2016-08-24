@@ -26,7 +26,8 @@ namespace windowMediaPlayerDM
 
             this.ShowInTaskbar = false;
             this.Media_List_Box.MouseWheel += new MouseEventHandler(Media_List_Box_MouseWheel);
-
+            this.Full_DM_box.MouseWheel +=new MouseEventHandler(Media_List_Box_MouseWheel);
+            this.DM_List_Box.MouseWheel +=new MouseEventHandler(Media_List_Box_MouseWheel);
             this.Media_List_Box.Select();
         }
         
