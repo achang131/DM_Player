@@ -911,8 +911,7 @@ float f_send_bitrate;
        }
        #endregion
        BackgroundWorker bk201;
-       test t;
-     
+       
        public class VLCEventManager {
           public delegate void _function();
 
@@ -1057,12 +1056,7 @@ float f_send_bitrate;
                }
            }
 
-           public static event EventHandler onPlaying_E = delegate { };
-           public static event EventHandler onPaused_E = delegate { };
-           public static event EventHandler onStopped_E = delegate { };
-           public static event EventHandler onOpenning_E = delegate { };
-           public static event EventHandler onNothingSpecial_E = delegate { };
-           public static event EventHandler onStateChange_E = delegate { };
+
            public static List<_function> list = new List<_function>();
            
          public  VLCEventManager(VlcMediaPlayer c) {
@@ -1089,12 +1083,7 @@ float f_send_bitrate;
                LibVlc.libvlc_event_attach(eventmanager, libvlc_event_e.libvlc_MediaPlayerNothingSpecial, Marshal.GetFunctionPointerForDelegate(cNothingSpecial), null);
                //  LibVlc.libvlc_event_attach(eventmanager, libvlc_event_e.libvlc_MediaPlayerTimeChanged, Marshal.GetFunctionPointerForDelegate(cChangetime), null);
                //   t = new test(Handle);
-               onPlaying_E += new EventHandler(VLCEventManager_onPlaying_E);
-               onPaused_E += new EventHandler(VLCEventManager_onPaused_E);
-               onStopped_E += new EventHandler(VLCEventManager_onStopped_E);
-               onOpenning_E += new EventHandler(VLCEventManager_onOpenning_E);
-               onNothingSpecial_E += new EventHandler(VLCEventManager_onNothingSpecial_E);
-           }
+          }
 
          void VLCEventManager_onNothingSpecial_E(object sender, EventArgs e)
          {
@@ -1148,140 +1137,45 @@ float f_send_bitrate;
            
         }
 
-       void t_PlayTimeChange(object sender, VlcMediaPlayer.test.PlayTimeArgs e)
-       {
-           //throw new NotImplementedException();
-           PlayTimeArgs c = new PlayTimeArgs();
-           c.currenttime = e.currenttime;
-           
-           onPlayTimeChange(c);
-       }
-       public class test {
-
-           private Int64 lastPlaytime = 0;
-           private Int64 lastPlaytimeGlobal = 0;
-           public class PlayerErrorArgs : EventArgs
-           {
-               public string error
-               {
-                   get;
-                   set;
-               }
-           }
-           public event EventHandler<PlayTimeArgs> PlayTimeChange;
-           protected virtual void onPlayTimeChange(PlayTimeArgs e)
-           {
-               EventHandler<PlayTimeArgs> et = PlayTimeChange;
-               if (et != null)
-               {
-                   et(this, e);
-               }
-
-           }
-           public class PlayTimeArgs : EventArgs
-           {
-               Int64 ctime = 0;
-               public Int64 t_currenttime
-               {
-                   get { return ctime; }
-                   set { ctime++; }
-
-               }
-               public Int64 currenttime
-               {
-                   set
-                   {
-                       if (ctime != value) { ctime = value; };
-                   }
-                   get { return ctime; }
-               }
-
-
-           }
-           internal void changetime()
-           {
-               PlayTimeArgs e = new PlayTimeArgs();
-               e.currenttime = currentVideoTime;
-               onPlayTimeChange(e);
-
-
-           }
-           public Int64 currentVideoTime
-           {
-               get
-               {
-                   Int64 currenttime = currentVideoTimeVLC;
-                   if (lastPlaytime == currenttime && lastPlaytime != 0)
-                   {
-                       currenttime += Environment.TickCount - lastPlaytimeGlobal;
-                   }
-                   else
-                   {
-                       lastPlaytime = currenttime;
-                       lastPlaytimeGlobal = Environment.TickCount;
-                   }
-                   return currenttime;
-               }
-
-           }
-           public Int64 currentVideoTimeVLC
-           {
-               get
-               {
-
-                   Int64 time = LibVlc.libvlc_media_player_get_time(player);
-                   //VlcException ex = new VlcException();
-                   return time;
-               }
-           }
-
-           IntPtr player;
-       public bool playing{get;set;}
-           public bool paused{get;set;}
-           public BackgroundWorker bk201;
-           public test(IntPtr handle) {
-               this.player = handle;
-               bk201 = new BackgroundWorker();
-               bk201.WorkerSupportsCancellation = true;
-               bk201.DoWork += new DoWorkEventHandler(bk201_DoWork);
-           
-           }
-
-           void bk201_DoWork(object sender, DoWorkEventArgs e)
-           {
-               //throw new NotImplementedException();
-               PlayTimeArgs et = new PlayTimeArgs();
-               while (playing && !paused) {
-                   et.currenttime = currentVideoTime;
-                   onPlayTimeChange(et);
-                   Thread.Sleep(0);
-               }
-           }
 
        
-       }
-       private delegate void cplaytime(PlayTimeArgs et);
+      
+     //  private delegate void cplaytime(PlayTimeArgs et);
        void bk201_DoWork(object sender, DoWorkEventArgs e)
        {
            //throw new NotImplementedException();
            PlayTimeArgs et = new PlayTimeArgs();
-           cplaytime cp = new cplaytime(onPlayTimeChange);
-           
-           while (playing&&!paused)
+       //    cplaytime cp = new cplaytime(onPlayTimeChange);
+         //  Int64 nit = 0;
+           Stopwatch sp = new Stopwatch();
+           sp.Start();
+           while (playing && !paused)
            {
-               try
+              // nit++;
+               Int64 currenttime = currentVideoTimeVLC;
+               if (lastPlaytime == currenttime && lastPlaytime != 0)
                {
-                   et.currenttime = currentVideoTime;
-                  // onPlayTimeChange(et);
-                   cp.Invoke(et);
+                  // currenttime += Environment.TickCount - lastPlaytimeGlobal;
+                 //  currenttime += nit - lastPlaytimeGlobal;
+                   currenttime += sp.ElapsedMilliseconds - lastPlaytimeGlobal;
+                   et.currenttime = currenttime;
+                   onPlayTimeChange(et);
+               
                }
-               catch (Exception) {
-                   Pause();
-                   bk201.CancelAsync();
+               else
+               {
+                   lastPlaytime = currenttime;
+                   //lastPlaytimeGlobal = Environment.TickCount;
+                   lastPlaytimeGlobal = sp.ElapsedMilliseconds;
+                  // lastPlaytimeGlobal = nit;
                }
+        
 
-               Thread.Sleep(0);
+
+               Thread.Sleep(1);
            }
+           sp.Stop();
+           
 
        }
         public VlcMediaPlayer(VlcMedia media,IntPtr panel) {
@@ -1374,7 +1268,7 @@ float f_send_bitrate;
         public void Pause() {
            
             //VlcException ex = new VlcException();
-            if (playing)
+            if (playing && !paused)
             {
                 //bk201.CancelAsync();
                 paused = true;

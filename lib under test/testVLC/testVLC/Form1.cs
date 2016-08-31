@@ -7,11 +7,20 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using VLClibDM;
-
+using System.Runtime.InteropServices;
 namespace testVLC
 {
+
+
     public partial class Form1 : Form
-    { 
+    {
+
+        #region importdll
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool AllocConsole();
+        #endregion
+
         VlcInstance Pbase;
         VlcMediaPlayer player;
         bool media_set = false;
@@ -36,6 +45,7 @@ namespace testVLC
           player.vlc.StateChange += new EventHandler(player_StateChange);
          player.PlayTimeChange+= new EventHandler<VlcMediaPlayer.PlayTimeArgs>(player_PlayTimeChange);
           this.FormClosed += new FormClosedEventHandler(Form1_FormClosed);
+          AllocConsole();
         }
         
         Int64 time;
@@ -46,18 +56,17 @@ namespace testVLC
             console.Text = time.ToString();
             }
         }
+        List<Int64> ilist = new List<Int64>();
         void player_PlayTimeChange(object sender, VlcMediaPlayer.PlayTimeArgs e)
         {
             //throw new NotImplementedException();
-            try
-            {
+        
              //   crtime = e.currenttime;
                // console.Text = e.currenttime.ToString();
+            Console.WriteLine(e.currenttime);
+            //Console.WriteLine("x: " + player.currentVideoTime);
                 changeText(e.currenttime);
-            }
-            catch (Exception ex) {
-                MessageBox.Show(ex.Message);
-            }
+     
         }
        public delegate void ctext(string t);
         public void changeText(string t) {
@@ -112,11 +121,12 @@ namespace testVLC
                 // console.Text = player.playerState;
 
              //   console.Text = player.AudioTrackCount.ToString();
-                VlcMedia c = player.getMedia();
+         /*
+            VlcMedia c = player.getMedia();
                 Int64 it = c.duration;
                 console.Text = it.ToString();
                 c.Dispose();
-
+            */
             
         }
 
