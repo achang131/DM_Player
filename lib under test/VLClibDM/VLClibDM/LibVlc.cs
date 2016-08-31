@@ -906,135 +906,135 @@ float f_send_bitrate;
        }
        #endregion
        BackgroundWorker bk201;
-       test t;
+      // test t;
      
-       public static class VLCEventManager {
-          public delegate void _function(); 
-           VlcMediaPlayer player;
-           IntPtr eventmanager;
-           public event EventHandler Playing;
-           public event EventHandler Stopped;
-           public event EventHandler Openning;
-           public event EventHandler Paused;
-           public event EventHandler NothingSpecial;
-           public event EventHandler<PlayerErrorArgs> PlayerError;
-           public event EventHandler StateChange; 
+       public  class VLCEventManager {
+          public  delegate void _function(); 
+          static VlcMediaPlayer player;
+          static IntPtr eventmanager;
+           public static  EventHandler Playing;
+           public static  EventHandler Stopped;
+           public static  EventHandler Openning;
+           public static  EventHandler Paused;
+           public static  EventHandler NothingSpecial;
+           public static  EventHandler<PlayerErrorArgs> PlayerError;
+           public static  EventHandler StateChange; 
            //  public  Delegate raiseChangeState();
            //  public delegate void raiseState(EventArgs e);
            IntPtr noreply = IntPtr.Zero;
-           protected virtual void onStateChange(EventArgs e)
+        public static void onStateChange(EventArgs e)
            {
                EventHandler c = StateChange;
                if (c != null)
                {
-                   c(this, e);
+                   c(null, e);
 
                }
            }
-           internal void vlcStateChange()
+           internal static void vlcStateChange()
            {
                //called everytime the playerStateChanges
                EventArgs e = EventArgs.Empty;
                onStateChange(e);
 
            }
-       
-         static protected virtual void onPlaying(EventArgs e)
+
+           public static void onPlaying(EventArgs e)
            {
                EventHandler et = Playing;
                if (Playing != null)
                {
-
-                   et(this, e);
+                   
+                   et(null, e);
                }
 
            }
-           static void callPlaying()
+           static internal void callPlaying()
            {
                EventArgs e = EventArgs.Empty;
                onPlaying(e);
                onStateChange(e);
 
            }
-           protected virtual void onStopped(EventArgs e)
+           public static void onStopped(EventArgs e)
            {
                EventHandler et = Stopped;
                if (Stopped != null)
                {
 
-                   et(this, e);
+                   et(null, e);
                }
 
            }
-           internal void callStopped()
+         static internal void callStopped()
            {
                EventArgs e = EventArgs.Empty;
                onStopped(e);
                onStateChange(e);
 
            }
-           protected virtual void onOpenning(EventArgs e)
+         public static void onOpenning(EventArgs e)
            {
                EventHandler et = Openning;
                if (Openning != null)
                {
 
-                   et(this, e);
+                   et(null, e);
                }
 
            }
-           internal void callOpenning()
+         static  internal void callOpenning()
            {
                EventArgs e = EventArgs.Empty;
                onOpenning(e);
                onStateChange(e);
 
            }
-           protected virtual void onPaused(EventArgs e)
+         public static void onPaused(EventArgs e)
            {
                EventHandler et = Paused;
                if (Paused != null)
                {
 
-                   et(this, e);
+                   et(null, e);
                }
 
            }
-           internal void callPaused()
+          static internal void callPaused()
            {
                EventArgs e = EventArgs.Empty;
                onPaused(e);
                onStateChange(e);
 
            }
-           protected virtual void onNothingSpecial(EventArgs e)
+          public static void onNothingSpecial(EventArgs e)
            {
                EventHandler et = NothingSpecial;
                if (NothingSpecial != null)
                {
 
-                   et(this, e);
+                   et(null, e);
                }
 
            }
-           internal void callNothingSpecial()
+          static internal void callNothingSpecial()
            {
                EventArgs e = EventArgs.Empty;
                onNothingSpecial(e);
                onStateChange(e);
 
            }
-           protected virtual void onPlayerError(PlayerErrorArgs e)
+          public static void onPlayerError(PlayerErrorArgs e)
            {
                EventHandler<PlayerErrorArgs> et = PlayerError;
                if (PlayerError != null)
                {
 
-                   et(this, e);
+                   et(null, e);
                }
 
            }
-           internal void callPlayerError()
+          static internal void callPlayerError()
            {
                PlayerErrorArgs e = new PlayerErrorArgs();
                e.error = LibVlc.libvlc_errmsg();
@@ -1052,17 +1052,18 @@ float f_send_bitrate;
            }
 
 
+        private static readonly _function cPlaying = new _function(callPlaying);
+         private static readonly _function cPaused = new _function(callPaused);
+          private static readonly     _function cStopped = new _function(callStopped);
+          private static readonly     _function cOpenning = new _function(callOpenning);
+          private static readonly     _function cNothingSpecial = new _function(callNothingSpecial);
 
-         public   VLCEventManager(VlcMediaPlayer c) {
+         public  VLCEventManager(VlcMediaPlayer c) {
                
                player = c;
                eventmanager = LibVlc.libvlc_media_player_event_manager(c.Handle);
-           
-              _function cPlaying = new _function(callPlaying);
-               _function cPaused = new _function(callPaused);
-               _function cStopped = new _function(callStopped);
-               _function cOpenning = new _function(callOpenning);
-               _function cNothingSpecial = new _function(callNothingSpecial);
+        
+
                // _function cChangetime = new _function(changetime);
                LibVlc.libvlc_event_attach(eventmanager, libvlc_event_e.libvlc_MediaPlayerPlaying, Marshal.GetFunctionPointerForDelegate(cPlaying), null);
                LibVlc.libvlc_event_attach(eventmanager, libvlc_event_e.libvlc_MediaPlayerPaused, Marshal.GetFunctionPointerForDelegate(cPaused), null);
