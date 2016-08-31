@@ -1,0 +1,10 @@
+C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\testVLC\testVLC\bin\x64\Debug\testVLC.exe
+C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\testVLC\testVLC\bin\x64\Debug\testVLC.pdb
+C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\testVLC\testVLC\bin\x64\Debug\VLClibDM.dll
+C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\testVLC\testVLC\bin\x64\Debug\VLClibDM.pdb
+C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\testVLC\testVLC\obj\x64\Debug\testVLC.csprojResolveAssemblyReference.cache
+C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\testVLC\testVLC\obj\x64\Debug\testVLC.Form1.resources
+C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\testVLC\testVLC\obj\x64\Debug\testVLC.Properties.Resources.resources
+C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\testVLC\testVLC\obj\x64\Debug\testVLC.csproj.GenerateResource.Cache
+C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\testVLC\testVLC\obj\x64\Debug\testVLC.exe
+C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\testVLC\testVLC\obj\x64\Debug\testVLC.pdb

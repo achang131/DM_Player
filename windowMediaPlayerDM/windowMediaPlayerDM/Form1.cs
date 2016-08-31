@@ -6589,57 +6589,59 @@ namespace windowMediaPlayerDM
                     //vlcSetMedia(gb.playDownlist);
                     vlc_track_time = -2;
                     //autoLoadByName(gb.playDownlist);
-
-                    FileInfo file2 = new FileInfo(gb.playDownlist.OriginalString);
-
-                    FileInfo[] findDM = file2.Directory.GetFiles(fm7.getTitle.SelectedItem.ToString());
-
-                    for (int i = 0; i < findDM.Count(); i++)
+                    string _file2 = gb.playDownlist.OriginalString;
+                    if (_file2 != null)
                     {
-                        if (findDM[i].Name.Contains("*.xml"))
-                        {
-                            string[] tdm = { findDM[i].FullName, findDM[i].Name };
-                            DM_List.Add(tdm);
-                            readXML(tdm[0]);
+                        FileInfo file2 = new FileInfo(gb.playDownlist.OriginalString);
 
-                            Danmoku_status.Text = "DM set";
+                        FileInfo[] findDM = file2.Directory.GetFiles(fm7.getTitle.SelectedItem.ToString());
+
+                        for (int i = 0; i < findDM.Count(); i++)
+                        {
+                            if (findDM[i].Name.Contains("*.xml"))
+                            {
+                                string[] tdm = { findDM[i].FullName, findDM[i].Name };
+                                DM_List.Add(tdm);
+                                readXML(tdm[0]);
+
+                                Danmoku_status.Text = "DM set";
+
+
+                            }
+
+
+                        }
+                        if (Comment_Windows.Count == 0)
+                        {
+                            commentWindowSetup();
+                        }
+                        else
+                        {
+                            ///////fm3.Owner = this;
 
 
                         }
 
 
+
+
+
+                        //set the media in vlc player
+                        urls.Remove((Uri)box.SelectedItem);
+                        FileInfo file = new FileInfo(gb.playDownlist.OriginalString);
+                        String[] temp = { file.FullName, file.Name };
+                        //Media_List.Add(temp);
+                        autoLoadMlist(temp);
+                        autoLoadDMlist(temp);
+
+                        UrlDictionary[(Uri)fm7.getLinks.SelectedItem].Remove((Uri)box.SelectedItem);
+                        box.Items.Remove((Uri)box.SelectedItem);
+
+
+
+
+
                     }
-                    if (Comment_Windows.Count==0)
-                    {
-                        commentWindowSetup();
-                    }
-                    else
-                    {
-                        ///////fm3.Owner = this;
-
-
-                    }
-
-
-
-
-
-                    //set the media in vlc player
-                    urls.Remove((Uri)box.SelectedItem);
-                    FileInfo file = new FileInfo(gb.playDownlist.OriginalString);
-                    String[] temp = { file.FullName, file.Name };
-                    //Media_List.Add(temp);
-                    autoLoadMlist(temp);
-                    autoLoadDMlist(temp);
-
-                    UrlDictionary[(Uri)fm7.getLinks.SelectedItem].Remove((Uri)box.SelectedItem);
-                    box.Items.Remove((Uri)box.SelectedItem);
-
-
-
-
-
-
                     wb.Dispose();
 
                 }
