@@ -32,11 +32,12 @@ namespace testVLC
           player.setDeinterlace("auto");
           player.setKeyInput = true;
           player.setMouseInput = true;
-      
+          
           player.vlc.StateChange += new EventHandler(player_StateChange);
          player.PlayTimeChange+= new EventHandler<VlcMediaPlayer.PlayTimeArgs>(player_PlayTimeChange);
           this.FormClosed += new FormClosedEventHandler(Form1_FormClosed);
         }
+        
         Int64 time;
         Int64 crtime
         {
