@@ -68,6 +68,9 @@
       <HintPath>..\packages\Vlc.DotNet.Wpf.2.1.126\lib\net40\x86\Vlc.DotNet.Wpf.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="VLClibDM">
+      <HintPath>..\..\lib under test\VLClibDM\VLClibDM\bin\Debug\VLClibDM.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>

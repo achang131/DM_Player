@@ -1,0 +1,9 @@
+C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\dmVLClib\dmVLClib\bin\Debug\dmVLClib.dll
+C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\dmVLClib\dmVLClib\bin\Debug\dmVLClib.pdb
+C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\dmVLClib\dmVLClib\bin\Debug\VLClibDM.dll
+C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\dmVLClib\dmVLClib\bin\Debug\VLClibDM.pdb
+C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\dmVLClib\dmVLClib\obj\Debug\dmVLClib.csprojResolveAssemblyReference.cache
+C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\dmVLClib\dmVLClib\obj\Debug\dmVLClib.UserControl1.resources
+C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\dmVLClib\dmVLClib\obj\Debug\dmVLClib.csproj.GenerateResource.Cache
+C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\dmVLClib\dmVLClib\obj\Debug\dmVLClib.dll
+C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\dmVLClib\dmVLClib\obj\Debug\dmVLClib.pdb

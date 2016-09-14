@@ -13,8 +13,14 @@
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-      
+
+            try
+            {
                 ChangeClipboardChain(this.Handle, nextClipboardViewer);
+            }
+            catch (System.ObjectDisposedException) { 
+            
+            }
                 if (disposing && (components != null))
                 {
                     components.Dispose();
@@ -68,6 +74,8 @@
             this.vlcPlay_button = new System.Windows.Forms.Button();
             this.sound_trackbar = new System.Windows.Forms.TrackBar();
             this.fullscreen_button = new System.Windows.Forms.Button();
+            this._VLCMediaPlayer = new System.Windows.Forms.Panel();
+            this.backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Media_Player)).BeginInit();
@@ -258,7 +266,6 @@
             this.vlcPlayer.Text = "vlcControl1";
             this.vlcPlayer.VlcLibDirectory = ((System.IO.DirectoryInfo)(resources.GetObject("vlcPlayer.VlcLibDirectory")));
             this.vlcPlayer.VlcMediaplayerOptions = null;
-            this.vlcPlayer.Click += new System.EventHandler(this.vlcPlayer_Click);
             // 
             // VLC_track
             // 
@@ -355,7 +362,7 @@
             // 
             this.sound_trackbar.Location = new System.Drawing.Point(825, 513);
             this.sound_trackbar.Name = "sound_trackbar";
-            this.sound_trackbar.Size = new System.Drawing.Size(171, 45);
+            this.sound_trackbar.Size = new System.Drawing.Size(159, 45);
             this.sound_trackbar.TabIndex = 8;
             this.sound_trackbar.TabStop = false;
             this.sound_trackbar.TickStyle = System.Windows.Forms.TickStyle.None;
@@ -371,6 +378,13 @@
             this.fullscreen_button.UseVisualStyleBackColor = true;
             this.fullscreen_button.Click += new System.EventHandler(this.fullscreen_button_Click);
             // 
+            // _VLCMediaPlayer
+            // 
+            this._VLCMediaPlayer.Location = new System.Drawing.Point(0, 30);
+            this._VLCMediaPlayer.Name = "_VLCMediaPlayer";
+            this._VLCMediaPlayer.Size = new System.Drawing.Size(996, 477);
+            this._VLCMediaPlayer.TabIndex = 10;
+            // 
             // Form1
             // 
             this.AllowDrop = true;
@@ -378,6 +392,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(996, 582);
+            this.Controls.Add(this._VLCMediaPlayer);
             this.Controls.Add(this.fullscreen_button);
             this.Controls.Add(this.vlcSound_button);
             this.Controls.Add(this.sound_trackbar);
@@ -443,6 +458,8 @@
         private System.Windows.Forms.TrackBar sound_trackbar;
         private System.Windows.Forms.ToolStripStatusLabel clipboard_label;
         private System.Windows.Forms.Button fullscreen_button;
+        private System.Windows.Forms.Panel _VLCMediaPlayer;
+        private System.ComponentModel.BackgroundWorker backgroundWorker2;
     }
 }
 

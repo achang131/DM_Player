@@ -1,0 +1,4 @@
+C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\temp_testlib\temp_testlib\bin\Debug\temp_testlib.dll
+C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\temp_testlib\temp_testlib\bin\Debug\temp_testlib.pdb
+C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\temp_testlib\temp_testlib\obj\Debug\temp_testlib.dll
+C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\temp_testlib\temp_testlib\obj\Debug\temp_testlib.pdb

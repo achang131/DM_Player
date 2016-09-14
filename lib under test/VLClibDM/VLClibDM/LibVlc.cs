@@ -10,8 +10,6 @@ using System.Drawing;
 using System.Timers;
 using System.Threading;
 using System.ComponentModel;
-using System.Linq;
-using System.Timers;
 using System.Security;
 using System.Reflection;
 using System.Globalization;
@@ -209,6 +207,10 @@ float f_send_bitrate;
         //Get current state of media descriptor object.
         //Possible media states are libvlc_NothingSpecial=0, libvlc_Opening, libvlc_Playing, libvlc_Paused, libvlc_Stopped, libvlc_Ended, libvlc_Error.
 
+        [DllImport("libvlc", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int libvlc_media_player_program_scrambled(IntPtr Player);
+      //check if current program is scrambled
+      //true for scrambled
         [DllImport("libvlc", CallingConvention = CallingConvention.Cdecl)]
         public static extern Int64 libvlc_media_get_duration(IntPtr media);
         //gets the duration of the media (in ms)
@@ -641,6 +643,7 @@ float f_send_bitrate;
         public static extern void libvlc_video_set_crop_geometry(IntPtr player, [MarshalAs(UnmanagedType.LPStr)] string psz_geometry);
         //set new crop filter geometry
         //psz_geometry: null to unset
+
         //0 for enable libvlc_adjust_enable
         //1 for contrast
         //2 for brightness
@@ -732,7 +735,9 @@ float f_send_bitrate;
     }
    public class VlcInstance : IDisposable {
         internal  IntPtr Handle;
-        string[] args = {
+       DirectoryInfo dc = new DirectoryInfo(@"C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\testVLC\testVLC\bin\Debug");
+        
+       string[] args = {
                 "-I", "dummy", "--ignore-config",
                 @"--plugin-path=C:\Program Files (x86)\VideoLAN\VLC\plugins",
                 "--vout-filter=deinterlace", "--deinterlace-mode=blend"
@@ -740,8 +745,25 @@ float f_send_bitrate;
    
         public VlcInstance()
         {
-            LibVlc.SetDllDirectory(@"C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\testVLC\testVLC\bin\Debug");
-          
+            if (dc.Exists)
+            {
+                LibVlc.SetDllDirectory(@"C:\Users\Alan\Documents\GitHub\DM_Player\lib under test\testVLC\testVLC\bin\Debug");
+            }
+            else { 
+            Console.WriteLine("dll directory not found !!! "+Environment.NewLine+"Please select a new directory that contains the dll");
+            FolderBrowserDialog fbd = new FolderBrowserDialog();
+            fbd.RootFolder = Environment.SpecialFolder.MyDocuments;
+            if (fbd.ShowDialog() == DialogResult.OK)
+            {
+                LibVlc.SetDllDirectory(fbd.SelectedPath);
+            }
+            else {
+                MessageBox.Show("Can not locate the dll for the program, please restart");
+               
+            
+            }
+
+            }
 
            // throw new Exception("test");
    
@@ -770,16 +792,17 @@ float f_send_bitrate;
     }
    public class VlcMedia : IDisposable {
         internal IntPtr Handle;
-
+        public String MediaFullName { set; get; }
         UTF8Encoding utf8 = new UTF8Encoding();
         internal VlcInstance inst{
         set;get;   }
         public VlcMedia(VlcInstance instance, string url) {
             inst = instance;
             FileInfo file = new FileInfo(url);
+
             if (file.Exists)
             {
-
+                MediaFullName = file.FullName;
 
                 Handle = LibVlc.libvlc_media_new_path(instance.Handle,utf8.GetBytes(file.FullName));
                
@@ -794,6 +817,7 @@ float f_send_bitrate;
 
         public VlcMedia(VlcInstance instance, Uri url)
         {
+            MediaFullName = url.OriginalString;
             inst = instance;
             Handle = LibVlc.libvlc_media_new_location(instance.Handle, utf8.GetBytes(url.AbsolutePath));
             //VlcException ex = new VlcException();
@@ -841,7 +865,7 @@ float f_send_bitrate;
 
 
    public class VlcMediaPlayer : IDisposable {
-        internal IntPtr Handle;
+        internal IntPtr Player;
         private VlcInstance instance;
         bool media_set = false;
         private bool playing, paused;
@@ -853,14 +877,14 @@ float f_send_bitrate;
             get { return Drawable; } 
             set { 
       //  LibVlc.libvlc_media_player_set_nsobject(Handle,value);
-        LibVlc.libvlc_media_player_set_hwnd(Handle, value);
+                LibVlc.libvlc_media_player_set_hwnd(Player, value);
         //VlcException ex = new VlcException();
         Drawable = value;
         }}
        //same as get video length only works after the video is loaded and played once
        public Int64 Duration{
            get {
-               if (VideoDuration != null)
+               if (VideoDuration >=0)
                {
 
                    return VideoDuration;
@@ -875,7 +899,6 @@ float f_send_bitrate;
    
        }
        #region events
-       IntPtr eventmanager;
 
 
        public event EventHandler<PlayTimeArgs> PlayTimeChange;
@@ -893,13 +916,30 @@ float f_send_bitrate;
                set { ctime++; }
 
            }
+           public int frequency
+           {
+               set;
+               get;
+           }
            public Int64 currenttime { 
                set {
                    if (ctime != value) { ctime = value; };
                }
                get { return ctime; } 
            }
-       
+           public int interval
+           {
+               get;
+               set;
+           }
+
+           public PlayTimeArgs() {
+               interval = 1;
+               frequency = 1;
+               //set default interval to 1 so the clock will run 1ms/time
+               //can be set to other values to speed up or slow down the clock speed
+
+           }
 
        }
        internal void changetime() {
@@ -923,23 +963,28 @@ float f_send_bitrate;
            public event EventHandler Paused;
            public event EventHandler NothingSpecial;
            public event EventHandler<PlayerErrorArgs> PlayerError;
-           public event EventHandler StateChange; 
+           public event EventHandler<StateChangeArgs> StateChange; 
            //  public  Delegate raiseChangeState();
            //  public delegate void raiseState(EventArgs e);
            IntPtr noreply = IntPtr.Zero;
-           protected virtual void onStateChange(EventArgs e)
+           public class StateChangeArgs : EventArgs {
+               public string currentState { set; get; }
+           
+           }
+           protected virtual void onStateChange(StateChangeArgs e)
            {
-               EventHandler c = StateChange;
+               EventHandler<StateChangeArgs> c = StateChange;
                if (c != null)
                {
                    c(this, e);
 
                }
            }
-           internal void vlcStateChange()
+           internal void vlcStateChange(string cState)
            {
                //called everytime the playerStateChanges
-               EventArgs e = EventArgs.Empty;
+               StateChangeArgs e = new StateChangeArgs();
+               e.currentState = cState;
                onStateChange(e);
 
            }
@@ -956,9 +1001,10 @@ float f_send_bitrate;
            }
            internal void callPlaying()
            {
+               
                EventArgs e = EventArgs.Empty;
                onPlaying(e);
-               onStateChange(e);
+               vlcStateChange("Playing");
 
            }
            protected virtual void onStopped(EventArgs e)
@@ -975,7 +1021,7 @@ float f_send_bitrate;
            {
                EventArgs e = EventArgs.Empty;
                onStopped(e);
-               onStateChange(e);
+               vlcStateChange("Stopped");
 
            }
            protected virtual void onOpenning(EventArgs e)
@@ -992,7 +1038,7 @@ float f_send_bitrate;
            {
                EventArgs e = EventArgs.Empty;
                onOpenning(e);
-               onStateChange(e);
+               vlcStateChange("Openning");
 
            }
            protected virtual void onPaused(EventArgs e)
@@ -1009,7 +1055,7 @@ float f_send_bitrate;
            {
                EventArgs e = EventArgs.Empty;
                onPaused(e);
-               onStateChange(e);
+               vlcStateChange("Paused");
 
            }
            protected virtual void onNothingSpecial(EventArgs e)
@@ -1026,7 +1072,7 @@ float f_send_bitrate;
            {
                EventArgs e = EventArgs.Empty;
                onNothingSpecial(e);
-               onStateChange(e);
+               vlcStateChange("Nothing Special");
 
            }
            protected virtual void onPlayerError(PlayerErrorArgs e)
@@ -1044,7 +1090,7 @@ float f_send_bitrate;
                PlayerErrorArgs e = new PlayerErrorArgs();
                e.error = LibVlc.libvlc_errmsg();
                onPlayerError(e);
-               onStateChange(EventArgs.Empty);
+               vlcStateChange("Player Error");
 
            }
            public class PlayerErrorArgs : EventArgs
@@ -1055,14 +1101,49 @@ float f_send_bitrate;
                    set;
                }
            }
+           public class EndReachArgs : EventArgs
+           {
 
+               public IntPtr player { set; get; }
+               public bool GoNext { set; get; }
+               public bool Loop { set; get; }
+               public String PlayerState { set; get; }
+
+           }
+           public event EventHandler<EndReachArgs> EndReach;
+
+           protected virtual void OnEndReach(EndReachArgs e)
+           {
+
+               EventHandler<EndReachArgs> et = EndReach;
+               if (EndReach != null)
+               {
+                   et(this, e);
+               }
+           }
+           public void callEndReached()
+           {
+               EndReachArgs e = new EndReachArgs();
+               //the current video player instance
+
+
+               e.player = player.Player;
+               //if the video automaticlly loads next video in the playlist when end reached
+               e.GoNext = false;
+               //if the video automatically loops itself when end reached
+               e.Loop = false;
+               OnEndReach(e);
+
+
+           }
 
            public static List<_function> list = new List<_function>();
-           
+
+         
          public  VLCEventManager(VlcMediaPlayer c) {
                
                player = c;
-               eventmanager = LibVlc.libvlc_media_player_event_manager(c.Handle);
+               eventmanager = LibVlc.libvlc_media_player_event_manager(c.Player);
 
 
                _function cPlaying = new _function(callPlaying);
@@ -1070,62 +1151,36 @@ float f_send_bitrate;
                _function cStopped = new _function(callStopped);
                _function cOpenning = new _function(callOpenning);
                _function cNothingSpecial = new _function(callNothingSpecial);
+               _function cEndReached = new _function(callEndReached);
                list.Add(cPlaying);
                list.Add(cPaused);
                list.Add(cStopped);
                list.Add(cOpenning);
                list.Add(cNothingSpecial);
+               list.Add(cEndReached);
                // _function cChangetime = new _function(changetime);
                LibVlc.libvlc_event_attach(eventmanager, libvlc_event_e.libvlc_MediaPlayerPlaying, Marshal.GetFunctionPointerForDelegate(cPlaying), null);
                LibVlc.libvlc_event_attach(eventmanager, libvlc_event_e.libvlc_MediaPlayerPaused, Marshal.GetFunctionPointerForDelegate(cPaused), null);
                LibVlc.libvlc_event_attach(eventmanager, libvlc_event_e.libvlc_MediaPlayerStopped, Marshal.GetFunctionPointerForDelegate(cStopped), null);
                LibVlc.libvlc_event_attach(eventmanager, libvlc_event_e.libvlc_MediaPlayerOpening, Marshal.GetFunctionPointerForDelegate(cOpenning), null);
                LibVlc.libvlc_event_attach(eventmanager, libvlc_event_e.libvlc_MediaPlayerNothingSpecial, Marshal.GetFunctionPointerForDelegate(cNothingSpecial), null);
-               //  LibVlc.libvlc_event_attach(eventmanager, libvlc_event_e.libvlc_MediaPlayerTimeChanged, Marshal.GetFunctionPointerForDelegate(cChangetime), null);
+               
+             //  LibVlc.libvlc_event_attach(eventmanager, libvlc_event_e.libvlc_MediaPlayerTimeChanged, Marshal.GetFunctionPointerForDelegate(cChangetime), null);
                //   t = new test(Handle);
+        //    LibVlc.libvlc_event_attach(eventmanager, libvlc_event_e.libvlc_MediaPlayerEndReached, Marshal.GetFunctionPointerForDelegate(cEndReached), null);
           }
 
-         void VLCEventManager_onNothingSpecial_E(object sender, EventArgs e)
-         {
-             //throw new NotImplementedException();
-             onStateChange(EventArgs.Empty);
-         }
 
-         void VLCEventManager_onOpenning_E(object sender, EventArgs e)
-         {
-             //throw new NotImplementedException();
-             onStateChange(EventArgs.Empty);
-         }
-
-         void VLCEventManager_onStopped_E(object sender, EventArgs e)
-         {
-             //throw new NotImplementedException();
-             onStateChange(EventArgs.Empty);
-         }
-
-         void VLCEventManager_onPaused_E(object sender, EventArgs e)
-         {
-             //throw new NotImplementedException();
-             onStateChange(EventArgs.Empty);
-         }
-
-         void VLCEventManager_onPlaying_E(object sender, EventArgs e)
-         {
-             //throw new NotImplementedException();
-             onStateChange(EventArgs.Empty);
-         }
-       
-       
-       
        
        }
        public VLCEventManager vlc;
        
+
        public VlcMediaPlayer(VlcInstance inst,IntPtr panel) {
             instance = inst;
-            
 
-            Handle = LibVlc.libvlc_media_player_new(inst.Handle);
+
+            Player = LibVlc.libvlc_media_player_new(inst.Handle);
             //VlcException ex = new VlcException();
             drawable = panel;
             vlc = new VLCEventManager(this);
@@ -1141,78 +1196,148 @@ float f_send_bitrate;
        
       
      //  private delegate void cplaytime(PlayTimeArgs et);
+       Stopwatch sp = new Stopwatch();
+       int frequency = 1;
        void bk201_DoWork(object sender, DoWorkEventArgs e)
        {
            //throw new NotImplementedException();
            PlayTimeArgs et = new PlayTimeArgs();
        //    cplaytime cp = new cplaytime(onPlayTimeChange);
          //  Int64 nit = 0;
-           Stopwatch sp = new Stopwatch();
+           
            sp.Start();
+           Int64 usedtime=-1;
            while (playing && !paused)
            {
               // nit++;
-               Int64 currenttime = currentVideoTimeVLC;
-               if (lastPlaytime == currenttime && lastPlaytime != 0)
+               Int64 currenttime = currentVideoTime ;
+               if (currenttime % et.frequency == 0)
                {
-                  // currenttime += Environment.TickCount - lastPlaytimeGlobal;
-                 //  currenttime += nit - lastPlaytimeGlobal;
-                   currenttime += sp.ElapsedMilliseconds - lastPlaytimeGlobal;
                    et.currenttime = currenttime;
-                   onPlayTimeChange(et);
-               
-               }
-               else
-               {
-                   lastPlaytime = currenttime;
-                   //lastPlaytimeGlobal = Environment.TickCount;
-                   lastPlaytimeGlobal = sp.ElapsedMilliseconds;
-                  // lastPlaytimeGlobal = nit;
-               }
-        
 
+                   if (usedtime != currenttime)
+                   {
+                       // currenttime += Environment.TickCount - lastPlaytimeGlobal;
+                       //  currenttime += nit - lastPlaytimeGlobal;
 
-               Thread.Sleep(1);
+                       // onPlayTimeChange(et);
+                       onPlayTimeChange(et);
+
+                   }
+
+                   usedtime = currenttime;
+                   if (VideoLength != 0 && VideoLength <= et.currenttime && loaded)
+                   {
+                       vlc.callEndReached();
+                   }
+               }
+               Thread.Sleep(et.interval);
            }
            sp.Stop();
            
+           
 
        }
+       IntPtr PlayerEvent;
+       public delegate void methods();
+       private static List<methods> eventList = new List<methods>();
         public VlcMediaPlayer(VlcMedia media,IntPtr panel) {
             instance = media.inst;
-            Handle = LibVlc.libvlc_media_player_new_from_media(media.Handle);
+            Player = LibVlc.libvlc_media_player_new_from_media(media.Handle);
             //VlcException ex = new VlcException();
             media_set = true;
             VideoDuration = media.duration;
             media.Dispose();
             drawable = panel;
+            vlc.Playing += new EventHandler(vlc_Playing);
+            PlayerEvent = LibVlc.libvlc_media_player_event_manager(Player);
+            
+            methods callMediaChanged = new methods(onMediaChanged);
+
+            eventList.Add(callMediaChanged);
+
+            LibVlc.libvlc_event_attach(PlayerEvent,libvlc_event_e.libvlc_MediaPlayerMediaChanged,Marshal.GetFunctionPointerForDelegate(callMediaChanged),null);
         
         }
+        public void onMediaChanged() { 
+        
+        MediaChangedArgs e = new MediaChangedArgs();
+        e.MediaFile=CurrentFile;
+        e.MediaDirectory = CurrentFile.DirectoryName;
+        e.MediaName = CurrentFile.Name;
+        OnMediaChanged(e);
+        
+        }
+
+        void vlc_Playing(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
+            if (!loaded)
+            {
+                loaded = true;
+            }
+        }
+       public event EventHandler<MediaChangedArgs>MediaChanged;
+       public class MediaChangedArgs : EventArgs {
+           public String MediaName { get; set; }
+           public String MediaDirectory { get; set; }
+           public FileInfo MediaFile { get; set; }
+       }
+       protected virtual void OnMediaChanged(MediaChangedArgs e){
+       
+           EventHandler<MediaChangedArgs> et = MediaChanged;
+       if(MediaChanged!=null){
+           et(this, e);
+       }
+       }
+       private FileInfo CurrentFile;
+       public void setValues(string filedir) {
+           MediaChangedArgs e = new MediaChangedArgs();
+           CurrentFile = new FileInfo(filedir);
+           e.MediaName = CurrentFile.Name;
+           e.MediaDirectory = CurrentFile.DirectoryName;
+           e.MediaFile = CurrentFile;
+
+           if (!PlayList.Contains(CurrentFile.FullName))
+           {
+               PlayList.Add(CurrentFile.FullName);
+               Console.WriteLine("add to lsit"+CurrentFile.Name);
+           }
+           
+          // OnMediaChanged(e);
+       }
         public void setVlcMedia(Uri media) { 
             VlcMedia vlcm = new VlcMedia(instance,media);
-            LibVlc.libvlc_media_player_set_media(Handle, vlcm.Handle);
+            LibVlc.libvlc_media_player_set_media(Player, vlcm.Handle);
             //VlcException ex = new VlcException();
             VideoDuration = vlcm.duration;
             vlcm.Dispose();
+            
            clearValues();
         
         }
+        bool loaded;
+       
        private void clearValues(){
        subtitleInfo.Clear();
            subtitleIDs.Clear();
            subtitle_Fname = null;
          lastPlaytime = 0;
          lastPlaytimeGlobal = 0;
+         sp.Reset();
          playing = false;
          paused = false;
+         loaded = false;
        
        }
         public void setVlcMedia(VlcMedia media){
-
-            LibVlc.libvlc_media_player_set_media(Handle, media.Handle);
+            setValues(media.MediaFullName);
+            LibVlc.libvlc_media_player_set_media(Player, media.Handle);
             media_set = true;
+            
             media.Dispose();
             clearValues();
+          
             //media can be disposed after it's set
           //  onStateChange(EventArgs.Empty);
            // Play();
@@ -1236,7 +1361,7 @@ float f_send_bitrate;
         {
             get
             {
-                libvlc_state_t state = LibVlc.libvlc_media_player_get_state(Handle);
+                libvlc_state_t state = LibVlc.libvlc_media_player_get_state(Player);
                 //VlcException ex = new VlcException();
                 string result = state.ToString();
                 return result;
@@ -1253,14 +1378,17 @@ float f_send_bitrate;
                 paused = false;
               //  t.playing = true;
               //  t.paused = false;
-                LibVlc.libvlc_media_player_play(Handle);
-                //VlcException ex = new VlcException();
-
 
                 if (!bk201.IsBusy && playing && !paused)
                 {
                     bk201.RunWorkerAsync();
                 }
+
+                LibVlc.libvlc_media_player_play(Player);
+                //VlcException ex = new VlcException();
+
+
+              
            
             }
         
@@ -1274,8 +1402,8 @@ float f_send_bitrate;
                 paused = true;
                // t.paused = true;
 
-        
-                    LibVlc.libvlc_media_player_pause(Handle);
+
+                LibVlc.libvlc_media_player_pause(Player);
                 
             }
         }
@@ -1285,26 +1413,81 @@ float f_send_bitrate;
             paused = false;
          //   t.playing = false;
          //   t.paused = false;
-   
-                LibVlc.libvlc_media_player_stop(Handle);
+
+            LibVlc.libvlc_media_player_stop(Player);
             
             //VlcException ex = new VlcException();
 
         }
+        public void ClearPlayList() {
+
+            PlayList.Clear();
+            if (CurrentFile != null) {
+                PlayList.Add(CurrentFile.FullName);
+            }
+        }
+        private List<String> plist = new List<String>();
+        public  List<String> PlayList { set { plist = value; } get {return plist ;}}
+        int findCurrentIndex() {
+
+            for (int i = 0; i < PlayList.Count; i++) {
+                if (PlayList.ElementAt(i).Equals(CurrentFile.FullName))
+                {
+                    return i;
+                }
+                
+            }
+            return 0;
+        }
+        public void Forwared()
+        {
+            if (PlayList.Count > 1) {
+                int index = findCurrentIndex();
+                if (index < PlayList.Count - 1)
+                {
+                    index++;
+                }
+                else {
+                    index = 0;
+                }
+                setVlcMedia(PlayList[index]);
+                Play();
+            }
+        }
+        public void Backward() {
+            if (PlayList.Count > 1) {
+                int index = findCurrentIndex();
+                if (index > 0)
+                {
+                    index--;
+                }
+                else {
+                    index = PlayList.Count - 1;
+                }
+                setVlcMedia(PlayList[index]);
+                Play();
+            }
+        }
         public float FPS
         {
             get {
-                float fps = LibVlc.libvlc_media_player_get_fps(Handle);
+                float fps = LibVlc.libvlc_media_player_get_fps(Player);
                 //VlcException ex = new VlcException();
                 return fps;
             }
         }
         public void Dispose() {
-            LibVlc.libvlc_media_player_release(Handle);
+            LibVlc.libvlc_media_player_release(Player);
+            if (bk201.IsBusy)
+            {
+                playing = false;
+                paused = false;
+                bk201.CancelAsync();
+            }
         
         }
         public Int64 VideoLength { get {
-            Int64 length = LibVlc.libvlc_media_player_get_length(Handle).ToInt64();
+            Int64 length = LibVlc.libvlc_media_player_get_length(Player).ToInt64();
             //VlcException ex = new VlcException();
             return length;
         }}
@@ -1315,30 +1498,32 @@ float f_send_bitrate;
                 Int64 currenttime = currentVideoTimeVLC;
                 if (lastPlaytime == currenttime && lastPlaytime != 0)
                 {
-                    currenttime += Environment.TickCount - lastPlaytimeGlobal;
+                    currenttime += sp.ElapsedMilliseconds - lastPlaytimeGlobal;
                 }
                 else {
                     lastPlaytime = currenttime;
-                    lastPlaytimeGlobal = Environment.TickCount;
+                    lastPlaytimeGlobal = sp.ElapsedMilliseconds;
                 }
                 return currenttime;
             }
             set
             {
-                LibVlc.libvlc_media_player_set_time(Handle, value);
+                lastPlaytime = value;
+                lastPlaytimeGlobal = sp.ElapsedMilliseconds;
+                LibVlc.libvlc_media_player_set_time(Player, value);
                 //VlcException ex = new VlcException();
             }
         }
         public Int64 currentVideoTimeVLC{get{
 
-        Int64 time = LibVlc.libvlc_media_player_get_time(Handle);
+            Int64 time = LibVlc.libvlc_media_player_get_time(Player);
         //VlcException ex = new VlcException();
         return time;
         }
         }
 
        public VlcMedia getMedia() {
-           VlcMedia temp = new VlcMedia(LibVlc.libvlc_media_player_get_media(Handle));
+           VlcMedia temp = new VlcMedia(LibVlc.libvlc_media_player_get_media(Player));
            //VlcException ex = new VlcException();
            return temp;
         }
@@ -1355,7 +1540,7 @@ float f_send_bitrate;
            {
 
 
-               IntPtr p = LibVlc.libvlc_video_get_spu_description(Handle);
+               IntPtr p = LibVlc.libvlc_video_get_spu_description(Player);
                if (p != IntPtr.Zero)
                {
                    libvlc_track_description_t track = (libvlc_track_description_t)
@@ -1364,7 +1549,7 @@ float f_send_bitrate;
                    subtitleIDs.Add(track.i_id);
                    // LibVlc.libvlc_track_description_list_release(p);
                    p = track.p_next;
-                   for (int i = 0; i < LibVlc.libvlc_video_get_spu_count(Handle) - 1; i++)
+                   for (int i = 0; i < LibVlc.libvlc_video_get_spu_count(Player) - 1; i++)
                    {
                        track = (libvlc_track_description_t)
                        Marshal.PtrToStructure(p, typeof(libvlc_track_description_t));
@@ -1382,8 +1567,8 @@ float f_send_bitrate;
            }
        }
        public long subtitleDelay {
-           get {return LibVlc.libvlc_video_get_spu_delay(Handle); }
-           set { LibVlc.libvlc_video_set_spu_delay(Handle, value); }
+           get { return LibVlc.libvlc_video_get_spu_delay(Player); }
+           set { LibVlc.libvlc_video_set_spu_delay(Player, value); }
        }
        public List<int> getSubtitleIDList {
            get {
@@ -1399,7 +1584,7 @@ float f_send_bitrate;
                result = subtitleInfo[currentSubtitleID];
            }
            else {
-               result = subtitleInfo[-1];
+               result = "No Subtitle";
            }
            return result;
 
@@ -1438,21 +1623,24 @@ float f_send_bitrate;
                FileInfo file = new FileInfo(path);
                subtitle_Fname = file.FullName;
 
-               LibVlc.libvlc_video_set_subtitle_file(Handle, UTF8Encoding.UTF8.GetBytes(path));
+               LibVlc.libvlc_video_set_subtitle_file(Player, UTF8Encoding.UTF8.GetBytes(path));
            }
            else {
                MessageBox.Show("No file is found on seleted path: " + path);
            }
        }
+      public int _SubtitleCount = -1;
        public int SubtitleCount { 
-           get { 
-           //return LibVlc.libvlc_video_get_spu_count(Handle); 
-               loadSubtitleList();
+           get {
+               _SubtitleCount = LibVlc.libvlc_video_get_spu_count(Player); 
+           loadSubtitleList();
            
            return subtitleIDs.Count-1;
        } }
        public int currentSubtitleID {
-           get { return LibVlc.libvlc_video_get_spu(Handle); 
+           get
+           {
+               return LibVlc.libvlc_video_get_spu(Player); 
  
            }
        }
@@ -1475,7 +1663,7 @@ float f_send_bitrate;
                loadSubtitleList();
                if (subtitleIDs.Count!=0 && value >= 0 && value <= subtitleIDs.Count)
                {
-                   LibVlc.libvlc_video_set_spu(Handle, subtitleIDs.ElementAt(value));
+                   LibVlc.libvlc_video_set_spu(Player, subtitleIDs.ElementAt(value));
                }
             //   LibVlc.libvlc_video_set_spu(Handle,value);
                   
@@ -1483,7 +1671,7 @@ float f_send_bitrate;
            }
        }
        private void loadSubtitleList() {
-           if (SubtitleCount > 0 && subtitleIDs.Count == 0)
+           if (_SubtitleCount > 0 && subtitleIDs.Count == 0)
            {
                loadSubtitleInfo();
            }
@@ -1491,70 +1679,89 @@ float f_send_bitrate;
 
        #endregion
        #region video
-       public bool EnableAdjustOptions{
-       get{switch(LibVlc.libvlc_video_get_adjust_int(Handle,libvlc_video_adjust_option_t.libvlc_adjust_Enable)){
-           default:
-           case 1:
-               return true;
-               break;
-               return false;
-               break;
-       };}
-       set{
-           switch(value){
-               case false:
-                    LibVlc.libvlc_video_set_adjust_int(Handle,libvlc_video_adjust_option_t.libvlc_adjust_Enable,0);
-     
-                   break;
+       public bool isScrambled {
+           get {
+               int i = LibVlc.libvlc_media_player_program_scrambled(Player);
+               if (i == 1)
+               {
+                   return true;
+               }
+               else {
+                   return false;
+               }
            
-               default:   
-            LibVlc.libvlc_video_set_adjust_int(Handle,libvlc_video_adjust_option_t.libvlc_adjust_Enable,1);
-       break;
-           }    
+           }
+       }
+       int i=-1;
+       private void checkEnableOption() {
+           if (i == -1)
+           {
+               i = 1;
+               LibVlc.libvlc_video_set_adjust_int(Player, libvlc_video_adjust_option_t.libvlc_adjust_Enable, 1);
+
+           }
+       }
+       public int EnableAdjustOptions{
+       get{
+           checkEnableOption();
+    
+         return i;
+       
+       }
+       set{
+           i = value;
+
+           LibVlc.libvlc_video_set_adjust_int(Player, libvlc_video_adjust_option_t.libvlc_adjust_Enable, value);
+    
        }
        }
        
     public float Contrast{
-       get{return LibVlc.libvlc_video_get_adjust_float(Handle,libvlc_video_adjust_option_t.libvlc_adjust_Contrast);}
+        get { return LibVlc.libvlc_video_get_adjust_float(Player, libvlc_video_adjust_option_t.libvlc_adjust_Contrast); }
        set{
-           LibVlc.libvlc_video_set_adjust_float(Handle,libvlc_video_adjust_option_t.libvlc_adjust_Contrast,value);
-           LibVlc.libvlc_video_set_adjust_int(Handle,libvlc_video_adjust_option_t.libvlc_adjust_Contrast,(int)value);
+           checkEnableOption();
+           LibVlc.libvlc_video_set_adjust_float(Player, libvlc_video_adjust_option_t.libvlc_adjust_Contrast, value);
+           LibVlc.libvlc_video_set_adjust_int(Player, libvlc_video_adjust_option_t.libvlc_adjust_Contrast, (int)value);
            }
        
        }
               public float Brightness{
-       get{return LibVlc.libvlc_video_get_adjust_float(Handle,libvlc_video_adjust_option_t.libvlc_adjust_Brightness);}
+                  get { return LibVlc.libvlc_video_get_adjust_float(Player, libvlc_video_adjust_option_t.libvlc_adjust_Brightness); }
        set{
-           LibVlc.libvlc_video_set_adjust_float(Handle,libvlc_video_adjust_option_t.libvlc_adjust_Brightness,value);
-           LibVlc.libvlc_video_set_adjust_int(Handle,libvlc_video_adjust_option_t.libvlc_adjust_Brightness,(int)value);
+           checkEnableOption();
+           LibVlc.libvlc_video_set_adjust_float(Player, libvlc_video_adjust_option_t.libvlc_adjust_Brightness, value);
+           LibVlc.libvlc_video_set_adjust_int(Player, libvlc_video_adjust_option_t.libvlc_adjust_Brightness, (int)value);
            }
        
        }
               public float Hue{
-       get{return LibVlc.libvlc_video_get_adjust_float(Handle,libvlc_video_adjust_option_t.libvlc_adjust_Hue);}
+                  get { return LibVlc.libvlc_video_get_adjust_float(Player, libvlc_video_adjust_option_t.libvlc_adjust_Hue); }
        set{
-           LibVlc.libvlc_video_set_adjust_float(Handle,libvlc_video_adjust_option_t.libvlc_adjust_Hue,value);
-           LibVlc.libvlc_video_set_adjust_int(Handle,libvlc_video_adjust_option_t.libvlc_adjust_Hue,(int)value);
+           checkEnableOption();
+           LibVlc.libvlc_video_set_adjust_float(Player, libvlc_video_adjust_option_t.libvlc_adjust_Hue, value);
+           LibVlc.libvlc_video_set_adjust_int(Player, libvlc_video_adjust_option_t.libvlc_adjust_Hue, (int)value);
            }
        
        }
 
        public float Saturation{
-       get{return LibVlc.libvlc_video_get_adjust_float(Handle,libvlc_video_adjust_option_t.libvlc_adjust_Saturation);}
+           get { return LibVlc.libvlc_video_get_adjust_float(Player, libvlc_video_adjust_option_t.libvlc_adjust_Saturation); }
        set{
-           LibVlc.libvlc_video_set_adjust_float(Handle,libvlc_video_adjust_option_t.libvlc_adjust_Saturation,value);
-           LibVlc.libvlc_video_set_adjust_int(Handle,libvlc_video_adjust_option_t.libvlc_adjust_Saturation,(int)value);
+           checkEnableOption();
+           LibVlc.libvlc_video_set_adjust_float(Player, libvlc_video_adjust_option_t.libvlc_adjust_Saturation, value);
+           LibVlc.libvlc_video_set_adjust_int(Player, libvlc_video_adjust_option_t.libvlc_adjust_Saturation, (int)value);
            }
        
        }
 
        public float Gamma {
-           get 
-           
-           { return LibVlc.libvlc_video_get_adjust_float(Handle,libvlc_video_adjust_option_t.libvlc_adjust_Gamma);}
+           get
+
+           { return LibVlc.libvlc_video_get_adjust_float(Player, libvlc_video_adjust_option_t.libvlc_adjust_Gamma); }
        set{
-       LibVlc.libvlc_video_set_adjust_float(Handle,libvlc_video_adjust_option_t.libvlc_adjust_Gamma,value);
-       LibVlc.libvlc_video_set_adjust_int(Handle,libvlc_video_adjust_option_t.libvlc_adjust_Gamma,(int)value);
+           checkEnableOption();
+           LibVlc.libvlc_video_set_adjust_float(Player, libvlc_video_adjust_option_t.libvlc_adjust_Gamma, value);
+       LibVlc.libvlc_video_set_adjust_int(Player, libvlc_video_adjust_option_t.libvlc_adjust_Gamma, (int)value);
        
        }
        
@@ -1565,7 +1772,7 @@ float f_send_bitrate;
                int x=0;
                int y=0;
                //0  fill in the number of videos mostly 0 by default
-               LibVlc.libvlc_video_get_cursor(Handle, 0, ref x, ref y);
+               LibVlc.libvlc_video_get_cursor(Player, 0, ref x, ref y);
                int[] result = { x, y };
                return result;
            
@@ -1575,7 +1782,7 @@ float f_send_bitrate;
        public void setDeinterlace(string mode)
        {
 
-           LibVlc.libvlc_video_set_deinterlace(Handle, mode);
+           LibVlc.libvlc_video_set_deinterlace(Player, mode);
 
            //VlcException ex = new VlcException();
 
@@ -1585,7 +1792,7 @@ float f_send_bitrate;
        get {
            uint x = 0;
            uint y = 0;
-           LibVlc.libvlc_video_get_size(Handle, 0, ref x, ref y);
+           LibVlc.libvlc_video_get_size(Player, 0, ref x, ref y);
            Size result = new Size((int)x, (int)y);
 
            return result;
@@ -1595,7 +1802,7 @@ float f_send_bitrate;
        
            public string AspectRatio{
            get{
-           return LibVlc.libvlc_video_get_aspect_ratio(Handle);
+               return LibVlc.libvlc_video_get_aspect_ratio(Player);
            }
                set {
                    string ans = value;
@@ -1603,26 +1810,26 @@ float f_send_bitrate;
                //null for default
                //invalid aspect will be ignored
 
-                   LibVlc.libvlc_video_set_aspect_ratio(Handle, ans);
+                   LibVlc.libvlc_video_set_aspect_ratio(Player, ans);
                
                }
            }
            //set the aspect back to default
            public void AspectRatioDefault() {
-               LibVlc.libvlc_video_set_aspect_ratio(Handle, null);
+               LibVlc.libvlc_video_set_aspect_ratio(Player, null);
            
            }
            public float VideoScale {
                get {
-                  
-                   return LibVlc.libvlc_video_get_scale(Handle);
+
+                   return LibVlc.libvlc_video_get_scale(Player);
                
                }
                set {
                    float ans = value;
                // 0 is a special value adjusts the video to the output windows(in windowed mode) or the fullscreen    
                //set either the scaling factor or zero
-                   LibVlc.libvlc_video_set_scale(Handle, ans);
+                   LibVlc.libvlc_video_set_scale(Player, ans);
 
                }
            
@@ -1646,11 +1853,11 @@ float f_send_bitrate;
 
            switch (s) { 
                case true:
-                   LibVlc.libvlc_video_set_key_input(Handle,true);
+                   LibVlc.libvlc_video_set_key_input(Player, true);
                    break;
 
                default:
-                   LibVlc.libvlc_video_set_key_input(Handle, false);
+                   LibVlc.libvlc_video_set_key_input(Player, false);
                    break;
            
            }
@@ -1682,10 +1889,10 @@ float f_send_bitrate;
 
            switch (m) { 
                case true:
-                   LibVlc.libvlc_video_set_mouse_input(Handle, true);
+                   LibVlc.libvlc_video_set_mouse_input(Player, true);
                    break;
                default:
-                   LibVlc.libvlc_video_set_mouse_input(Handle, false);
+                   LibVlc.libvlc_video_set_mouse_input(Player, false);
                    break;
            }
        }
@@ -1697,14 +1904,14 @@ float f_send_bitrate;
        #region audio
        public int Volume {
 
-           get { 
-           int volume=LibVlc.libvlc_audio_get_volume(Handle);
+           get {
+               int volume = LibVlc.libvlc_audio_get_volume(Player);
            return volume;
            }
            set {
                if (value >= 0 && value <= 100)
                {
-                   LibVlc.libvlc_audio_set_volume(Handle, value);
+                   LibVlc.libvlc_audio_set_volume(Player, value);
                }
            }
        
@@ -1713,13 +1920,13 @@ float f_send_bitrate;
            {
                get
                {
-                   int count = LibVlc.libvlc_audio_get_track_count(Handle)-1;
+                   int count = LibVlc.libvlc_audio_get_track_count(Player) - 1;
                    return count ;
                }
            }
            public int currentAudioTrack {
-               get { return LibVlc.libvlc_audio_get_track(Handle); }
-               set { LibVlc.libvlc_audio_set_track(Handle,value); }
+               get { return LibVlc.libvlc_audio_get_track(Player); }
+               set { LibVlc.libvlc_audio_set_track(Player, value); }
            }
        #endregion
 
@@ -1727,7 +1934,7 @@ float f_send_bitrate;
    }
       class VlcException
         {
-            internal libvlc_exception_t ex;
+            
             public VlcException()
             {
                 //ex = new libvlc_exception_t();

@@ -1786,14 +1786,24 @@ namespace windowMediaPlayerDM
 
                          if (oldfile.Length < newfile.Length)
                          {
-                           
-                             oldfile.Delete();
-                             newfile.CopyTo(oldfile.FullName);
-                             newfile.Delete();
-                             String[] temp = { oldfile.FullName, oldfile.Name };
-                             if (!Media_List.Contains(temp))
+                             try
                              {
-                                 Media_List.Add(temp);
+                                 oldfile.Delete();
+                                 newfile.CopyTo(oldfile.FullName);
+                                 newfile.Delete();
+
+                                 String[] temp = { oldfile.FullName, oldfile.Name };
+                                 if (!Media_List.Contains(temp))
+                                 {
+                                     Media_List.Add(temp);
+                                 }
+                             }
+                             catch (IOException) {
+                                 String[] temp = { newfile.FullName, newfile.Name };
+                                 if (!Media_List.Contains(temp))
+                                 {
+                                     Media_List.Add(temp);
+                                 }
                              }
 
                          }

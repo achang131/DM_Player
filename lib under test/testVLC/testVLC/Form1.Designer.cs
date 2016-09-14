@@ -38,6 +38,12 @@
             this.up = new System.Windows.Forms.Button();
             this.Track = new System.Windows.Forms.Label();
             this.button3 = new System.Windows.Forms.Button();
+            this.soundbar = new System.Windows.Forms.ProgressBar();
+            this.optionbox = new System.Windows.Forms.ComboBox();
+            this.trackbar = new System.Windows.Forms.TrackBar();
+            this.backward = new System.Windows.Forms.Button();
+            this.forward = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)(this.trackbar)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -137,11 +143,68 @@
             this.button3.Text = "button1";
             this.button3.UseVisualStyleBackColor = true;
             // 
+            // soundbar
+            // 
+            this.soundbar.Location = new System.Drawing.Point(740, 494);
+            this.soundbar.Name = "soundbar";
+            this.soundbar.Size = new System.Drawing.Size(141, 23);
+            this.soundbar.TabIndex = 4;
+            // 
+            // optionbox
+            // 
+            this.optionbox.FormattingEnabled = true;
+            this.optionbox.Items.AddRange(new object[] {
+            "Time",
+            "Enable",
+            "Contrast",
+            "Brightness",
+            "Hue",
+            "Saturation",
+            "Gamma"});
+            this.optionbox.Location = new System.Drawing.Point(50, 495);
+            this.optionbox.Name = "optionbox";
+            this.optionbox.Size = new System.Drawing.Size(121, 21);
+            this.optionbox.TabIndex = 5;
+            // 
+            // trackbar
+            // 
+            this.trackbar.AutoSize = false;
+            this.trackbar.Location = new System.Drawing.Point(177, 494);
+            this.trackbar.Name = "trackbar";
+            this.trackbar.Size = new System.Drawing.Size(354, 32);
+            this.trackbar.TabIndex = 6;
+            this.trackbar.TickStyle = System.Windows.Forms.TickStyle.Both;
+            // 
+            // backward
+            // 
+            this.backward.Location = new System.Drawing.Point(537, 496);
+            this.backward.Name = "backward";
+            this.backward.Size = new System.Drawing.Size(75, 23);
+            this.backward.TabIndex = 7;
+            this.backward.Text = "backward";
+            this.backward.UseVisualStyleBackColor = true;
+            this.backward.Click += new System.EventHandler(this.backward_Click);
+            // 
+            // forward
+            // 
+            this.forward.Location = new System.Drawing.Point(618, 496);
+            this.forward.Name = "forward";
+            this.forward.Size = new System.Drawing.Size(75, 23);
+            this.forward.TabIndex = 7;
+            this.forward.Text = "forward";
+            this.forward.UseVisualStyleBackColor = true;
+            this.forward.Click += new System.EventHandler(this.forward_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(895, 500);
+            this.ClientSize = new System.Drawing.Size(893, 531);
+            this.Controls.Add(this.forward);
+            this.Controls.Add(this.backward);
+            this.Controls.Add(this.trackbar);
+            this.Controls.Add(this.optionbox);
+            this.Controls.Add(this.soundbar);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.up);
             this.Controls.Add(this.Track);
@@ -154,6 +217,7 @@
             this.Controls.Add(this.Openb);
             this.Name = "Form1";
             this.Text = "Form1";
+            ((System.ComponentModel.ISupportInitialize)(this.trackbar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -171,6 +235,11 @@
         private System.Windows.Forms.Button up;
         private System.Windows.Forms.Label Track;
         private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.ProgressBar soundbar;
+        private System.Windows.Forms.ComboBox optionbox;
+        private System.Windows.Forms.TrackBar trackbar;
+        private System.Windows.Forms.Button backward;
+        private System.Windows.Forms.Button forward;
     }
 }
 
