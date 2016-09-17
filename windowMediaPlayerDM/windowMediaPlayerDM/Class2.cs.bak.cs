@@ -1727,7 +1727,11 @@ namespace windowMediaPlayerDM
                          }
                      }
                      else {
-                         oldfile.Delete();
+                         try
+                         {
+                             oldfile.Delete();
+                         }
+                         catch (IOException) { };
                          FileInfo dltemp = new FileInfo(CurrentDir + "\\" + filename);
 
                          wb.DownloadFileAsync(filepath, CurrentDir + "\\" + filename);
